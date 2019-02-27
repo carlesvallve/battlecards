@@ -1,6 +1,6 @@
 {
-  "name": "slimehunt",
-  "title": "Slime Hunt",
+  "name": "slime-smash",
+  "title": "Slime Smash",
   "version": "1.0.0",
   "manifest": {
     "maxTick": 50,

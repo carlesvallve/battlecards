@@ -45,10 +45,10 @@ export default class TitleScreen extends View {
 
     new FixedTextView({
       parent: this,
-      text: 'HUNT',
-      color: '#000',
+      text: 'SMASH',
+      color: '#ddd',
       x: 0,
-      y: -offsetY + 68 + this.screen.height / 2,
+      y: -0 + -offsetY + 68 + this.screen.height / 2,
       width: 320,
       height: 100,
       fontFamily: 'Verdana',
@@ -56,8 +56,8 @@ export default class TitleScreen extends View {
       horizontalAlign: 'center',
       verticalAlign: 'middle',
       strokeWidth: 4,
-      strokeColor: '#777',
-      size: 70,
+      strokeColor: '#fff',
+      size: 57,
       autoFontSize: false,
       autoSize: false,
     });
