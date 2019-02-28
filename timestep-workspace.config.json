@@ -1,0 +1,7 @@
+{
+    "packages": [
+      "https://github.com/gameclosure/timestep-build.git",
+      "https://github.com/gameclosure/timestep-core.git",
+      "https://github.com/gameclosure/timestep-instant.git"
+    ]
+  }

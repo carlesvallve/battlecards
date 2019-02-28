@@ -6,6 +6,7 @@ import FixedTextView from 'src/lib/FixedTextView';
 import InputView from 'src/lib/InputView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
+import GameOver from 'src/game/components/GameOver';
 
 
 export default class Hud extends View {
@@ -21,19 +22,22 @@ export default class Hud extends View {
 
     this.createStars();
     this.createScoreLabel();
-    this.createGameOverView();
     this.createPauseButton();
 
+    this.gameOver = new GameOver({ parent: this });
+
     this.on('hud:start', this.init.bind(this));
-    this.on('hud:updateScore', this.updateScore.bind(this));
-    this.on('hud:updateStars', this.updateStars.bind(this));
-    this.on('hud:removeHeart', this.removeHeart.bind(this));
-    this.on('hud:gameover', this.gameOver.bind(this));
+    this.on('hud:continue', this.continue.bind(this));
+    this.on('hud:updateScore', this.onUpdateScore.bind(this));
+    this.on('hud:onUdateStars', this.onUpdateStars.bind(this));
+    this.on('hud:removeHeart', this.onRemoveHeart.bind(this));
+    this.on('hud:gameover', this.onGameOver.bind(this));
   }
 
   init () {
     const gameData = this.loadGameData();
-    console.log('gameData:', gameData);
+    // console.log('gameData:', gameData);
+
     this.stars = gameData.stars;
     this.highscore = gameData.highscore;
 
@@ -41,41 +45,20 @@ export default class Hud extends View {
     this.scoreLabel.setText(this.score.toString());
     this.starLabel.setText(this.stars.toString());
     this.createHearts(3);
-    this.gameoverLabel.hide();
+
+    this.gameOver.hide();
   }
 
-  gameOver () {
-    this.gameoverLabel.style.opacity = 0;
-    this.gameoverLabel.show();
-
-    const t = 350;
-    const easing = animate.easeInOut;
-
-    const y = 16 + this.screen.height * 0.25;
-
-    animate(this.gameoverLabel)
-      .now({ y: y + 10, opacity: 0 }, 0, easing)
-      .then({ y: y + 0, opacity: 1 }, t, easing);
-
-    // save game data
-    this.saveGameData();
+  continue () {
+    this.createHearts(1);
+    this.gameOver.hide();
   }
 
-  saveGameData () {
-    // save highscore and current stars to localstorage
-    localStorage.setItem('gameData', JSON.stringify({
-      stars: this.stars,
-      highscore: this.score > this.highscore ? this.score : this.highscore,
-    }));
-  }
+  // =====================================================================
+  // Hud Events (score, stars, hearts, gameOver)
+  // =====================================================================
 
-  loadGameData () {
-    // Retrieve game data from local storage.
-    const data = JSON.parse(localStorage.getItem('gameData'));
-    return data || { stars: 0, highscore: 0 };
-  }
-
-  updateScore ({ points }) {
+  onUpdateScore ({ points }) {
     const t = 100;
     const easing = animate.easeOut;
 
@@ -90,7 +73,7 @@ export default class Hud extends View {
       .then({ scale: 1 }, t, easing);
   }
 
-  updateStars ({ ammount }) {
+  onUpdateStars ({ ammount }) {
     const t = 100;
     const easing = animate.easeOut;
 
@@ -104,6 +87,32 @@ export default class Hud extends View {
       })
       .then({ scale: 1 }, t, easing);
   }
+
+  onRemoveHeart () {
+    const heart = this.hearts[this.hearts.length - 1];
+    if (!heart) {
+      return;
+    }
+
+    blink(heart, 50);
+    animate(this)
+      .wait(300)
+      .then(() => {
+        heart.removeFromSuperview();
+        this.hearts.splice(this.hearts.length - 1, 1);
+      });
+  }
+
+  onGameOver () {
+    // save game data
+    this.saveGameData();
+    // display gameover message
+    this.gameOver.init();
+  }
+
+  // =====================================================================
+  // Create hud header elements (stars, score, hearts)
+  // =====================================================================
 
   createStars () {
     new ImageView({ // star icon
@@ -184,31 +193,6 @@ export default class Hud extends View {
     });
   }
 
-  createGameOverView () {
-    this.gameoverLabel = new FixedTextView({
-      parent: this,
-      centerOnOrigin: true,
-      centerAnchor: true,
-      text: 'GAME OVER',
-      color: '#CC0000',
-      x: this.screen.width / 2,
-      y: 0,
-      width: 320,
-      height: 100,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 4,
-      strokeColor: '#ff0000',
-      size: 36,
-      autoFontSize: false,
-      autoSize: false,
-    });
-
-    this.gameoverLabel.hide();
-  }
-
   createHearts (max) {
     this.hearts = [];
     for (let i = 0; i < max; i++) {
@@ -228,20 +212,9 @@ export default class Hud extends View {
     }
   }
 
-  removeHeart () {
-    const heart = this.hearts[this.hearts.length - 1];
-    if (!heart) {
-      return;
-    }
-
-    blink(heart, 50);
-    animate(this)
-      .wait(300)
-      .then(() => {
-        heart.removeFromSuperview();
-        this.hearts.splice(this.hearts.length - 1, 1);
-      });
-  }
+  // =====================================================================
+  // Create hud footer elements (stars, score, hearts)
+  // =====================================================================
 
   createPauseButton () {
     // const button = new ImageView({
@@ -276,4 +249,23 @@ export default class Hud extends View {
 
     // console.log('>>>', button);
   }
+
+  // =====================================================================
+  // Load and save game data
+  // =====================================================================
+
+  saveGameData () {
+    // save highscore and current stars to localstorage
+    localStorage.setItem('gameData', JSON.stringify({
+      stars: this.stars,
+      highscore: this.score > this.highscore ? this.score : this.highscore,
+    }));
+  }
+
+  loadGameData () {
+    // Retrieve game data from local storage.
+    const data = JSON.parse(localStorage.getItem('gameData'));
+    return data || { stars: 0, highscore: 0 };
+  }
+
 }

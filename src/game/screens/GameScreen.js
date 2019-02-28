@@ -97,6 +97,7 @@ export default class GameScreen extends View {
 
   init () {
     this.gameState = GameStates.Play;
+    sounds.playSong('dubesque');
 
     // reset slimes
     for (let i = 0; i < this.slimes.length; i++) {
@@ -115,6 +116,9 @@ export default class GameScreen extends View {
 
     // reset hud
     this.hud.emit('hud:start');
+
+    // init world animation
+    this.world.init(this.ninja);
 
     // start spawning slimes
     animate({}).
@@ -258,7 +262,13 @@ export default class GameScreen extends View {
 
     // return to title screen if we are in gameover mode
     if (this.gameState === GameStates.gameOver) {
-      this.emit('game:end');
+      // actually, if we click here means we want to continue.
+      // so respawn the ninja and refill lifes!
+      this.gameState = GameStates.Play;
+      this.ninja.emit('ninja:start');
+      this.hud.emit('hud:continue');
+      sounds.playSong('dubesque');
+      // this.emit('game:end');
       return;
     }
 

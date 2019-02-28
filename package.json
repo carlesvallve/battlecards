@@ -3,14 +3,6 @@
   "shortName": "slimesmash",
   "title": "Slime Smash",
   "version": "1.0.0",
-  "analytics": {
-    "prod": {
-      "pixel": {
-        "id": "113377609289513",
-        "enabled": true
-      }
-    }
-  },
   "manifest": {
     "maxTick": 50,
     "android": {
@@ -47,20 +39,26 @@
     ]
   },
   "scripts": {
-    "postinstall": "git submodule update --init --recursive && (cd frontend && npm install)",
     "start": "npm run serve",
-    "build:dev": "./frontend/node_modules/.bin/webpack --env.buildType development",
-    "build:prod": "./frontend/node_modules/.bin/webpack --env.buildType production",
-    "build:zip": "./frontend/node_modules/.bin/webpack --env.buildType production && npm run zip -- -prod",
+    "build:dev": "webpack --env.buildType development",
+    "build:prod": "webpack --env.buildType production",
+    "build:zip": "webpack --env.buildType production && npm run zip -- -prod",
     "zip": "bash scripts/zip.sh",
+    "serveFacebook": "webpack-dev-server --env.buildType developmentFacebook --no-inline",
     "lint": "eslint src",
-    "serve": "./frontend/node_modules/.bin/webpack-dev-server --env.buildType development --no-inline",
+    "serve": "webpack-dev-server --env.buildType development --no-inline",
     "clean": "rm -rf build dist testResults deploy .cache",
     "clean-modules": "rm -rf node_modules"
   },
   "author": "Carles Vallve",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "@blackstormlabs/timestep-build": "github:gameclosure/timestep-build#51fc6d5",
+    "@blackstormlabs/timestep-core": "github:gameclosure/timestep-core#7efbe2b",
+    "@blackstormlabs/timestep-devtools": "github:gameclosure/timestep-devtools#cbc88f3",
+    "@blackstormlabs/timestep-instant": "github:gameclosure/timestep-instant#8e43b7e",
+    "@blackstormlabs/timestep-workspace": "^4.0.0"
+  },
   "dependencies": {
     "eslint": "^5.11.1"
   }

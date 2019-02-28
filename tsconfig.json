@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "sourceMap": false,
-    "allowJs": true,
+    // "allowJs": true,
     "experimentalDecorators": true,
     "moduleResolution": "node"
   },
