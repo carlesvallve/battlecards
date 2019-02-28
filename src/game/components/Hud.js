@@ -29,7 +29,7 @@ export default class Hud extends View {
     this.on('hud:start', this.init.bind(this));
     this.on('hud:continue', this.continue.bind(this));
     this.on('hud:updateScore', this.onUpdateScore.bind(this));
-    this.on('hud:onUdateStars', this.onUpdateStars.bind(this));
+    this.on('hud:updateStars', this.onUpdateStars.bind(this));
     this.on('hud:removeHeart', this.onRemoveHeart.bind(this));
     this.on('hud:gameover', this.onGameOver.bind(this));
   }

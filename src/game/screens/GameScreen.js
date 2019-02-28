@@ -81,7 +81,7 @@ export default class GameScreen extends View {
     this.hud = new Hud({
       parent: this,
       x: 5,
-      y: 5,
+      y: 5 + 30,
       width: this.screen.width - 10,
       height: this.screen.height - 10,
       zIndex: 998,
@@ -260,15 +260,19 @@ export default class GameScreen extends View {
   onTap (x, y) {
     // console.log('onTap', x, y);
 
-    // return to title screen if we are in gameover mode
     if (this.gameState === GameStates.gameOver) {
+      // return to title screen if we are in gameover mode
+      // this.emit('game:end');
+
       // actually, if we click here means we want to continue.
       // so respawn the ninja and refill lifes!
-      this.gameState = GameStates.Play;
-      this.ninja.emit('ninja:start');
-      this.hud.emit('hud:continue');
-      sounds.playSong('dubesque');
-      // this.emit('game:end');
+      if (this.hud.gameOver.time <= 8) {
+        this.gameState = GameStates.Play;
+        this.ninja.emit('ninja:start');
+        this.hud.emit('hud:continue');
+        sounds.playSong('dubesque');
+      }
+
       return;
     }
 
