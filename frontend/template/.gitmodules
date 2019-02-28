@@ -1,5 +1,0 @@
-[submodule "frontend"]
-        path=frontend
-        url=https://github.com/BlackstormLabs/coretech_frontend
-        fetchRecurseSubmodules = yes
-        ignore=none

@@ -55,7 +55,7 @@ export default class Ninja extends View {
     this.style.x = this.game.world.center;
     this.style.y = this.screen.height / 2;
 
-    this.game.world.init(this);
+    // this.game.world.init(this);
 
     animate(this).clear();
 

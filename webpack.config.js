@@ -2,13 +2,7 @@ const path = require('path');
 // Stub to call full webpack scripts in frontend/ subrepo.
 
 // First, load the real file, and gracefully report an error with a likely fix if we can't.
-try {
-	var webpackConfig = require(__dirname + "/frontend/arson/webpack.config.js");
-}
-catch(e) {
-	console.error("Failed to load webpack scripts from frontend/ folder. Did you run npm install?");
-	process.exit(1);	
-}
+var webpackConfig = require('@blackstormlabs/timestep-build/arson/webpack.config.js');
 
 // This is what webpack actually calls.
 module.exports = function (env) {
@@ -24,4 +18,4 @@ module.exports = function (env) {
 
   // Pass config back to webpack.
   return config;
-}
+};

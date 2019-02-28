@@ -1,5 +1,7 @@
 {
   "instant_games": {
+    "orientation": "PORTRAIT",
+    "navigation_menu_version": "NAV_FLOATING",
     "custom_update_templates": {
       "SCREENSHOT_MISCELLANEOUS": {
         "example": "⚡ 😎 ⚡ 😎 ⚡"

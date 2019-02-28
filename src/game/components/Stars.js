@@ -41,7 +41,7 @@ export default class Stars extends View {
       centerOnOrigin: true,
       centerAnchor: true,
       scale: 1, // this.sc,
-      image: new Image({ url: 'resources/images/8bit-ninja/stars/star-yellow.png' }),
+      image: new Image({ url: 'resources/images/8bit-ninja/star-yellow.png' }),
     });
 
     sprite.style.offsetX = -size / 2;
@@ -79,9 +79,10 @@ export default class Stars extends View {
 
       // attrack particle to ninja
       if (sprite.action === Actions.Die) {
+        const vel = 0.4;
         const targetX = this.ninja.targetX || this.ninja.style.x;
-        const dx = (targetX - me.x) * 0.2;
-        const dy = (-7 + this.ninja.style.y - me.y) * 0.2;
+        const dx = (targetX - me.x) * vel;
+        const dy = (-7 + this.ninja.style.y - me.y) * vel;
         me.x += dx;
         me.y += dy;
         if (dx <= 1 && dy <= 1) {

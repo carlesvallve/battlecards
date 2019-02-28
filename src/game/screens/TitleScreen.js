@@ -18,7 +18,7 @@ export default class TitleScreen extends View {
       parent: this,
       width: this.screen.width,
       height: this.screen.height,
-      backgroundColor: '#222',
+      backgroundColor: '#111',
     });
 
     const offsetY = 110;
