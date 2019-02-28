@@ -115,7 +115,7 @@ export default class Hud extends View {
       centerOnOrigin: false,
       centerAnchor: false,
       scale: 1, // this.sc,
-      image: new Image({ url: 'resources/images/8bit-ninja/stars/star-yellow.png' }),
+      image: new Image({ url: 'resources/images/8bit-ninja/star-yellow.png' }),
     });
 
     this.starLabel = new FixedTextView({

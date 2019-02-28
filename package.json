@@ -1,7 +1,16 @@
 {
-  "name": "slime-smash",
+  "name": "slimesmash",
+  "shortName": "slimesmash",
   "title": "Slime Smash",
   "version": "1.0.0",
+  "analytics": {
+    "prod": {
+      "pixel": {
+        "id": "113377609289513",
+        "enabled": true
+      }
+    }
+  },
   "manifest": {
     "maxTick": 50,
     "android": {
@@ -24,12 +33,26 @@
       "webGL": {
         "maxTextureMegabytes": 150
       }
-    }
+    },
+    "appID": "2313545695532143",
+    "fbinstant": {
+      "url": "https://connect.facebook.net/en_US/fbinstant.6.2.js"
+    },
+    "studio": {
+      "domain": "gameclosure.com",
+      "name": "GameClosure"
+    },
+    "supportedOrientations": [
+      "portrait"
+    ]
   },
   "scripts": {
     "postinstall": "git submodule update --init --recursive && (cd frontend && npm install)",
     "start": "npm run serve",
-    "build": "./frontend/node_modules/.bin/webpack --env.buildType production --no-inline",
+    "build:dev": "./frontend/node_modules/.bin/webpack --env.buildType development",
+    "build:prod": "./frontend/node_modules/.bin/webpack --env.buildType production",
+    "build:zip": "./frontend/node_modules/.bin/webpack --env.buildType production && npm run zip -- -prod",
+    "zip": "bash scripts/zip.sh",
     "lint": "eslint src",
     "serve": "./frontend/node_modules/.bin/webpack-dev-server --env.buildType development --no-inline",
     "clean": "rm -rf build dist testResults deploy .cache",

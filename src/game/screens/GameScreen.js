@@ -44,7 +44,7 @@ export default class GameScreen extends View {
       width: 3000,
       height: this.screen.height / 2,
       scale: 1,
-      image: 'resources/images/8bit-ninja/bg/gradient.jpg',
+      image: 'resources/images/bg/gradient.jpg',
       scaleMethod: 'tile',
       columns: 3,
     });

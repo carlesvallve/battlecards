@@ -1,0 +1,57 @@
+{
+  "version": "1.1.13",
+  "sheets": {
+    "spritesheets_resources-images-bg1.png": [
+      "45ff08e546e8142a571666cb7ba28a7d186eba65f0369be59f3a188ba1366909",
+      "5ddd06a9573370bce898d133f2184f220f00763f25f1c3832bc63e190150a427",
+      1053,
+      372,
+      {
+        "quality": 85,
+        "rgb_amount": 32,
+        "alpha_amount": 32,
+        "raw": "--floyd=1.0 --speed 1"
+      },
+      "modeRelease"
+    ],
+    "spritesheets_resources-images-8bit-ninja1.png": [
+      "51c007ea1339ec4127e72c887d6f9bf609c9a6e4cbfbe36dd8a14b9d1f167e73",
+      "e8e71659b96df42adc2601897636c2af793031548d77699d2273a084d016dfa3",
+      5611,
+      1337,
+      {
+        "quality": 85,
+        "rgb_amount": 32,
+        "alpha_amount": 32,
+        "raw": "--floyd=1.0 --speed 1"
+      },
+      "modeRelease"
+    ],
+    "spritesheets_resources-images-hud1.png": [
+      "1449ed54a283c26002f80d766afa21d6fc96eb2c0f49305be09b3b84dd342069",
+      "74c1ad787b7013126dac727f6134cb1442ac7903c9062231835f69c17589dd24",
+      3499,
+      2090,
+      {
+        "quality": 85,
+        "rgb_amount": 32,
+        "alpha_amount": 32,
+        "raw": "--floyd=1.0 --speed 1"
+      },
+      "modeRelease"
+    ],
+    "spritesheets_frontend-devkit-fbinstant-images-avatar1.png": [
+      "a99e83a8d33eef47d40c457462a9cfc0dbdb1e8b8b277e714464b28aeb022d9c",
+      "4ebb357548fef98dbd7c78bb7860943880b7388be97fcef4f7aff78772adaec0",
+      431703,
+      149994,
+      {
+        "quality": 85,
+        "rgb_amount": 32,
+        "alpha_amount": 32,
+        "raw": "--floyd=1.0 --speed 1"
+      },
+      "modeRelease"
+    ]
+  }
+}

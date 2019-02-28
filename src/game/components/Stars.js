@@ -41,7 +41,7 @@ export default class Stars extends View {
       centerOnOrigin: true,
       centerAnchor: true,
       scale: 1, // this.sc,
-      image: new Image({ url: 'resources/images/8bit-ninja/stars/star-yellow.png' }),
+      image: new Image({ url: 'resources/images/8bit-ninja/star-yellow.png' }),
     });
 
     sprite.style.offsetX = -size / 2;
