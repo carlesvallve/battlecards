@@ -23,7 +23,6 @@ export default class Application extends View {
   _loadAssets () {
     // console.log('Start loading assets...');
     // var initialAssets = loadingGroups.initialAssets;
- 
     var loadingProgress = 0;
 
     function setLoadingProgress (progress) {
