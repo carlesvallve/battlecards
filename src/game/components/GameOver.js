@@ -94,21 +94,21 @@ export default class Hud extends View {
     const easing = animate.easeInOut;
 
     // gameover label
-    let y = -24 + this.screen.height * 0.25;
+    let y = -24 + this.screen.height * 0.225;
     animate(this.gameoverLabel)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
       .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // continue label
-    y = 28 + this.screen.height * 0.25;
+    y = 28 + this.screen.height * 0.225;
     animate(this.continueLabel)
     .clear()
     .now({ y: y + 10, opacity: 0 }, 0, easing)
     .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // continue number
-    y = 72 + this.screen.height * 0.25;
+    y = 72 + this.screen.height * 0.225;
     animate(this.continueNumber)
     .clear()
     .now({ y: y + 10, opacity: 0 }, 0, easing)

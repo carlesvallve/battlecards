@@ -1,7 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
-import { Actions } from 'src/lib/enums.js';
+import { GameStates, Actions } from 'src/lib/enums.js';
 import {
   getScreenDimensions,
   getRandomFloat,
@@ -9,6 +9,7 @@ import {
   getDistanceBetweenViews,
   debugPoint,
   getRandomItemFromArray } from 'src/lib/utils';
+
 
 
 export default class Slime extends View {
@@ -61,6 +62,10 @@ export default class Slime extends View {
   }
 
   tick () { // dt
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+
     if (this.action === Actions.Attack) {
       return;
     }

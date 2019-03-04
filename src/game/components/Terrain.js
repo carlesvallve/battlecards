@@ -1,5 +1,4 @@
 import View from 'ui/View';
-import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
@@ -10,40 +9,62 @@ export default class Terrain extends View {
     this.screen = getScreenDimensions();
     this.game = opts.parent.game;
 
-    this.lava = new ImageScaleView({
-      superview: this,
-      x: 0,
-      y: 5 + this.screen.height / 2,
-      anchorX: 0,
-      anchorY: 0,
-      width: 3000,
-      height: 20,
-      scale: 1,
-      image: 'resources/images/8bit-ninja/lava-1.png',
-      scaleMethod: 'tile',
-      columns: 300,
-    });
-
-    this.rock = new ImageScaleView({
-      superview: this,
-      x: 0,
-      y: 10 + this.screen.height / 2,
-      anchorX: 0,
-      anchorY: 0,
-      width: 3000,
-      height: this.screen.height / 2,
-      scale: 1,
-      image: 'resources/images/8bit-ninja/terrain-center.png',
-      scaleMethod: 'tile',
-      columns: 360,
-    });
-
     this.createTiles();
+    this.createPlatform();
 
     debugPoint(this);
   }
 
   createTiles () {
+    const tileImages = {
+      lava: new Image({ url: 'resources/images/8bit-ninja/lava-1.png' }),
+      ground: 'resources/images/8bit-ninja/terrain-center.png'
+    };
+
+    const getTileType = (tx, x ,y, size) => {
+      if (y === 0 && (
+          tx + x * size < this.game.world.left - size ||
+          tx + x * size >= this.game.world.right + size
+      )) {
+        return 'lava';
+      }
+
+      if (y > 0) { return 'ground'; }
+      return null;
+    };
+
+    const size = 10;
+
+    const tilesInScreen = Math.ceil(this.screen.width / size);
+    const tilesInWalkableDistance = 2 + ((this.game.world.walkableDistance * 2) / size);
+
+    const tx = (this.game.world.left - size) - (size * (tilesInScreen / 2));
+    const maxX = tilesInScreen + tilesInWalkableDistance;
+    const maxY = Math.ceil((this.screen.height / 2) / size);
+
+    for (let y = 0; y < maxY; y++) {
+      for (let x = 0; x < maxX; x++) {
+        const type = getTileType(tx, x, y, size);
+        if (type === null) { continue; }
+        let img = tileImages[type];
+
+        // get y by tile type
+        let yy = y * (size) + this.screen.height / 2;
+        if (type === 'lava') { yy += 4; }
+
+        new ImageView({
+          parent: this,
+          width: size,
+          height: size,
+          x: tx + x * size,
+          y: yy,
+          image: img,
+        });
+      }
+    }
+  }
+
+  createPlatform () {
     const tileImages = {
       left: new Image({ url: 'resources/images/8bit-ninja/terrain-top-left.png' }),
       right: new Image({ url: 'resources/images/8bit-ninja/terrain-top-right.png' }),

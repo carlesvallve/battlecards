@@ -1,13 +1,25 @@
 import View from 'ui/View';
+import QuickViewPool from 'ui/ViewPool2';
 import {
   getScreenDimensions,
   getRandomInt,
   getRandomFloat } from 'src/lib/utils';
+  import { GameStates } from 'src/lib/enums';
 
+
+
+const pool = new QuickViewPool({
+  ctor: View,
+  initOpts: {
+    centerOnOrigin: true,
+    centerAnchor: true
+  }
+});
 
 export default class Explosion extends View {
   constructor (opts) {
     super(opts);
+
     this.screen = getScreenDimensions();
     this.sc = opts.sc;
     this.game = opts.parent.game;
@@ -28,18 +40,16 @@ export default class Explosion extends View {
   createSprite ({ startX, startY, color }) {
     const size = getRandomFloat(1.5, 3);
 
-    const sprite = new View({
-      parent: this,
-      x: startX,
-      y: startY,
-      width: size,
-      height: size,
-      backgroundColor: color,
-      centerOnOrigin: true,
-      centerAnchor: true,
-      scale: this.sc,
-    });
-
+    // using timestep's ViewPool2
+    // sprite pooling system to increase performance
+    const sprite = pool.obtainView();
+    this.addSubview(sprite);
+    sprite.style.backgroundColor = color;
+    sprite.style.scale = this.sc;
+    sprite.style.x = startX;
+    sprite.style.y = startY;
+    sprite.style.width = size;
+    sprite.style.height = size;
     sprite.style.offsetX = -size / 2;
     sprite.style.offsetY = -size;
 
@@ -50,6 +60,10 @@ export default class Explosion extends View {
   }
 
   tick (dt) {
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+
     // remove explosion when there are no sprites left alive
     if ( this.sprites.length === 0) {
       this.removeFromSuperview();
@@ -91,12 +105,11 @@ export default class Explosion extends View {
 
       // scale down
       const lifeSpeed = getRandomFloat(0.97, 0.99) * 1;
-      me.scaleX *= lifeSpeed;
-      me.scaleY *= lifeSpeed;
+      me.scale *= lifeSpeed;
 
       // kill particle when her life ends
-      if (me.scaleX <= 0.4 || (sprite.style.y === floorY && sprite.vy === 0)) {
-        sprite.hide();
+      if (me.scale <= 0.4 || (sprite.style.y === floorY && sprite.vy === 0)) {
+        pool.releaseView(sprite);
         this.sprites.splice(i, 1);
       }
     }

@@ -1,7 +1,7 @@
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
-import { Actions } from 'src/lib/enums.js';
+import { GameStates, Actions } from 'src/lib/enums.js';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 
 
@@ -49,6 +49,10 @@ export default class Chest extends View {
   }
 
   tick (dt) {
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+
     // uopdate sprite
     const me = this.style;
 

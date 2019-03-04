@@ -5,7 +5,7 @@ import Image from 'ui/resource/Image';
 import { Actions } from 'src/lib/enums.js';
 import { getScreenDimensions, getRandomInt, getDistanceBetweenViews } from 'src/lib/utils';
 import sounds from 'src/lib/sounds';
-import { GameStates } from '../../lib/enums';
+import { GameStates } from 'src/lib/enums';
 
 export default class Stars extends View {
   constructor (opts) {
@@ -66,6 +66,10 @@ export default class Stars extends View {
   }
 
   tick (dt) {
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+
     // update particles
     for (let i = 0; i < this.sprites.length; i++) {
       const sprite = this.sprites[i];

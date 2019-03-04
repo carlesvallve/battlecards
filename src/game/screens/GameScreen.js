@@ -13,7 +13,7 @@ import Explosion from 'src/game/components/Explosion';
 import Hud from 'src/game/components/Hud';
 import sounds from 'src/lib/sounds';
 
-import { GameStates, Actions } from '../../lib/enums';
+import { GameStates, Actions } from 'src/lib/enums';
 import {
   getScreenDimensions,
   getRandomFloat,
@@ -84,7 +84,7 @@ export default class GameScreen extends View {
       y: 5 + 30,
       width: this.screen.width - 10,
       height: this.screen.height - 10,
-      zIndex: 998,
+      zIndex: 999,
     });
 
     // game events
@@ -135,6 +135,10 @@ export default class GameScreen extends View {
   }
 
   createSlime (pos) {
+    if (this.gameState === GameStates.Pause) {
+      return;
+    }
+
     // wait and create a new slime
     const delay = getRandomFloat(500, 1000);
     animate(this)
@@ -244,11 +248,14 @@ export default class GameScreen extends View {
   setInput () {
     this.inputView = new InputView({
       parent: this,
-      zIndex: 999,
+      zIndex: 998,
       width: this.screen.width,
       height: this.screen.height,
-      dragThreshold: 0
+      dragThreshold: 0,
+      // backgroundColor: 'rgba(1, 0, 0, 0.5)',
     });
+
+    // this.inputView.style.backgroundColor = 'rgba(255, 0, 0, 0.5)',
 
     // set input handlers
     this.inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
@@ -260,19 +267,22 @@ export default class GameScreen extends View {
   onTap (x, y) {
     // console.log('onTap', x, y);
 
-    if (this.gameState === GameStates.gameOver) {
-      // return to title screen if we are in gameover mode
-      // this.emit('game:end');
+    // clicking anywhere while paused will resume the game
+    if (this.gameState === GameStates.Pause) {
+      this.hud.onResume();
+      return;
+    }
 
+    // if we are in 'continue' screen
+    if (this.gameState === GameStates.gameOver) {
       // actually, if we click here means we want to continue.
-      // so respawn the ninja and refill lifes!
+      // so respawn the ninja and refill one life!
       if (this.hud.gameOver.time <= 8) {
         this.gameState = GameStates.Play;
         this.ninja.emit('ninja:start');
         this.hud.emit('hud:continue');
         sounds.playSong('dubesque');
       }
-
       return;
     }
 

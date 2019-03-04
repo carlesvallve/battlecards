@@ -1,12 +1,13 @@
 import animate from 'animate';
 import View from 'ui/View';
+import ButtonView from 'ui/widget/ButtonView';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
 import FixedTextView from 'src/lib/FixedTextView';
-import InputView from 'src/lib/InputView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';
+import { GameStates } from 'src/lib/enums';
 
 
 export default class Hud extends View {
@@ -217,37 +218,57 @@ export default class Hud extends View {
   // =====================================================================
 
   createPauseButton () {
-    // const button = new ImageView({
-    //   parent: this,
-    //   width: 16,
-    //   height: 16,
-    //   x: this.screen.width - 32,
-    //   y: this.screen.height - 32,
-    //   scale: 1.0,
-    // });
+    this.pauseLabel = new FixedTextView({ // score label
+      parent: this,
+      text: 'PAUSE',
+      color: '#fff',
+      x: this.screen.width / 2,
+      y: this.screen.height / 4,
+      fontFamily: 'Verdana',
+      fontWeight: 'bold',
+      horizontalAlign: 'center',
+      verticalAlign: 'middle',
+      strokeWidth: 6,
+      strokeColor: '#000',
+      size: 48,
+      autoFontSize: false,
+      autoSize: false,
+      centerOnOrigin: false,
+      centerAnchor: true,
+      visible: false,
+    });
 
-    // button.setImage(new Image({ url: 'resources/images/hud/icon-pause.png' }));
-    // button.show();
+    new ButtonView({
+      parent: this,
+      image: new Image({ url: 'resources/images/hud/icon-pause.png' }),
+      width: 16,
+      height: 16,
+      x: this.screen.width - 32,
+      y: this.screen.height - 32 * 2,
+      scale: 1.0,
+      onClick: () => {
+        if (this.game.gameState === GameStates.Play) {
+          this.onPause();
+        } else {
+          this.onResume();
+        }
+      }
+    });
+  }
 
-    // const inputView = new InputView({
-    //   parent: this,
-    //   width: 16,
-    //   height: 16,
-    //   x: this.screen.width - 32,
-    //   y: this.screen.height - 32,
-    //   dragThreshold: 0,
-    //   backgroundColor: '#f00',
-    // });
+  onPause () {
+    this.game.gameState = GameStates.Pause;
+    this.game.inputView.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    this.pauseLabel.show();
+  }
 
-    // inputView.registerHandlerForTouch((x, y) => {
-    //   console.log('Clicking on pause inputView...', e, localPt);
-    // });
+  onResume () {
+    this.game.gameState = GameStates.Play;
+    this.game.inputView.style.backgroundColor = null;
+    this.pauseLabel.hide();
 
-    // button.onInputSelect = (e, localPt) => {
-    //   console.log('Clicking on pause button...', e, localPt);
-    // };
-
-    // console.log('>>>', button);
+    // continue spawning slimes
+    this.game.createSlime(this.game.world.getRandomPos());
   }
 
   // =====================================================================

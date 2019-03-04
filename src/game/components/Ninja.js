@@ -55,15 +55,13 @@ export default class Ninja extends View {
     this.style.x = this.game.world.center;
     this.style.y = this.screen.height / 2;
 
-    // this.game.world.init(this);
-
     animate(this).clear();
 
     this.setDirection(this.dir);
     this.idle();
     this.show();
 
-    // this.respawn();
+    this.respawn();
   }
 
   setDirection (dir) {
@@ -120,10 +118,7 @@ export default class Ninja extends View {
     animate(this)
       .clear()
       .wait(0).then(() => { sounds.playSound('swap'); })
-      .wait(150).then(() => { sounds.playSound('fall', 1); })
-      .wait(100).then(() => {
-        // sounds.playSound('combo_x' + getRandomInt(2, 6), 0.25);
-      });
+      .wait(150).then(() => { sounds.playSound('fall', 1); });
   }
 
   die () {
@@ -132,10 +127,6 @@ export default class Ninja extends View {
     this.action = Actions.Die;
 
     this.game.hud.emit('hud:removeHeart');
-
-    // sounds.playSound('explode');
-    // this.game.emit('game:explosion', { slime: this });
-    // this.hide();
 
     // wait and die
     const anim = animate(this)
@@ -165,15 +156,21 @@ export default class Ninja extends View {
     this.show();
     this.idle();
 
+    const t = 100;
     animate({})
-      .wait(1300)
-      .then(() => {
-        // end of respawning phase
-        this.respawning = false;
+      .wait(t).then(() => { this.style.opacity = 0; })
+      .wait(t).then(() => { this.style.opacity = 0.6; })
+      .wait(t).then(() => { this.style.opacity = 0; })
+      .wait(t).then(() => { this.style.opacity = 0.6; })
+      .wait(t).then(() => { this.style.opacity = 0; })
+      .wait(t).then(() => { this.style.opacity = 0.6; })
+      .wait(t).then(() => { this.style.opacity = 0; })
+      .wait(t).then(() => { this.style.opacity = 0.6; })
+      .wait(t).then(() => {
         this.style.opacity = 1;
-        // this.idle();
+        this.respawning = false;
       });
-    }
+  }
 
   moveTo ({ x, y }) {
     if (this.action === Actions.Attack) { return; }

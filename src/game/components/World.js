@@ -1,6 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
 import { getScreenDimensions, getRandomInt, debugPoint } from 'src/lib/utils';
+import { GameStates } from 'src/lib/enums';
 
 export default class World extends View {
   constructor (opts) {
@@ -57,6 +58,10 @@ export default class World extends View {
   }
 
   tick (dt) {
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+
     const ninja = this.game.ninja;
     if (!this.game.ninja) {
       return;
