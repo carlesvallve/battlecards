@@ -48,11 +48,13 @@ export default class Hud extends View {
     this.createHearts(3);
 
     this.gameOver.hide();
+    this.pauseButton.show();
   }
 
   continue () {
     this.createHearts(1);
     this.gameOver.hide();
+    this.pauseButton.show();
   }
 
   // =====================================================================
@@ -109,6 +111,8 @@ export default class Hud extends View {
     this.saveGameData();
     // display gameover message
     this.gameOver.init();
+
+    this.pauseButton.hide();
   }
 
   // =====================================================================
@@ -214,7 +218,7 @@ export default class Hud extends View {
   }
 
   // =====================================================================
-  // Create hud footer elements (stars, score, hearts)
+  // Create hud footer elements (pause)
   // =====================================================================
 
   createPauseButton () {
@@ -238,13 +242,13 @@ export default class Hud extends View {
       visible: false,
     });
 
-    new ButtonView({
+    this.pauseButton = new ButtonView({
       parent: this,
       image: new Image({ url: 'resources/images/hud/icon-pause.png' }),
-      width: 16,
-      height: 16,
-      x: this.screen.width - 32,
-      y: this.screen.height - 32 * 2,
+      width: 24,
+      height: 24,
+      x: this.screen.width - 40,
+      y: this.screen.height - 72,
       scale: 1.0,
       onClick: () => {
         if (this.game.gameState === GameStates.Play) {
