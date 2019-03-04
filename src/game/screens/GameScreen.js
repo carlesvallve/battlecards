@@ -260,7 +260,7 @@ export default class GameScreen extends View {
     // set input handlers
     this.inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
     // this.inputView.registerHandlerForDoubleClick((x, y) => this.onDoubleClick(x, y));
-    // this.inputView.registerHandlerForDrag((x, y) => this.onDrag(x, y));
+    this.inputView.registerHandlerForDrag((x, y) => this.onDrag(x, y));
     // this.inputView.registerHandlerForDragFinish((dx, dy) => this.onDragFinish(dx, dy));
   }
 
@@ -270,7 +270,7 @@ export default class GameScreen extends View {
     // clicking anywhere while paused will resume the game
     if (this.gameState === GameStates.Pause) {
       this.hud.onResume();
-      return;
+      // return;
     }
 
     // if we are in 'continue' screen
@@ -300,9 +300,17 @@ export default class GameScreen extends View {
   //   }
   // }
 
-  // onDrag (dx, dy) {
-  //   console.log('onDrag', dx, dy);
-  // }
+  onDrag (dx, dy) {
+    // console.log('onDrag', dx);
+    const minDx = 32;
+
+    if (Math.abs(dx) <= minDx) { return; }
+    if (this.ninja) {
+      const x = this.ninja.style.x + dx;
+      const y = this.ninja.style.y + dy;
+      this.ninja.emit('ninja:moveTo', { x, y });
+    }
+  }
 
   // onDragFinish (dx, dy) {
   //   console.log('onDragFinish', dx, dy);

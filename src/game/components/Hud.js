@@ -107,11 +107,8 @@ export default class Hud extends View {
   }
 
   onGameOver () {
-    // save game data
     this.saveGameData();
-    // display gameover message
     this.gameOver.init();
-
     this.pauseButton.hide();
   }
 
@@ -181,7 +178,7 @@ export default class Hud extends View {
       text: '000',
       color: '#fff',
       x: this.screen.width / 2,
-      y: 40, // -72 + this.screen.height / 4,
+      y: 40,
       width: 320,
       height: 32,
       fontFamily: 'Verdana',
@@ -222,7 +219,7 @@ export default class Hud extends View {
   // =====================================================================
 
   createPauseButton () {
-    this.pauseLabel = new FixedTextView({ // score label
+    this.pauseLabel = new FixedTextView({
       parent: this,
       text: 'PAUSE',
       color: '#fff',
@@ -232,7 +229,7 @@ export default class Hud extends View {
       fontWeight: 'bold',
       horizontalAlign: 'center',
       verticalAlign: 'middle',
-      strokeWidth: 6,
+      strokeWidth: 4,
       strokeColor: '#000',
       size: 48,
       autoFontSize: false,

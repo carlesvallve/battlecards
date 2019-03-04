@@ -42,7 +42,7 @@
     "start": "npm run serve",
     "build:dev": "webpack --env.buildType development",
     "build:prod": "webpack --env.buildType production",
-    "build:zip": "webpack --env.buildType production && npm run zip -- -prod",
+    "build:zip": "webpack -p --env.buildType production && npm run zip -- -prod",
     "zip": "bash scripts/zip.sh",
     "serveFacebook": "webpack-dev-server --env.buildType developmentFacebook --no-inline",
     "lint": "eslint src",

@@ -2,7 +2,7 @@ import animate from 'animate';
 import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
-import { Actions } from 'src/lib/enums.js';
+import { GameStates, Actions } from 'src/lib/enums.js';
 import sounds from 'src/lib/sounds';
 
 
@@ -122,6 +122,7 @@ export default class Ninja extends View {
   }
 
   die () {
+    if (this.game.gameState === GameStates.Pause) { return; }
     if (this.action === Actions.Die || this.respawning) { return; }
     this.idle();
     this.action = Actions.Die;
@@ -132,11 +133,13 @@ export default class Ninja extends View {
     const anim = animate(this)
     .clear()
     .wait(100).then(() => {
+      this.game.hud.onResume();
       sounds.playSound('explode');
       this.game.emit('game:explosion', { slime: this });
       this.hide();
     })
     .wait(500).then(() => {
+      this.game.hud.onResume();
       // if no more hearts, gameover!
       if (this.game.hud.hearts.length === 0) {
         anim.clear();
