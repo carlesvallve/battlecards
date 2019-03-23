@@ -2,6 +2,7 @@ import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
+import Tile from 'src/game/components/Tile';
 
 export default class Terrain extends View {
   constructor (opts) {
@@ -80,7 +81,7 @@ export default class Terrain extends View {
       if (i === 0) { img = tileImages.left; }
       if (i === max - 1) { img = tileImages.right; }
 
-      new ImageView({
+      new Tile({
         parent: this,
         width: size,
         height: size,
@@ -90,4 +91,32 @@ export default class Terrain extends View {
       });
     }
   }
+
+  // // Find out if the given pixel is traversable.
+  // // X and Y are the scene pixel coordinates
+  // isPointTraversable (x, y) {
+  //   const tileSize = 8;
+
+  //   // Get the tile coordinates from the pixel coord.
+  //   const tileX = Math.Floor(x / tileSize);
+  //   const tileY = Math.Floor(y / tileSize);
+
+  //   // If the point is out of bound, we assume it's traversable
+  //   if (tileX < 0) return true;
+  //   if (tileX >= horizontalTileCount) return true;
+  //   if (tileY < 0) return true;
+  //   if (tileY >= verticalTileCount) return true;
+
+  //   const tile = getTile(tileX, tileY);
+
+  //   // If the tile is blank the point is traversable
+  //   if (tile == null) return true;
+
+  //   // Get the coordinates of the point within the tile
+  //   const localPointX = x % tileSize;
+  //   const localPointY = y % tileSize;
+
+  //   // Return "true" if the pixel is not solid
+  //   return !tile.solidityMap[localPointX, localPointY];
+  // }
 }
