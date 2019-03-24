@@ -34,10 +34,30 @@ export default class Terrain extends View {
 
     const mapWidth = mapData.length;
     const mapHeight = mapData[0].length;
+
+    this.offset = {
+      x: this.game.world.left - tileSize,
+      y: this.screen.height / 2 - mapWidth * tileSize / 2
+    };
+
+    this.center = {
+      x: this.offset.x + mapWidth * tileSize / 2,
+      y: this.offset.y + mapWidth * tileSize / 2
+    };
+
+    const mapBox = new View({
+      parent: this,
+      backgroundColor: 'rgba(0.5,0.5,0.5,0.5)',
+      width: mapWidth * tileSize,
+      height: mapHeight * tileSize,
+      x: this.offset.x,
+      y: this.offset.y ,
+    });
+
     const map = [];
 
     // const offset = { x: this.game.world.left - tileSize, y: this.screen.height / 2 };
-    const offset = { x: 0, y: 0 };
+    const tileOffset = { x: 0, y: 0 };
 
     for (let y = 0; y < mapHeight; y++) {
       map[y] = [];
@@ -46,11 +66,11 @@ export default class Terrain extends View {
           map[y][x] = null;
         } else {
           map[y][x] = new Tile({
-            parent: this,
+            parent: mapBox,
             width: tileSize,
             height: tileSize,
-            x: offset.x + x * tileSize,
-            y:  offset.y + y * tileSize,
+            x: tileOffset.x + x * tileSize,
+            y: tileOffset.y + y * tileSize,
             image:tileImages.center,
           });
         }

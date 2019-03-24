@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 
 import View from 'ui/View';
-import animate from 'animate';
 
 // ======================== map
 
@@ -38,11 +37,14 @@ export const getTile = (x, y) => {
   return level.map[y][x] || null;
 };
 
-// ======================== map
+// ======================== global point to tile point
 
 // Find out if the given pixel is traversable.
 // X and Y are the scene pixel coordinates
-export const isPointTraversable = (x, y) => {
+export const isPointTraversable = (x, y, offset) => {
+  x -= offset.x;
+  y -= offset.y;
+
   // Get the tile coordinates from the pixel coord.
   const tileX = Math.floor(x / tileSize);
   const tileY = Math.floor(y / tileSize);
@@ -135,7 +137,7 @@ export const normalize = (point, scale = 1) => {
   return point;
 };
 
-export const rayCast = (position, direction, rayLength, debugOpts = { debugView: null , duration: 100 }) =>  {
+export const rayCast = (position, direction, rayLength, offset, debugOpts = { debugView: null , duration: 100 }) =>  {
   // set result defaults
   const result = {
     doCollide: false,
@@ -145,7 +147,7 @@ export const rayCast = (position, direction, rayLength, debugOpts = { debugView:
 
   // Exit the function now if the ray length is 0
   if (rayLength == 0) {
-    result.doCollide = isPointTraversable(position.x, position.y);
+    result.doCollide = isPointTraversable(position.x, position.y, offset);
     result.position = position;
     drawNode(position.x, position.y, 'pink', 4);
     return result;
@@ -168,7 +170,7 @@ export const rayCast = (position, direction, rayLength, debugOpts = { debugView:
     const ok = true;
     while (ok) {
       let rayPoint = rayLine[rayPointIndex];
-      if (!isPointTraversable(rayPoint.x, rayPoint.y)) {
+      if (!isPointTraversable(rayPoint.x, rayPoint.y, offset)) {
         result.position = rayPoint; // Vector.FromPoint(rayPoint);
         result.doCollide = true;
         drawNode(result.position.x, result.position.y, 'cyan', 2, debugOpts);

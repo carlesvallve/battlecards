@@ -24,8 +24,6 @@ export default class Ninja extends View {
 
     this.createSprite();
 
-    // this.createDebugLine();
-
     this.on('ninja:start', this.init.bind(this));
     this.on('ninja:idle', this.idle.bind(this));
     this.on('ninja:run', this.run.bind(this));
@@ -55,19 +53,6 @@ export default class Ninja extends View {
     this.sprite.style.offsetY = -16;
 
     debugPoint(this);
-
-    this.t = 0;
-  }
-
-  createDebugLine () {
-    this.line = new View({
-      parent: this,
-      width: 1,
-      height: 32,
-      x: 0,
-      y: 0,
-      backgroundColor: 'pink',
-    });
   }
 
   init () {
@@ -76,8 +61,9 @@ export default class Ninja extends View {
     this.dir = 1;
     this.speed = 0.1;
     this.color = 'black';
-    this.style.x = level.tileSize * 6; // this.game.world.center;
-    this.style.y = level.tileSize * 6; // this.screen.height / 2;
+
+    this.style.x = this.game.terrain.center.x, // this.game.world.center;
+    this.style.y = this.game.terrain.center.y, // this.screen.height / 2;
 
     animate(this).clear();
 
@@ -266,11 +252,13 @@ export default class Ninja extends View {
   castRayDown () {
     const me = this.style;
     const up = 8;
+    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x, y: me.y - up }, // position,
       { x: 0, y: 1 }, // direction,
       128,            // rayLength,
+      offset,
       {} // { debugView: this.parent, duration: 100 } // debug options
     );
 
@@ -290,11 +278,13 @@ export default class Ninja extends View {
     const me = this.style;
     const d = 8;
     const up = 8;
+    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x, y: me.y -up },
       { x: this.dir, y: 0 },
       16,
+      offset,
       {} // { debugView: this.parent, duration: 100 }
     );
 
@@ -316,12 +306,14 @@ export default class Ninja extends View {
   castRayClimb (d) {
     const me = this.style;
     const up = 24;
+    const offset = this.game.terrain.offset;
 
     // check if we can climb to next step forward
     const hit = rayCast(
       { x: me.x + this.dir * 8, y: me.y - up },
       { x: 0, y: 1 },
       32,
+      offset,
       {} // { debugView: this.parent, duration: 100 }
     );
 

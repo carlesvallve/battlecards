@@ -1,5 +1,4 @@
 import ImageView from 'ui/ImageView';
-import Image from 'ui/resource/Image';
 import { debugPoint } from 'src/lib/utils';
 
 export default class Tile extends ImageView {
@@ -7,14 +6,6 @@ export default class Tile extends ImageView {
     super(opts);
 
     this.parent = opts.parent;
-    // this.width = opts.size;
-    // this.height = opts.size;
-    // this.x = opts.x;
-    // this.y = opts.y;
-    // this.setImage(opts.image);
-
-    // console.log(opts.image.getSource());
-    // this.solidityMap = this.buildSolidityMap2(opts.image.getImageData());
     this.solidityMap = this.buildSolidityMap(opts.width);
 
     debugPoint(this);
@@ -54,12 +45,8 @@ export default class Tile extends ImageView {
 
     return solidityMap;
 
-    // console.log(solidityMap);
-
     // We will need some additionnal processing here if the tile is
     // transformed in some way
-    // (like horizontally or vertically flipped)
-    // I don't put the code here to keep it simple
-    // but if needed you can find it in Tile.cs
+    // (like scaled or horizontally or vertically flipped)
   }
 }
