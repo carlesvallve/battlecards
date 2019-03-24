@@ -229,7 +229,8 @@ export default class Ninja extends View {
       this.idle();
     });
 
-    // this.rayExample (x, y);
+    // this.castRayDown(this.style.x, this.style.y);
+    // this.castRayDown (x, y);
   }
 
   jumpTo ({ x, y }) {
@@ -254,23 +255,27 @@ export default class Ninja extends View {
 
 
   tick (dt) {
-    this.castRayDown(this.style.x, this.style.y);
-    // this.castRayForward(this.style.x, this.style.y, this.dir);
+    this.castRayDown();
+    this.castRayForward();
   }
 
-  castRayDown (x, y) {
-    const me = this.style;
-    const up = 32;
-    y -= up;
-    x = me.x;
-    y = me.y - up;
+  // ===============================================================
+  // Raycasting logic
+  // ===============================================================
 
-    const position = { x: x, y: y };
-    const direction = { x: 0, y: 1 };
-    const rayLength = 140; // 16 * 3;
-    const hit = rayCast(position, direction, rayLength, { debugView: this.parent, duration: 50 });
+  castRayDown () {
+    const me = this.style;
+    const up = 8;
+
+    const hit = rayCast(
+      { x: me.x, y: me.y - up }, // position,
+      { x: 0, y: 1 }, // direction,
+      128,            // rayLength,
+      {} // { debugView: this.parent, duration: 100 } // debug options
+    );
 
     if (hit && hit.distance <= up) {
+      // set y to hit point and reset gravity vector
       me.y = hit.position.y;
       this.vy = 0;
     } else {
@@ -281,28 +286,57 @@ export default class Ninja extends View {
     }
   }
 
-  // castRayForward (x, y, dir) {
-  //   const me = this.style;
-  //   const up = 8;
-  //   y -= up;
-  //   // x = me.x;
-  //   // y = me.y - up;
+  castRayForward () {
+    const me = this.style;
+    const d = 8;
+    const up = 8;
 
-  //   const position = { x: x, y: y };
-  //   const direction = { x: dir, y: 0 };
-  //   const rayLength = 140; // 16 * 3;
-  //   const hit = rayCast(position, direction, rayLength, { debugView: this.parent, duration: 50 });
+    const hit = rayCast(
+      { x: me.x, y: me.y -up },
+      { x: this.dir, y: 0 },
+      16,
+      {} // { debugView: this.parent, duration: 100 }
+    );
 
-  //   // if (hit && hit.distance <= up) {
-  //   //   me.y = hit.position.y;
-  //   //   this.vy = 0;
-  //   // } else {
-  //   //   // add gravity to velocity on y axis
-  //   //   this.gravity = 0.5;
-  //   //   this.vy += this.gravity;
-  //   //   me.y = me.y + this.vy;
-  //   }
-  // }
+    if (hit && hit.distance <= d) {
+      // check if we can climb forward
+      const hasClimbed = this.castRayClimb(d);
+
+      // stop moving if we cannot climb
+      if (!hasClimbed) {
+        // stop interpolating and animating character
+        animate(this).clear();
+        this.idle();
+        // lock character x to hit point and apply bounce back
+        me.x = hit.position.x - d * this.dir;
+      }
+    }
+  }
+
+  castRayClimb (d) {
+    const me = this.style;
+    const up = 24;
+
+    // check if we can climb to next step forward
+    const hit = rayCast(
+      { x: me.x + this.dir * 8, y: me.y - up },
+      { x: 0, y: 1 },
+      32,
+      {} // { debugView: this.parent, duration: 100 }
+    );
+
+    // if there is a platform and the distance is not to high, we can climb
+    if (hit) {
+      const dy= Math.abs(hit.position.y - me.y);
+      if (dy <= 16) {
+        // castRayDown will automatically put us on the upper platform
+        // so just return hasClimbed value
+        return true;
+      }
+    }
+
+    return false;
+  }
 
 }
 

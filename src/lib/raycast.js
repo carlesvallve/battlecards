@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 
 import View from 'ui/View';
-import { debugPoint } from './utils';
+import animate from 'animate';
 
 // ======================== map
 
@@ -21,8 +21,8 @@ export const level = {
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1],
   [1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   ],
@@ -65,113 +65,20 @@ export const isPointTraversable = (x, y) => {
   const localPointX = Math.floor(x % tileSize);
   const localPointY = Math.floor(y % tileSize);
 
-  const solid = tile.solidityMap[localPointY][localPointX];
-
   // Return "true" if the pixel is not solid
-  return solid === 0; // !tile.solidityMap[localPointX, localPointY];
+  const solid = tile.solidityMap[localPointY][localPointX];
+  return solid === 0;
 };
 
 // ======================== Bresenham algorithm
 
 // Returns the list of points from p0 to p1
-export const bresenhamLine = (p0, p1) => { // returns List<Point>
-  // console.log('bresenhamLine', p0, p1);
-  return bresenhamLine2(p0.x, p0.y, p1.x, p1.y);
-  // return bresenhamLine3(p0.x, p0.y, p1.x, p1.y);
-};
-
-
-let bresenhamLine3 = (x1, y1, x2, y2) => {
-  const result = []; // array of points
-
-  // Iterators, counters required by algorithm
-  let x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
-
-  // Calculate line deltas
-  dx = x2 - x1;
-  dy = y2 - y1;
-
-  // Create a positive copy of deltas (makes iterating easier)
-  dx1 = Math.abs(dx);
-  dy1 = Math.abs(dy);
-
-  // Calculate error intervals for both axis
-  px = 2 * dy1 - dx1;
-  py = 2 * dx1 - dy1;
-
-  // The line is X-axis dominant
-  if (dy1 <= dx1) {
-
-    // Line is drawn left to right
-    if (dx >= 0) {
-        x = x1; y = y1; xe = x2;
-    } else { // Line is drawn right to left (swap ends)
-        x = x2; y = y2; xe = x1;
-    }
-
-    // pixel(x, y); // Draw first pixel
-    result.push({ x, y });
-
-    // Rasterize the line
-    for (i = 0; x < xe; i++) {
-      x = x + 1;
-
-      // Deal with octants...
-      if (px < 0) {
-        px = px + 2 * dy1;
-      } else {
-        if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
-          y = y + 1;
-        } else {
-          y = y - 1;
-        }
-        px = px + 2 * (dy1 - dx1);
-      }
-
-      // Draw pixel from line span at currently rasterized position
-      // pixel(x, y);
-      result.push({ x, y });
-    }
-
-  } else { // The line is Y-axis dominant
-
-    // Line is drawn bottom to top
-    if (dy >= 0) {
-      x = x1; y = y1; ye = y2;
-    } else { // Line is drawn top to bottom
-      x = x2; y = y2; ye = y1;
-    }
-
-    // pixel(x, y); // Draw first pixel
-    result.push({ x, y });
-
-    // Rasterize the line
-    for (i = 0; y < ye; i++) {
-      y = y + 1;
-
-      // Deal with octants...
-      if (py <= 0) {
-          py = py + 2 * dx1;
-      } else {
-        if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
-          x = x + 1;
-        } else {
-          x = x - 1;
-        }
-        py = py + 2 * (dx1 - dy1);
-      }
-
-      // Draw pixel from line span at currently rasterized position
-      // pixel(x, y);
-      result.push({ x, y });
-    }
-  }
-
-  return result;
+export const bresenhamLineBetweenPoints = (p0, p1) => { // returns List<Point>
+  return bresenhamLine(p0.x, p0.y, p1.x, p1.y);
 };
 
 // Returns the list of points from (x0, y0) to (x1, y1) : List<Point>
-export const bresenhamLine2 = (x0, y0, x1, y1)  => {
+export const bresenhamLine = (x0, y0, x1, y1)  => {
   const result = []; // array of points
 
   const steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
@@ -216,7 +123,7 @@ export const bresenhamLine2 = (x0, y0, x1, y1)  => {
 };
 
 
-// ======================== Raycast algorithm -> returns RayCastingResult
+// ======================== Raycast algorithm
 
 export const normalize = (point, scale = 1) => {
   var norm = Math.sqrt(point.x * point.x + point.y * point.y);
@@ -229,8 +136,6 @@ export const normalize = (point, scale = 1) => {
 };
 
 export const rayCast = (position, direction, rayLength, debugOpts = { debugView: null , duration: 100 }) =>  {
-  // const debugView = debug ? debug.debugView : null;
-
   // set result defaults
   const result = {
     doCollide: false,
@@ -250,21 +155,19 @@ export const rayCast = (position, direction, rayLength, debugOpts = { debugView:
   const dir = normalize(direction, rayLength);
   const pos2 = { x: position.x + dir.x, y: position.y + dir.y };
 
-  // Get the list of points from the Bresenham algorithm -> List<Point>
-  const rayLine = bresenhamLine(position, pos2);
+  // Get the list of points from the Bresenham algorithm
+  const rayLine = bresenhamLineBetweenPoints(position, pos2);
 
   if (rayLine.length > 0) {
-    let rayPointIndex = 0;
+    const startingAtPos = rayLine[0].x === position.x && rayLine[0].y === position.y;
 
-    // note: this made the ray to function reversed...
-    // if (rayLine[0] !== position) {
-    //   rayPointIndex = rayLine.length - 1;
-    // }
+    // get starting point, normal or reversed
+    let rayPointIndex = startingAtPos ? 0 : rayLine.length - 1;
 
     // Loop through all the points starting from "position"
     const ok = true;
     while (ok) {
-      let rayPoint = rayLine[rayPointIndex]; // Point
+      let rayPoint = rayLine[rayPointIndex];
       if (!isPointTraversable(rayPoint.x, rayPoint.y)) {
         result.position = rayPoint; // Vector.FromPoint(rayPoint);
         result.doCollide = true;
@@ -274,41 +177,41 @@ export const rayCast = (position, direction, rayLength, debugOpts = { debugView:
         drawNode(rayPoint.x, rayPoint.y, 'grey', 1, debugOpts);
       }
 
-      // note: this made the ray function in the right direction
-      rayPointIndex++;
-      if (rayPointIndex >= rayLine.length) { break; }
-
-      // note: this made the ray to function reversed...
-      // if (rayLine[0] != position) {
-      //   rayPointIndex--;
-      //   if (rayPointIndex < 0) { break; }
-      // } else {
-      //   rayPointIndex++;
-      //   if (rayPointIndex >= rayLine.length) { break; }
-      // }
+      // iterate on ray points
+      if (startingAtPos) {
+        // iterate in forward direction
+        rayPointIndex++;
+        if (rayPointIndex >= rayLine.length) { break; }
+      } else {
+        // iterate on reversed direction
+        rayPointIndex--;
+        if (rayPointIndex < 0) { break; }
+      }
     }
   }
 
   drawNode(position.x, position.y, 'pink', 2, debugOpts);
 
+  // we didnt find any non transversable hit
   if (!result.doCollide) {
     return null;
   }
 
+  // calculate distance to hit point from cast origin
   const a = Math.abs(result.position.x - position.x);
   const b = Math.abs(result.position.y - position.y);
   result.distance = Math.hypot(a, b);
-  // console.log(result.distance);
+
+  // return hit result
   return result;
 };
 
 
 export const drawNode = (x, y, color, size = 1, opts = { debugView: null, duration: 100 }) => {
   const { debugView, duration }  = opts;
+  if (!debugView || duration === 0) { return; }
 
-  if (!debugView) { return; }
-
-  const point = new View({
+  let point = new View({
     superview: debugView,
     backgroundColor: color,
     x: x - size / 2, y: y - size / 2, width: size, height: size,
@@ -317,8 +220,104 @@ export const drawNode = (x, y, color, size = 1, opts = { debugView: null, durati
 
   setTimeout(() => {
     point.removeFromSuperview();
+    point = null;
   }, duration);
 };
+
+
+
+// =========================================
+// Alternative bresenham algorithm
+// =========================================
+
+// let bresenhamLine3 = (x1, y1, x2, y2) => {
+//   const result = []; // array of points
+
+//   // Iterators, counters required by algorithm
+//   let x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
+
+//   // Calculate line deltas
+//   dx = x2 - x1;
+//   dy = y2 - y1;
+
+//   // Create a positive copy of deltas (makes iterating easier)
+//   dx1 = Math.abs(dx);
+//   dy1 = Math.abs(dy);
+
+//   // Calculate error intervals for both axis
+//   px = 2 * dy1 - dx1;
+//   py = 2 * dx1 - dy1;
+
+//   // The line is X-axis dominant
+//   if (dy1 <= dx1) {
+
+//     // Line is drawn left to right
+//     if (dx >= 0) {
+//         x = x1; y = y1; xe = x2;
+//     } else { // Line is drawn right to left (swap ends)
+//         x = x2; y = y2; xe = x1;
+//     }
+
+//     // pixel(x, y); // Draw first pixel
+//     result.push({ x, y });
+
+//     // Rasterize the line
+//     for (i = 0; x < xe; i++) {
+//       x = x + 1;
+
+//       // Deal with octants...
+//       if (px < 0) {
+//         px = px + 2 * dy1;
+//       } else {
+//         if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
+//           y = y + 1;
+//         } else {
+//           y = y - 1;
+//         }
+//         px = px + 2 * (dy1 - dx1);
+//       }
+
+//       // Draw pixel from line span at currently rasterized position
+//       // pixel(x, y);
+//       result.push({ x, y });
+//     }
+
+//   } else { // The line is Y-axis dominant
+
+//     // Line is drawn bottom to top
+//     if (dy >= 0) {
+//       x = x1; y = y1; ye = y2;
+//     } else { // Line is drawn top to bottom
+//       x = x2; y = y2; ye = y1;
+//     }
+
+//     // pixel(x, y); // Draw first pixel
+//     result.push({ x, y });
+
+//     // Rasterize the line
+//     for (i = 0; y < ye; i++) {
+//       y = y + 1;
+
+//       // Deal with octants...
+//       if (py <= 0) {
+//           py = py + 2 * dx1;
+//       } else {
+//         if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
+//           x = x + 1;
+//         } else {
+//           x = x - 1;
+//         }
+//         py = py + 2 * (dx1 - dy1);
+//       }
+
+//       // Draw pixel from line span at currently rasterized position
+//       // pixel(x, y);
+//       result.push({ x, y });
+//     }
+//   }
+
+//   return result;
+// };
 
 
 
