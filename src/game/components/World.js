@@ -10,7 +10,7 @@ export default class World extends View {
     this.game = opts.parent;
     this.elasticity = 0.25;
 
-    this.center = 1500;
+    this.center = this.screen.width / 2; // 1500;
     this.walkableDistance = -60 + this.screen.width / 2;
     this.left = this.center - this.walkableDistance;
     this.right = this.center + this.walkableDistance;

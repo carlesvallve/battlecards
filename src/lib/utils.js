@@ -37,7 +37,7 @@ export const getDistanceBetweenViews = (view1, view2) => {
   return d;
 };
 
-export const debugPoint = (parent, display = false, color = 'yellow') => {
+export const debugPoint = (parent, display = true, color = 'yellow') => {
   if (!display) {
     return null;
   }

@@ -2,8 +2,10 @@ import animate from 'animate';
 import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
-import { GameStates, Actions } from 'src/lib/enums.js';
+import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
+
+import { level, rayCast, debugRay } from 'src/lib/raycast';
 
 
 export default class Ninja extends View {
@@ -12,8 +14,17 @@ export default class Ninja extends View {
     this.screen = getScreenDimensions();
     this.scale = opts.scale;
     this.game = opts.parent.game;
+    this.parent = opts.parent;
+
+    // initialize gravity and velocity
+    this.gravity = 0.25;
+    this.impulse = 10;
+    this.vx = 0; // getRandomFloat(-10, 10);
+    this.vy = 0;
 
     this.createSprite();
+
+    // this.createDebugLine();
 
     this.on('ninja:start', this.init.bind(this));
     this.on('ninja:idle', this.idle.bind(this));
@@ -44,6 +55,19 @@ export default class Ninja extends View {
     this.sprite.style.offsetY = -16;
 
     debugPoint(this);
+
+    this.t = 0;
+  }
+
+  createDebugLine () {
+    this.line = new View({
+      parent: this,
+      width: 1,
+      height: 32,
+      x: 0,
+      y: 0,
+      backgroundColor: 'pink',
+    });
   }
 
   init () {
@@ -52,8 +76,8 @@ export default class Ninja extends View {
     this.dir = 1;
     this.speed = 0.1;
     this.color = 'black';
-    this.style.x = this.game.world.center;
-    this.style.y = this.screen.height / 2;
+    this.style.x = level.tileSize * 6; // this.game.world.center;
+    this.style.y = level.tileSize * 6; // this.screen.height / 2;
 
     animate(this).clear();
 
@@ -180,13 +204,13 @@ export default class Ninja extends View {
     if (this.action === Actions.Die && !this.style.visible) { return; }
     this.setDirection(x >= this.style.x ? 1 : -1);
 
-    if (x < this.game.world.left) {
-      x = this.game.world.left;
-    }
+    // if (x < this.game.world.left) {
+    //   x = this.game.world.left;
+    // }
 
-    if (x > this.game.world.right) {
-      x = this.game.world.right;
-    }
+    // if (x > this.game.world.right) {
+    //   x = this.game.world.right;
+    // }
 
     const speed = 10; // bigger is slower
     const d = Math.abs(x - this.style.x);
@@ -196,12 +220,16 @@ export default class Ninja extends View {
     this.sprite.setFramerate(12);
     this.sprite.startAnimation('run', { loop: true });
 
+    // this.goal = x;
+
     animate(this).clear()
     .now({ x: this.style.x }, 0, animate.linear)
     .then({ x: x }, duration, animate.linear)
     .then(() => {
       this.idle();
     });
+
+    // this.rayExample (x, y);
   }
 
   jumpTo ({ x, y }) {
@@ -223,4 +251,58 @@ export default class Ninja extends View {
       this.idle();
     });
   }
+
+
+  tick (dt) {
+    this.castRayDown(this.style.x, this.style.y);
+    // this.castRayForward(this.style.x, this.style.y, this.dir);
+  }
+
+  castRayDown (x, y) {
+    const me = this.style;
+    const up = 32;
+    y -= up;
+    x = me.x;
+    y = me.y - up;
+
+    const position = { x: x, y: y };
+    const direction = { x: 0, y: 1 };
+    const rayLength = 140; // 16 * 3;
+    const hit = rayCast(position, direction, rayLength, { debugView: this.parent, duration: 50 });
+
+    if (hit && hit.distance <= up) {
+      me.y = hit.position.y;
+      this.vy = 0;
+    } else {
+      // add gravity to velocity on y axis
+      this.gravity = 0.5;
+      this.vy += this.gravity;
+      me.y = me.y + this.vy;
+    }
+  }
+
+  // castRayForward (x, y, dir) {
+  //   const me = this.style;
+  //   const up = 8;
+  //   y -= up;
+  //   // x = me.x;
+  //   // y = me.y - up;
+
+  //   const position = { x: x, y: y };
+  //   const direction = { x: dir, y: 0 };
+  //   const rayLength = 140; // 16 * 3;
+  //   const hit = rayCast(position, direction, rayLength, { debugView: this.parent, duration: 50 });
+
+  //   // if (hit && hit.distance <= up) {
+  //   //   me.y = hit.position.y;
+  //   //   this.vy = 0;
+  //   // } else {
+  //   //   // add gravity to velocity on y axis
+  //   //   this.gravity = 0.5;
+  //   //   this.vy += this.gravity;
+  //   //   me.y = me.y + this.vy;
+  //   }
+  // }
+
 }
+

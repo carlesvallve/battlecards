@@ -4,16 +4,79 @@ import Image from 'ui/resource/Image';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import Tile from 'src/game/components/Tile';
 
+import { level } from 'src/lib/raycast';
+
+
 export default class Terrain extends View {
   constructor (opts) {
     super(opts);
     this.screen = getScreenDimensions();
     this.game = opts.parent.game;
 
-    this.createTiles();
-    this.createPlatform();
+    this.createMap();
+
+    // this.createTiles();
+    // this.createPlatform();
 
     debugPoint(this);
+  }
+
+  createMap () {
+    const tileImages = {
+      topLeft: new Image({ url: 'resources/images/8bit-ninja/terrain-top-left.png' }),
+      topRight: new Image({ url: 'resources/images/8bit-ninja/terrain-top-right.png' }),
+      center: new Image({ url: 'resources/images/8bit-ninja/terrain-center.png' }),
+      lava: new Image({ url: 'resources/images/8bit-ninja/lava-1.png' }),
+    };
+
+    const { mapData, tileSize } = level;
+    console.log('mapData:', mapData);
+
+    const mapWidth = mapData.length;
+    const mapHeight = mapData[0].length;
+    const map = [];
+
+    // const offset = { x: this.game.world.left - tileSize, y: this.screen.height / 2 };
+    const offset = { x: 0, y: 0 };
+
+    for (let y = 0; y < mapHeight; y++) {
+      map[y] = [];
+      for (let x = 0; x < mapWidth; x++) {
+        if (mapData[y][x] === 0) {
+          map[y][x] = null;
+        } else {
+          map[y][x] = new Tile({
+            parent: this,
+            width: tileSize,
+            height: tileSize,
+            x: offset.x + x * tileSize,
+            y:  offset.y + y * tileSize,
+            image:tileImages.center,
+          });
+        }
+      }
+    }
+
+    // for (let x = 0; x < mapWidth; x++) {
+    //   map[x] = [];
+    //   for (let y = 0; y < mapHeight; y++) {
+    //     if (mapData[x][y] === 0) {
+    //       map[x][y] = null;
+    //     } else {
+    //       map[x][y] = new Tile({
+    //         parent: this,
+    //         width: tileSize,
+    //         height: tileSize,
+    //         x: offset.x + x * tileSize,
+    //         y:  offset.y + y * tileSize,
+    //         image:tileImages.center,
+    //       });
+    //     }
+    //   }
+    // }
+
+    console.log('map:', map);
+    level.map = map;
   }
 
   createTiles () {
@@ -92,31 +155,4 @@ export default class Terrain extends View {
     }
   }
 
-  // // Find out if the given pixel is traversable.
-  // // X and Y are the scene pixel coordinates
-  // isPointTraversable (x, y) {
-  //   const tileSize = 8;
-
-  //   // Get the tile coordinates from the pixel coord.
-  //   const tileX = Math.Floor(x / tileSize);
-  //   const tileY = Math.Floor(y / tileSize);
-
-  //   // If the point is out of bound, we assume it's traversable
-  //   if (tileX < 0) return true;
-  //   if (tileX >= horizontalTileCount) return true;
-  //   if (tileY < 0) return true;
-  //   if (tileY >= verticalTileCount) return true;
-
-  //   const tile = getTile(tileX, tileY);
-
-  //   // If the tile is blank the point is traversable
-  //   if (tile == null) return true;
-
-  //   // Get the coordinates of the point within the tile
-  //   const localPointX = x % tileSize;
-  //   const localPointY = y % tileSize;
-
-  //   // Return "true" if the pixel is not solid
-  //   return !tile.solidityMap[localPointX, localPointY];
-  // }
 }

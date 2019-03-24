@@ -121,11 +121,11 @@ export default class GameScreen extends View {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    animate({}).
-      wait(this.options.slimeSpawnDelay)
-      .then(() => {
-        this.createSlime(this.world.getRandomPos());
-      });
+    // animate({}).
+    //   wait(this.options.slimeSpawnDelay)
+    //   .then(() => {
+    //     this.createSlime(this.world.getRandomPos());
+    //   });
   }
 
   gameOver () {
