@@ -1,6 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
+import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums.js';
 import {
   getScreenDimensions,
@@ -12,16 +13,16 @@ import {
 
 
 
-export default class Slime extends View {
+export default class Slime extends Entity {
   constructor (opts) {
     super(opts);
-    this.screen = getScreenDimensions();
-    this.scale = opts.scale;
-    this.game = opts.parent.game;
+    // this.screen = getScreenDimensions();
+    // this.scale = opts.scale;
+    // this.game = opts.parent.game;
     this.ninja = this.game.ninja;
 
     this.dir = -1;
-    this.speed = getRandomFloat(0.5, 3.0);
+    this.speed = getRandomFloat(0.5, 1.5); // bigger is faster // 0.5, 3.0
     this.color = opts.color || 'black';
     this.scorePoints = this.color === 'black' ? getRandomInt(10, 20) :  getRandomInt(30, 50);
     this.starProbability = this.color === 'black' ? getRandomInt(10, 30) :  getRandomInt(30, 50);
@@ -29,15 +30,22 @@ export default class Slime extends View {
     this.action = Actions.Idle;
 
     // initialize gravity and velocity
-    this.gravity = 1.5;
-    this.impulse = 0;
-    this.vx = getRandomFloat(-10, 10);
-    this.vy = 0;
+    // this.gravity = 1.5;
+    // this.impulse = 0;
+    // this.vx = getRandomFloat(-10, 10);
+    // this.vy = 0;
 
     this.style.zIndex = 100;
 
     this.createSprite();
     this.setDirection(getRandomItemFromArray([-1, 1]));
+
+    this.on('collision.ground', () => {});
+    this.on('collision:wall', () => {
+      // change slime direction
+      animate(this).clear();
+      this.setDirection(-this.dir);
+    });
   }
 
   createSprite () {
@@ -61,7 +69,7 @@ export default class Slime extends View {
     debugPoint(this);
   }
 
-  tick () { // dt
+  tick (dt) { // dt
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
@@ -73,32 +81,34 @@ export default class Slime extends View {
     const me = this.style;
     me.x += this.speed * this.dir;
 
-    const floorY = this.game.world.getFloorY(me.x);
+    super.tick(dt);
+
+    // const floorY = this.game.world.getFloorY(me.x);
 
     // reverse direction if we go out of screen limits
-    if (me.y === floorY) {
-      const left  = this.ninja.style.x - this.screen.width / 2;
-      const right = this.ninja.style.x + this.screen.width / 2;
+    // if (me.y === floorY) {
+      // const left  = this.ninja.style.x - this.screen.width / 2;
+      // const right = this.ninja.style.x + this.screen.width / 2;
 
-      if (this.dir > 0 && me.x > right - this.speed - me.width / 2) {
-        this.setDirection(-1);
-      }
-      if (this.dir < 0 && me.x < left + this.speed + me.width / 2) {
-        this.setDirection(1);
-      }
-    }
+      // if (this.dir > 0 && me.x > right - this.speed - me.width / 2) {
+      //   this.setDirection(-1);
+      // }
+      // if (this.dir < 0 && me.x < left + this.speed + me.width / 2) {
+      //   this.setDirection(1);
+      // }
+    // }
 
-    // add gravity to velocity on y axis
-    this.vy += this.gravity;
-    me.y = me.y + this.vy;
+    // // add gravity to velocity on y axis
+    // this.vy += this.gravity;
+    // me.y = me.y + this.vy;
 
-    // check for rebound at floor level
-    if (me.y + this.vy >= floorY) {
-      me.y = floorY;
-      // this.impulse = getRandomFloat(5, 20);
-      // this.speed = getRandomFloat(this.speed - 0.5, this.speed + 0.5);
-      this.vy = this.impulse * -this.gravity;
-    }
+    // // check for rebound at floor level
+    // if (me.y + this.vy >= floorY) {
+    //   me.y = floorY;
+    //   // this.impulse = getRandomFloat(5, 20);
+    //   // this.speed = getRandomFloat(this.speed - 0.5, this.speed + 0.5);
+    //   this.vy = this.impulse * -this.gravity;
+    // }
 
     this.checkNinjaDistance();
   }
@@ -108,9 +118,9 @@ export default class Slime extends View {
     this.style.flipX = dir === -1;
   }
 
-  jump () {
-    this.impulse = 26;
-  }
+  // jump () {
+  //   this.impulse = 26;
+  // }
 
   checkNinjaDistance () {
     // escape if the slime is dying or already attacking

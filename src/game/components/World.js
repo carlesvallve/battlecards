@@ -2,6 +2,7 @@ import animate from 'animate';
 import View from 'ui/View';
 import { getScreenDimensions, getRandomInt, debugPoint } from 'src/lib/utils';
 import { GameStates } from 'src/lib/enums';
+import { level } from 'src/lib/raycast';
 
 export default class World extends View {
   constructor (opts) {
@@ -36,11 +37,16 @@ export default class World extends View {
   }
 
   getRandomPos () {
+    const { mapData, tileSize } = level;
     const ninja = this.game.ninja;
+
     const y = getRandomInt(this.screen.height / 3, -4 + this.screen.height / 2);
 
-    const left = ninja.style.x - getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 2);
-    const right = ninja.style.x + getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 2);
+    let left = ninja.style.x - getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
+    if (left < tileSize) { left = tileSize; }
+    let right = ninja.style.x + getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
+    if (right > (mapData[0].length - 1) * tileSize) { right = (mapData[0].length - 1) * tileSize; }
+
     const x = getRandomInt(1, 100) <= 50 ? left : right;
 
     return { x, y };
@@ -48,13 +54,18 @@ export default class World extends View {
 
   centerAt (ninja) {
     const targetX = -ninja.style.x + this.screen.width / 2;
+    const targetY = -ninja.style.y + this.screen.height / 2;
     this.style.x = targetX;
+    this.style.y = targetY;
   }
 
   interpolate (ninja) {
     const targetX = -ninja.style.x + this.screen.width / 2;
+    const targetY = -ninja.style.y + this.screen.height / 2;
     const dx = (targetX - this.style.x) * this.elasticity;
+    const dy = (targetY - this.style.y) * this.elasticity;
     this.style.x += dx;
+    this.style.y += dy;
   }
 
   tick (dt) {

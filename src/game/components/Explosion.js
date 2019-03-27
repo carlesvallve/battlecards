@@ -1,12 +1,8 @@
 import View from 'ui/View';
 import QuickViewPool from 'ui/ViewPool2';
-import {
-  getScreenDimensions,
-  getRandomInt,
-  getRandomFloat } from 'src/lib/utils';
-  import { GameStates } from 'src/lib/enums';
-
-
+import { getRandomInt, getRandomFloat } from 'src/lib/utils';
+import { GameStates } from 'src/lib/enums';
+import { rayCast } from 'src/lib/raycast';
 
 const pool = new QuickViewPool({
   ctor: View,
@@ -16,16 +12,16 @@ const pool = new QuickViewPool({
   }
 });
 
+// todo: we should turn this into an abstract class since we are not the parent anymore
+
 export default class Explosion extends View {
   constructor (opts) {
     super(opts);
 
-    this.screen = getScreenDimensions();
-    this.sc = opts.sc;
     this.game = opts.parent.game;
 
     // initialize gravity and velocity
-    this.gravity = 0.75;
+    this.gravity = 0.5;
     this.impulse = 16;
     this.vx = 0;
     this.vy = 0;
@@ -37,24 +33,24 @@ export default class Explosion extends View {
     }
   }
 
-  createSprite ({ startX, startY, color }) {
+  createSprite ({ startX, startY, color, sc }) {
     const size = getRandomFloat(1.5, 3);
 
     // using timestep's ViewPool2
     // sprite pooling system to increase performance
     const sprite = pool.obtainView();
-    this.addSubview(sprite);
+    this.game.world.addSubview(sprite);
     sprite.style.backgroundColor = color;
-    sprite.style.scale = this.sc;
+    sprite.style.scale = sc;
     sprite.style.x = startX;
-    sprite.style.y = startY;
+    sprite.style.y = startY - 8;
     sprite.style.width = size;
     sprite.style.height = size;
     sprite.style.offsetX = -size / 2;
     sprite.style.offsetY = -size;
 
     sprite.vx = getRandomInt(-15, 15) * 0.5;
-    sprite.vy = getRandomInt(-22, 15) * 0.75;
+    sprite.vy = getRandomInt(-22, 0) * 0.75;
 
     return sprite;
   }
@@ -75,43 +71,65 @@ export default class Explosion extends View {
       const sprite = this.sprites[i];
       const me = sprite.style;
 
-      // add gravity to velocity on y axis
-      sprite.vy += this.gravity;
-
-      // update position
+      this.castRayDown(sprite, 0);
+      this.castRayForward(sprite, 0);
       me.x += sprite.vx;
       me.y += sprite.vy;
 
-      // check collision left
-      const left = this.game.ninja.style.x - this.screen.width / 2;
-      if (me.x + sprite.vx <= left) {
-        me.x = 0;
-        sprite.vx = -sprite.vx * 0.75;
-      }
-
-      // check collision right
-      const right = this.game.ninja.style.x + this.screen.width / 2;
-      if (me.x + sprite.vx >= right) {
-        me.x = this.screen.width;
-        sprite.vx = -sprite.vx * 0.75;
-      }
-
-      // check collision bottom
-      const floorY = this.game.world.getFloorY(me.x);
-      if (me.y + sprite.vy >= floorY) {
-        me.y = floorY;
-        sprite.vy = -sprite.vy * 0.9;
-      }
-
       // scale down
-      const lifeSpeed = getRandomFloat(0.97, 0.99) * 1;
+      const lifeSpeed = getRandomFloat(0.98, 0.995) * 1;
       me.scale *= lifeSpeed;
 
       // kill particle when her life ends
-      if (me.scale <= 0.4 || (sprite.style.y === floorY && sprite.vy === 0)) {
+      if (me.scale <= 0.4 && sprite.grounded && sprite.vy === 0) {
         pool.releaseView(sprite);
         this.sprites.splice(i, 1);
       }
+    }
+  }
+
+  castRayDown (sprite, dx, debug = false) {
+    const me = sprite.style;
+    const up = 1;
+    const forward = 0;
+    const offset = this.game.terrain.offset;
+
+    const hit = rayCast(
+      { x: me.x - forward, y: me.y - up },
+      { x: 0, y: 1 },
+      32,
+      offset,
+      debug ? { debugView: this.parent, duration: 100 } : {}
+    );
+
+    if (hit && hit.distance <= up) {
+      // set y to hit point and reset gravity vector
+      me.y = hit.position.y;
+      sprite.vy = -sprite.vy * 0.3; // 0.4;
+      sprite.grounded = true;
+    } else {
+      // add gravity to velocity on y axis
+      sprite.vy += this.gravity;
+      sprite.grounded = false;
+    }
+  }
+
+  castRayForward (sprite, debug = false) {
+    const me = sprite.style;
+    const d = 2;
+    const up = 2;
+    const offset = this.game.terrain.offset;
+
+    const hit = rayCast(
+      { x: me.x, y: me.y -up },
+      { x: this.vx > 0 ? 1 : -1, y: 0 },
+      16,
+      offset,
+      debug ? { debugView: this.parent, duration: 100 } : {}
+    );
+
+    if (hit && hit.distance <= d) {
+      sprite.vx = -sprite.vx * 0.75;
     }
   }
 }

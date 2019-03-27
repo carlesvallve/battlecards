@@ -1,6 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
+import Entity from 'src/game/components/Entity';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
@@ -8,19 +9,19 @@ import sounds from 'src/lib/sounds';
 import { level, rayCast, debugRay } from 'src/lib/raycast';
 
 
-export default class Ninja extends View {
+export default class Ninja extends Entity {
   constructor (opts) {
     super(opts);
-    this.screen = getScreenDimensions();
-    this.scale = opts.scale;
-    this.game = opts.parent.game;
-    this.parent = opts.parent;
+    // this.screen = getScreenDimensions();
+    // this.scale = opts.scale;
+    // this.game = opts.parent.game;
+    // this.parent = opts.parent;
 
     // initialize gravity and velocity
     this.gravity = 0.25;
     this.impulse = 10;
-    this.vx = 0; // getRandomFloat(-10, 10);
-    this.vy = 0;
+    // this.vx = 0; // getRandomFloat(-10, 10);
+    // this.vy = 0;
 
     this.createSprite();
 
@@ -32,6 +33,13 @@ export default class Ninja extends View {
     this.on('ninja:die', this.die.bind(this));
     this.on('ninja:moveTo', this.moveTo.bind(this));
     this.on('ninja:jumpTo', this.jumpTo.bind(this));
+
+    this.on('collision.ground', () => {});
+    this.on('collision:wall', () => {
+      // stop interpolating and animating character
+      animate(this).clear();
+      this.idle();
+    });
   }
 
 
@@ -52,7 +60,7 @@ export default class Ninja extends View {
     this.sprite.style.offsetX = -8;
     this.sprite.style.offsetY = -16;
 
-    debugPoint(this);
+    // debugPoint(this);
   }
 
   init () {
@@ -241,94 +249,98 @@ export default class Ninja extends View {
 
 
   tick (dt) {
-    this.castRayDown();
-    this.castRayForward();
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+
+    super.tick(dt);
   }
 
   // ===============================================================
   // Raycasting logic
   // ===============================================================
 
-  castRayDown () {
-    const me = this.style;
-    const up = 8;
-    const offset = this.game.terrain.offset;
+  // castRayDown (dx) {
+  //   const me = this.style;
+  //   const up = 8;
+  //   const forward = this.dir * 5 * dx;
+  //   const offset = this.game.terrain.offset;
 
-    const hit = rayCast(
-      { x: me.x, y: me.y - up }, // position,
-      { x: 0, y: 1 }, // direction,
-      128,            // rayLength,
-      offset,
-      {} // { debugView: this.parent, duration: 100 } // debug options
-    );
+  //   const hit = rayCast(
+  //     { x: me.x - forward, y: me.y - up }, // position,
+  //     { x: 0, y: 1 }, // direction,
+  //     128,            // rayLength,
+  //     offset,
+  //     {} // { debugView: this.parent, duration: 100 } // debug options
+  //   );
 
-    if (hit && hit.distance <= up) {
-      // set y to hit point and reset gravity vector
-      me.y = hit.position.y;
-      this.vy = 0;
-    } else {
-      // add gravity to velocity on y axis
-      this.gravity = 0.5;
-      this.vy += this.gravity;
-      me.y = me.y + this.vy;
-    }
-  }
+  //   if (hit && hit.distance <= up) {
+  //     // set y to hit point and reset gravity vector
+  //     me.y = hit.position.y;
+  //     this.vy = 0;
+  //   } else {
+  //     // add gravity to velocity on y axis
+  //     this.gravity = 0.5;
+  //     this.vy += this.gravity;
+  //     me.y = me.y + this.vy;
+  //   }
+  // }
 
-  castRayForward () {
-    const me = this.style;
-    const d = 8;
-    const up = 8;
-    const offset = this.game.terrain.offset;
+  // castRayForward () {
+  //   const me = this.style;
+  //   const d = 8;
+  //   const up = 8;
+  //   const offset = this.game.terrain.offset;
 
-    const hit = rayCast(
-      { x: me.x, y: me.y -up },
-      { x: this.dir, y: 0 },
-      16,
-      offset,
-      {} // { debugView: this.parent, duration: 100 }
-    );
+  //   const hit = rayCast(
+  //     { x: me.x, y: me.y -up },
+  //     { x: this.dir, y: 0 },
+  //     16,
+  //     offset,
+  //     {} // { debugView: this.parent, duration: 100 }
+  //   );
 
-    if (hit && hit.distance <= d) {
-      // check if we can climb forward
-      const hasClimbed = this.castRayClimb(d);
+  //   if (hit && hit.distance <= d) {
+  //     // check if we can climb forward
+  //     const hasClimbed = this.castRayClimb(d);
 
-      // stop moving if we cannot climb
-      if (!hasClimbed) {
-        // stop interpolating and animating character
-        animate(this).clear();
-        this.idle();
-        // lock character x to hit point and apply bounce back
-        me.x = hit.position.x - d * this.dir;
-      }
-    }
-  }
+  //     // stop moving if we cannot climb
+  //     if (!hasClimbed) {
+  //       // stop interpolating and animating character
+  //       animate(this).clear();
+  //       this.idle();
+  //       // lock character x to hit point and apply bounce back
+  //       me.x = hit.position.x - d * this.dir;
+  //     }
+  //   }
+  // }
 
-  castRayClimb (d) {
-    const me = this.style;
-    const up = 24;
-    const offset = this.game.terrain.offset;
+  // castRayClimb (d) {
+  //   const me = this.style;
+  //   const up = 24;
+  //   const offset = this.game.terrain.offset;
 
-    // check if we can climb to next step forward
-    const hit = rayCast(
-      { x: me.x + this.dir * 8, y: me.y - up },
-      { x: 0, y: 1 },
-      32,
-      offset,
-      {} // { debugView: this.parent, duration: 100 }
-    );
+  //   // check if we can climb to next step forward
+  //   const hit = rayCast(
+  //     { x: me.x + this.dir * 8, y: me.y - up },
+  //     { x: 0, y: 1 },
+  //     32,
+  //     offset,
+  //     {} // { debugView: this.parent, duration: 100 }
+  //   );
 
-    // if there is a platform and the distance is not to high, we can climb
-    if (hit) {
-      const dy= Math.abs(hit.position.y - me.y);
-      if (dy <= 16) {
-        // castRayDown will automatically put us on the upper platform
-        // so just return hasClimbed value
-        return true;
-      }
-    }
+  //   // if there is a platform and the distance is not to high, we can climb
+  //   if (hit) {
+  //     const dy= Math.abs(hit.position.y - me.y);
+  //     if (dy <= 16) {
+  //       // castRayDown will automatically put us on the upper platform
+  //       // so just return hasClimbed value
+  //       return true;
+  //     }
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
 }
 

@@ -121,11 +121,11 @@ export default class GameScreen extends View {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    // animate({}).
-    //   wait(this.options.slimeSpawnDelay)
-    //   .then(() => {
-    //     this.createSlime(this.world.getRandomPos());
-    //   });
+    animate({}).
+      wait(this.options.slimeSpawnDelay)
+      .then(() => {
+        this.createSlime(this.world.getRandomPos());
+      });
   }
 
   gameOver () {
@@ -138,6 +138,10 @@ export default class GameScreen extends View {
     if (this.gameState === GameStates.Pause) {
       return;
     }
+
+    // if ( this.slimes.length >= 1) {
+    //   return;
+    // }
 
     // wait and create a new slime
     const delay = getRandomFloat(500, 1000);
@@ -289,6 +293,7 @@ export default class GameScreen extends View {
     // interact with the ninja
     if (this.ninja) {
       x = x - this.world.style.x;
+      y = y - this.world.style.y;
       this.ninja.emit('ninja:moveTo', { x, y });
     }
   }
