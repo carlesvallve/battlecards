@@ -50,7 +50,7 @@ export default class Explosion extends View {
     sprite.style.offsetY = -size;
 
     sprite.vx = getRandomInt(-15, 15) * 0.5;
-    sprite.vy = getRandomInt(-22, 0) * 0.75;
+    sprite.vy = getRandomInt(-22, 3) * 0.75;
 
     return sprite;
   }
@@ -71,10 +71,10 @@ export default class Explosion extends View {
       const sprite = this.sprites[i];
       const me = sprite.style;
 
-      this.castRayDown(sprite, 0);
-      this.castRayForward(sprite, 0);
       me.x += sprite.vx;
       me.y += sprite.vy;
+      this.castRayDown(sprite, 0);
+      this.castRayForward(sprite, 0);
 
       // scale down
       const lifeSpeed = getRandomFloat(0.98, 0.995) * 1;

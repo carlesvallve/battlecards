@@ -6,6 +6,8 @@ import { Actions } from 'src/lib/enums.js';
 import { getScreenDimensions, getRandomInt, getDistanceBetweenViews } from 'src/lib/utils';
 import sounds from 'src/lib/sounds';
 import { GameStates } from 'src/lib/enums';
+import { rayCast } from 'src/lib/raycast';
+
 
 export default class Stars extends View {
   constructor (opts) {
@@ -16,7 +18,7 @@ export default class Stars extends View {
     this.ninja = this.game.ninja;
 
     // initialize gravity and velocity
-    this.gravity = 0.75;
+    this.gravity = 0.5;
     this.impulse = 16;
     this.vx = 0;
     this.vy = 0;
@@ -47,8 +49,8 @@ export default class Stars extends View {
     sprite.style.offsetX = -size / 2;
     sprite.style.offsetY = -size;
 
-    sprite.vx = getRandomInt(-15, 15) * 0.4;
-    sprite.vy = getRandomInt(-22, 15) * 0.7;
+    sprite.vx = getRandomInt(-15, 15) * 0.5;
+    sprite.vy = getRandomInt(-16, -4) * 0.75; // 0.75;
 
     sprite.action = Actions.Run;
     animate(sprite)
@@ -59,7 +61,7 @@ export default class Stars extends View {
       })
       .wait(3000)
       .then(() => {
-        this.die(sprite);
+        // this.die(sprite);
       });
 
     return sprite;
@@ -81,9 +83,9 @@ export default class Stars extends View {
         continue;
       }
 
-      // attrack particle to ninja
+      // attract particle to ninja
       if (sprite.action === Actions.Die) {
-        const vel = 0.4;
+        const vel = 0.5;
         const targetX = this.ninja.targetX || this.ninja.style.x;
         const dx = (targetX - me.x) * vel;
         const dy = (-7 + this.ninja.style.y - me.y) * vel;
@@ -95,34 +97,40 @@ export default class Stars extends View {
         continue;
       }
 
-      // add gravity to velocity on y axis
-      sprite.vy += this.gravity;
-
-      // update position
+      sprite.vx *= 0.99;
       me.x += sprite.vx;
       me.y += sprite.vy;
+      this.castRayDown(sprite, 0);
+      this.castRayForward(sprite, 0);
 
-      // check collision left
-      const left = this.game.ninja.style.x - this.screen.width / 2;
-      if (me.x + sprite.vx <= left) {
-        me.x = 0;
-        sprite.vx = -sprite.vx * 0.75;
-      }
+      // // add gravity to velocity on y axis
+      // sprite.vy += this.gravity;
 
-      // check collision right
-      const right = this.game.ninja.style.x + this.screen.width / 2;
-      if (me.x + sprite.vx >= right) {
-        me.x = this.screen.width;
-        sprite.vx = -sprite.vx * 0.75;
-      }
+      // // update position
+      // me.x += sprite.vx;
+      // me.y += sprite.vy;
 
-      // check collision bottom
-      const floorY = this.game.world.getFloorY(me.x);
-      if (me.y + sprite.vy >= floorY) {
-        me.y = floorY;
-        sprite.vy = -sprite.vy * 0.9;
-        sprite.vx *= 0.8;
-      }
+      // // check collision left
+      // const left = this.game.ninja.style.x - this.screen.width / 2;
+      // if (me.x + sprite.vx <= left) {
+      //   me.x = 0;
+      //   sprite.vx = -sprite.vx * 0.75;
+      // }
+
+      // // check collision right
+      // const right = this.game.ninja.style.x + this.screen.width / 2;
+      // if (me.x + sprite.vx >= right) {
+      //   me.x = this.screen.width;
+      //   sprite.vx = -sprite.vx * 0.75;
+      // }
+
+      // // check collision bottom
+      // const floorY = this.game.world.getFloorY(me.x);
+      // if (me.y + sprite.vy >= floorY) {
+      //   me.y = floorY;
+      //   sprite.vy = -sprite.vy * 0.9;
+      //   sprite.vx *= 0.8;
+      // }
 
       sprite.style.r += sprite.vx * 0.1; //  * 0.01;
 
@@ -169,6 +177,51 @@ export default class Stars extends View {
         }
         break;
       }
+    }
+  }
+
+  castRayDown (sprite, dx, debug = false) {
+    const me = sprite.style;
+    const up = 3;
+    const forward = 0;
+    const offset = this.game.terrain.offset;
+
+    const hit = rayCast(
+      { x: me.x - forward, y: me.y - up },
+      { x: 0, y: 1 },
+      32,
+      offset,
+      debug ? { debugView: this.parent, duration: 100 } : {}
+    );
+
+    if (hit && hit.distance <= up) {
+      // set y to hit point and reset gravity vector
+      me.y = hit.position.y;
+      sprite.vy = -sprite.vy * 0.75; // 0.4;
+      sprite.grounded = true;
+    } else {
+      // add gravity to velocity on y axis
+      sprite.vy += this.gravity;
+      sprite.grounded = false;
+    }
+  }
+
+  castRayForward (sprite, debug = false) {
+    const me = sprite.style;
+    const d = 3;
+    const up = 3;
+    const offset = this.game.terrain.offset;
+
+    const hit = rayCast(
+      { x: me.x, y: me.y -up },
+      { x: this.vx > 0 ? 1 : -1, y: 0 },
+      16,
+      offset,
+      debug ? { debugView: this.parent, duration: 100 } : {}
+    );
+
+    if (hit && hit.distance <= d) {
+      sprite.vx = -sprite.vx * 0.9; // 0.75;
     }
   }
 }
