@@ -23,6 +23,8 @@ export default class Ninja extends Entity {
     // this.vx = 0; // getRandomFloat(-10, 10);
     // this.vy = 0;
 
+    this.goal = null;
+
     this.createSprite();
 
     this.on('ninja:start', this.init.bind(this));
@@ -121,14 +123,15 @@ export default class Ninja extends Entity {
   attack ({ target }) {
     if (this.action === Actions.Die || target.action === Actions.Attack) { return; }
 
-    animate(this).clear();
-
     this.action = Actions.Attack;
     this.sprite.setFramerate(12);
     this.sprite.startAnimation('attack', {
       loop: false,
       callback: () => {
         this.idle();
+        if (this.goal) {
+          this.moveTo({ x: this.goal.x, y: this.goal.y });
+        }
       }
     });
 
@@ -214,13 +217,14 @@ export default class Ninja extends Entity {
     this.sprite.setFramerate(12);
     this.sprite.startAnimation('run', { loop: true });
 
-    // this.goal = x;
+    this.goal = { x, y };
 
     animate(this).clear()
     .now({ x: this.style.x }, 0, animate.linear)
     .then({ x: x }, duration, animate.linear)
     .then(() => {
       this.idle();
+      this.goal = null;
     });
 
     // this.castRayDown(this.style.x, this.style.y);
