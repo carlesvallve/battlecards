@@ -40,7 +40,7 @@ export default class Stars extends View {
       y: startY,
       width: size,
       height: size,
-      centerOnOrigin: true,
+      // centerOnOrigin: true,
       centerAnchor: true,
       scale: 1, // this.sc,
       image: new Image({ url: 'resources/images/8bit-ninja/star-yellow.png' }),
@@ -85,7 +85,7 @@ export default class Stars extends View {
 
       // attract particle to ninja
       if (sprite.action === Actions.Die) {
-        const vel = 0.5;
+        const vel = 0.15;
         const targetX = this.ninja.targetX || this.ninja.style.x;
         const dx = (targetX - me.x) * vel;
         const dy = (-7 + this.ninja.style.y - me.y) * vel;
@@ -102,35 +102,6 @@ export default class Stars extends View {
       me.y += sprite.vy;
       this.castRayDown(sprite, 0);
       this.castRayForward(sprite, 0);
-
-      // // add gravity to velocity on y axis
-      // sprite.vy += this.gravity;
-
-      // // update position
-      // me.x += sprite.vx;
-      // me.y += sprite.vy;
-
-      // // check collision left
-      // const left = this.game.ninja.style.x - this.screen.width / 2;
-      // if (me.x + sprite.vx <= left) {
-      //   me.x = 0;
-      //   sprite.vx = -sprite.vx * 0.75;
-      // }
-
-      // // check collision right
-      // const right = this.game.ninja.style.x + this.screen.width / 2;
-      // if (me.x + sprite.vx >= right) {
-      //   me.x = this.screen.width;
-      //   sprite.vx = -sprite.vx * 0.75;
-      // }
-
-      // // check collision bottom
-      // const floorY = this.game.world.getFloorY(me.x);
-      // if (me.y + sprite.vy >= floorY) {
-      //   me.y = floorY;
-      //   sprite.vy = -sprite.vy * 0.9;
-      //   sprite.vx *= 0.8;
-      // }
 
       sprite.style.r += sprite.vx * 0.1; //  * 0.01;
 
@@ -182,7 +153,7 @@ export default class Stars extends View {
 
   castRayDown (sprite, dx, debug = false) {
     const me = sprite.style;
-    const up = 3;
+    const up = 6;
     const forward = 0;
     const offset = this.game.terrain.offset;
 
@@ -208,14 +179,16 @@ export default class Stars extends View {
 
   castRayForward (sprite, debug = false) {
     const me = sprite.style;
-    const d = 3;
-    const up = 3;
+    const d = 6;
+    const up = 6;
     const offset = this.game.terrain.offset;
 
+    const dir = this.vx > 0 ? 1 : -1;
+
     const hit = rayCast(
-      { x: me.x, y: me.y -up },
-      { x: this.vx > 0 ? 1 : -1, y: 0 },
-      16,
+      { x: me.x + dir * 3, y: me.y -up },
+      { x: dir, y: 0 },
+      32,
       offset,
       debug ? { debugView: this.parent, duration: 100 } : {}
     );

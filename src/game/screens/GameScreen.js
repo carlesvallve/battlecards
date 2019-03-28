@@ -19,6 +19,7 @@ import {
   getRandomFloat,
   getRandomInt,
   getRandomItemFromArray } from 'src/lib/utils';
+import Vector from '../../lib/vector';
 
 
 export default class GameScreen extends View {
@@ -138,10 +139,6 @@ export default class GameScreen extends View {
     if (this.gameState === GameStates.Pause) {
       return;
     }
-
-    // if ( this.slimes.length >= 1) {
-    //   return;
-    // }
 
     // wait and create a new slime
     const delay = getRandomFloat(500, 1000);
@@ -306,15 +303,15 @@ export default class GameScreen extends View {
   // }
 
   onDrag (dx, dy) {
-    // console.log('onDrag', dx);
-    const minDx = 32;
+    // first attempt on jump feature
+    const d = 32;
+    const vec = new Vector(dx, dy).normalize().multiplyScalar(d);
+    const pos = {
+      x: this.ninja.style.x + vec.x * 2,
+      y: this.ninja.style.y + vec.y,
+    };
 
-    if (Math.abs(dx) <= minDx) { return; }
-    if (this.ninja) {
-      const x = this.ninja.style.x + dx;
-      const y = this.ninja.style.y + dy;
-      this.ninja.emit('ninja:moveTo', { x, y });
-    }
+    this.ninja.jumpTo(pos);
   }
 
   // onDragFinish (dx, dy) {

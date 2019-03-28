@@ -1,10 +1,8 @@
 import animate from 'animate';
-import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
 import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums.js';
 import {
-  getScreenDimensions,
   getRandomFloat,
   getRandomInt,
   getDistanceBetweenViews,
@@ -12,13 +10,9 @@ import {
   getRandomItemFromArray } from 'src/lib/utils';
 
 
-
 export default class Slime extends Entity {
   constructor (opts) {
     super(opts);
-    // this.screen = getScreenDimensions();
-    // this.scale = opts.scale;
-    // this.game = opts.parent.game;
     this.ninja = this.game.ninja;
 
     this.dir = -1;
@@ -28,12 +22,6 @@ export default class Slime extends Entity {
     this.starProbability = this.color === 'black' ? getRandomInt(10, 30) :  getRandomInt(30, 50);
 
     this.action = Actions.Idle;
-
-    // initialize gravity and velocity
-    // this.gravity = 1.5;
-    // this.impulse = 0;
-    // this.vx = getRandomFloat(-10, 10);
-    // this.vy = 0;
 
     this.style.zIndex = 100;
 
@@ -69,7 +57,7 @@ export default class Slime extends Entity {
     debugPoint(this);
   }
 
-  tick (dt) { // dt
+  tick (dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
@@ -82,34 +70,6 @@ export default class Slime extends Entity {
     me.x += this.speed * this.dir;
 
     super.tick(dt);
-
-    // const floorY = this.game.world.getFloorY(me.x);
-
-    // reverse direction if we go out of screen limits
-    // if (me.y === floorY) {
-      // const left  = this.ninja.style.x - this.screen.width / 2;
-      // const right = this.ninja.style.x + this.screen.width / 2;
-
-      // if (this.dir > 0 && me.x > right - this.speed - me.width / 2) {
-      //   this.setDirection(-1);
-      // }
-      // if (this.dir < 0 && me.x < left + this.speed + me.width / 2) {
-      //   this.setDirection(1);
-      // }
-    // }
-
-    // // add gravity to velocity on y axis
-    // this.vy += this.gravity;
-    // me.y = me.y + this.vy;
-
-    // // check for rebound at floor level
-    // if (me.y + this.vy >= floorY) {
-    //   me.y = floorY;
-    //   // this.impulse = getRandomFloat(5, 20);
-    //   // this.speed = getRandomFloat(this.speed - 0.5, this.speed + 0.5);
-    //   this.vy = this.impulse * -this.gravity;
-    // }
-
     this.checkNinjaDistance();
   }
 

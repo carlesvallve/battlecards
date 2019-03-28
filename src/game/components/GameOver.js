@@ -126,7 +126,7 @@ export default class Hud extends View {
         this.hud.game.emit('game:end');
         return;
       }
-    }, 1000);
+    }, 500);
   }
 
   hide () {
