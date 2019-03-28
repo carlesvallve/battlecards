@@ -304,10 +304,10 @@ export default class GameScreen extends View {
 
   onDrag (dx, dy) {
     // first attempt on jump feature
-    const d = 32;
-    const vec = new Vector(dx, dy).normalize().multiplyScalar(d);
+    const d = 16;
+    const vec = new Vector(dx, dy).multiplyScalar(d).limit(64);
     const pos = {
-      x: this.ninja.style.x + vec.x * 2,
+      x: this.ninja.style.x + vec.x,
       y: this.ninja.style.y + vec.y,
     };
 

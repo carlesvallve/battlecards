@@ -50,6 +50,8 @@ export default class Entity extends View {
   // ===============================================================
 
   castRayDown (dx, debug = false) {
+    if (this.vy < 0) { return; }
+
     const me = this.style;
     const up = 8;
     const forward = this.dir * 4 * dx;

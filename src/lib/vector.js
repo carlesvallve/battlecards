@@ -141,5 +141,15 @@ export default class Vector {
     this.y = xtemp * Math.sin(theta) + this.y * Math.cos(theta);
     return this;
   }
+
+  limit (maxLength) {
+    const lengthSquared = this.lengthSq(); // this.x*x + y*y;
+   if ((lengthSquared > maxLength * maxLength) && (lengthSquared > 0)) {
+        const ratio = maxLength / Math.sqrt(lengthSquared);
+        this.x *= ratio;
+        this.y *= ratio;
+    }
+    return this;
+  }
 }
 

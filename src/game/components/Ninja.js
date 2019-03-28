@@ -219,9 +219,9 @@ export default class Ninja extends Entity {
 
   jumpTo ({ x, y }) {
     if (this.action === Actions.Die) { return; }
-    if (this.action === Actions.Jump) { return; }
+    // if (this.action === Actions.Jump) { return; }
 
-    this.vy = -8;
+    this.vy = -16;
 
     const duration = 200;
     this.goal = null;
