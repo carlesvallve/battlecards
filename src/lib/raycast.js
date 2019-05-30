@@ -1,41 +1,12 @@
 /* eslint-disable no-use-before-define */
 
 import View from 'ui/View';
-
-// ======================== map
-
-export const level = {
-  mapData: [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-  [1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1],
-  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  ],
-  map: null,
-  tileSize: 16,
-};
-
-const horizontalTileCount = level.mapData[0].length;
-const verticalTileCount = level.mapData.length;
-const tileSize = level.tileSize;
-
-export const getTile = (x, y) => {
-  return level.map[y][x] || null;
-};
+import {
+  horizontalTileCount,
+  verticalTileCount,
+  tileSize,
+  getTile
+} from 'conf/levels/index';
 
 // ======================== global point to tile point
 
@@ -75,12 +46,13 @@ export const isPointTraversable = (x, y, offset) => {
 // ======================== Bresenham algorithm
 
 // Returns the list of points from p0 to p1
-export const bresenhamLineBetweenPoints = (p0, p1) => { // returns List<Point>
+export const bresenhamLineBetweenPoints = (p0, p1) => {
+  // returns List<Point>
   return bresenhamLine(p0.x, p0.y, p1.x, p1.y);
 };
 
 // Returns the list of points from (x0, y0) to (x1, y1) : List<Point>
-export const bresenhamLine = (x0, y0, x1, y1)  => {
+export const bresenhamLine = (x0, y0, x1, y1) => {
   const result = []; // array of points
 
   const steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
@@ -124,25 +96,31 @@ export const bresenhamLine = (x0, y0, x1, y1)  => {
   return result;
 };
 
-
 // ======================== Raycast algorithm
 
 export const normalize = (point, scale = 1) => {
   var norm = Math.sqrt(point.x * point.x + point.y * point.y);
-  if (norm != 0) { // as3 return 0,0 for a point of zero length
-    point.x = scale * point.x / norm;
-    point.y = scale * point.y / norm;
+  if (norm != 0) {
+    // as3 return 0,0 for a point of zero length
+    point.x = (scale * point.x) / norm;
+    point.y = (scale * point.y) / norm;
   }
 
   return point;
 };
 
-export const rayCast = (position, direction, rayLength, offset, debugOpts = { debugView: null , duration: 100 }) =>  {
+export const rayCast = (
+  position,
+  direction,
+  rayLength,
+  offset,
+  debugOpts = { debugView: null, duration: 100 }
+) => {
   // set result defaults
   const result = {
     doCollide: false,
     position: null,
-    distance: null,
+    distance: null
   };
 
   // Exit the function now if the ray length is 0
@@ -161,12 +139,13 @@ export const rayCast = (position, direction, rayLength, offset, debugOpts = { de
   const rayLine = bresenhamLineBetweenPoints(position, pos2);
 
   if (rayLine.length > 0) {
-    const startingAtPos = rayLine[0].x === position.x && rayLine[0].y === position.y;
+    const startingAtPos =
+      rayLine[0].x === position.x && rayLine[0].y === position.y;
 
     // get starting point, normal or reversed
     let rayPointIndex = startingAtPos ? 0 : rayLine.length - 1;
 
-    // Loop through all the points starting from "position"
+    // Loop through all the points starting from 'position'
     const ok = true;
     while (ok) {
       let rayPoint = rayLine[rayPointIndex];
@@ -183,11 +162,15 @@ export const rayCast = (position, direction, rayLength, offset, debugOpts = { de
       if (startingAtPos) {
         // iterate in forward direction
         rayPointIndex++;
-        if (rayPointIndex >= rayLine.length) { break; }
+        if (rayPointIndex >= rayLine.length) {
+          break;
+        }
       } else {
         // iterate on reversed direction
         rayPointIndex--;
-        if (rayPointIndex < 0) { break; }
+        if (rayPointIndex < 0) {
+          break;
+        }
       }
     }
   }
@@ -208,16 +191,26 @@ export const rayCast = (position, direction, rayLength, offset, debugOpts = { de
   return result;
 };
 
-
-export const drawNode = (x, y, color, size = 1, opts = { debugView: null, duration: 100 }) => {
-  const { debugView, duration }  = opts;
-  if (!debugView || duration === 0) { return; }
+export const drawNode = (
+  x,
+  y,
+  color,
+  size = 1,
+  opts = { debugView: null, duration: 100 }
+) => {
+  const { debugView, duration } = opts;
+  if (!debugView || duration === 0) {
+    return;
+  }
 
   let point = new View({
     superview: debugView,
     backgroundColor: color,
-    x: x - size / 2, y: y - size / 2, width: size, height: size,
-    zIndex: 9998,
+    x: x - size / 2,
+    y: y - size / 2,
+    width: size,
+    height: size,
+    zIndex: 9998
   });
 
   setTimeout(() => {
@@ -225,9 +218,6 @@ export const drawNode = (x, y, color, size = 1, opts = { debugView: null, durati
     point = null;
   }, duration);
 };
-
-
-
 
 // =========================================
 // Alternative bresenham algorithm
@@ -321,7 +311,3 @@ export const drawNode = (x, y, color, size = 1, opts = { debugView: null, durati
 
 //   return result;
 // };
-
-
-
-

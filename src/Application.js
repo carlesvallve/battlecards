@@ -11,7 +11,6 @@ import platform from 'platform';
 
 import loadingGroups from 'src/loadingGroups';
 
-
 export default class Application extends View {
   constructor (opts) {
     super(opts);
