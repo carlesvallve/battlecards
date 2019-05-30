@@ -10,7 +10,7 @@ import { blink } from 'src/lib/animations';
 export default class TitleScreen extends View {
 
   constructor () {
-    super();
+    super({});
     this.screen = getScreenDimensions();
     console.log('dimensions:', this.screen.width, this.screen.height);
 

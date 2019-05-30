@@ -4,8 +4,8 @@ import View from 'ui/View';
 
 export const getScreenDimensions = () => {
   const scale = device.width / 320;
-  const w = parseInt(device.screen.width / scale, 10);
-  const h = parseInt(device.screen.height / scale, 10);
+  const w = Math.round(device.screen.width / scale);
+  const h = Math.round(device.screen.height / scale);
   return { width: w, height: h };
 };
 

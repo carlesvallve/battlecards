@@ -2,15 +2,18 @@ import animate from 'animate';
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
-import { Actions } from 'src/lib/enums.js';
-import { getScreenDimensions, getRandomInt, getDistanceBetweenViews } from 'src/lib/utils';
+import { Actions } from 'src/lib/enums';
+import {
+  getScreenDimensions,
+  getRandomInt,
+  getDistanceBetweenViews,
+} from 'src/lib/utils';
 import sounds from 'src/lib/sounds';
 import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 
-
 export default class Stars extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();
     this.sc = opts.sc;
@@ -31,7 +34,7 @@ export default class Stars extends View {
     }
   }
 
-  createSprite ({ startX, startY }) {
+  createSprite({ startX, startY }) {
     const size = 6;
 
     const sprite = new ImageView({
@@ -57,7 +60,9 @@ export default class Stars extends View {
       .clear()
       .wait(300)
       .then(() => {
-        if (sprite.action === Actions.Run) { sprite.action = Actions.Idle; }
+        if (sprite.action === Actions.Run) {
+          sprite.action = Actions.Idle;
+        }
       })
       .wait(3000)
       .then(() => {
@@ -67,7 +72,7 @@ export default class Stars extends View {
     return sprite;
   }
 
-  tick (dt) {
+  tick(dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
@@ -111,7 +116,7 @@ export default class Stars extends View {
     }
   }
 
-  checkNinjaDistance (sprite) {
+  checkNinjaDistance(sprite) {
     if (this.ninja.action === Actions.Die) {
       return;
     }
@@ -123,24 +128,25 @@ export default class Stars extends View {
     }
   }
 
-  collect (sprite) {
+  collect(sprite) {
     this.removeSprite(sprite);
     sounds.playSound('combo_x' + getRandomInt(2, 6), 0.4);
     this.game.hud.emit('hud:updateStars', { ammount: 1 });
   }
 
-  die (sprite) {
-    animate(sprite).clear()
-    .now({ scale: sprite.style.scale }, 0, animate.linear)
-    .then({ scale: 0 }, 300, animate.linear)
-    .then(() => {
-      this.removeSprite(sprite);
-    });
+  die(sprite) {
+    animate(sprite)
+      .clear()
+      .now({ scale: sprite.style.scale }, 0, animate.linear)
+      .then({ scale: 0 }, 300, animate.linear)
+      .then(() => {
+        this.removeSprite(sprite);
+      });
   }
 
-  removeSprite (sprite) {
+  removeSprite(sprite) {
     sprite.removeFromSuperview();
-    for (let i in this.sprites ){
+    for (let i in this.sprites) {
       if (this.sprites[i] === sprite) {
         this.sprites.splice(i, 1);
         if (this.sprites.length === 0) {
@@ -151,7 +157,7 @@ export default class Stars extends View {
     }
   }
 
-  castRayDown (sprite, dx, debug = false) {
+  castRayDown(sprite, dx, debug = false) {
     const me = sprite.style;
     const up = 6;
     const forward = 0;
@@ -162,7 +168,7 @@ export default class Stars extends View {
       { x: 0, y: 1 },
       32,
       offset,
-      debug ? { debugView: this.parent, duration: 100 } : {}
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     if (hit && hit.distance <= up) {
@@ -177,7 +183,7 @@ export default class Stars extends View {
     }
   }
 
-  castRayForward (sprite, debug = false) {
+  castRayForward(sprite, dy, debug = false) {
     const me = sprite.style;
     const d = 6;
     const up = 6;
@@ -186,11 +192,11 @@ export default class Stars extends View {
     const dir = this.vx > 0 ? 1 : -1;
 
     const hit = rayCast(
-      { x: me.x + dir * 3, y: me.y -up },
+      { x: me.x + dir * 3, y: me.y - up },
       { x: dir, y: 0 },
       32,
       offset,
-      debug ? { debugView: this.parent, duration: 100 } : {}
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     if (hit && hit.distance <= d) {

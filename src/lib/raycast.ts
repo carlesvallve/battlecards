@@ -5,8 +5,8 @@ import {
   horizontalTileCount,
   verticalTileCount,
   tileSize,
-  getTile
-} from 'conf/levels/index';
+  getTile,
+} from 'src/conf/levels/index';
 
 // ======================== global point to tile point
 
@@ -99,7 +99,7 @@ export const bresenhamLine = (x0, y0, x1, y1) => {
 // ======================== Raycast algorithm
 
 export const normalize = (point, scale = 1) => {
-  var norm = Math.sqrt(point.x * point.x + point.y * point.y);
+  const norm = Math.sqrt(point.x * point.x + point.y * point.y);
   if (norm != 0) {
     // as3 return 0,0 for a point of zero length
     point.x = (scale * point.x) / norm;
@@ -114,13 +114,13 @@ export const rayCast = (
   direction,
   rayLength,
   offset,
-  debugOpts = { debugView: null, duration: 100 }
+  debugOpts = { enabled: false, debugView: null, duration: 100 },
 ) => {
   // set result defaults
   const result = {
     doCollide: false,
     position: null,
-    distance: null
+    distance: null,
   };
 
   // Exit the function now if the ray length is 0
@@ -196,10 +196,10 @@ export const drawNode = (
   y,
   color,
   size = 1,
-  opts = { debugView: null, duration: 100 }
+  opts = { enabled: false, debugView: null, duration: 100 },
 ) => {
-  const { debugView, duration } = opts;
-  if (!debugView || duration === 0) {
+  const { enabled, debugView, duration } = opts;
+  if (!enabled || !debugView || duration === 0) {
     return;
   }
 
@@ -210,7 +210,7 @@ export const drawNode = (
     y: y - size / 2,
     width: size,
     height: size,
-    zIndex: 9998
+    zIndex: 9998,
   });
 
   setTimeout(() => {

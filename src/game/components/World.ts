@@ -2,7 +2,7 @@ import animate from 'animate';
 import View from 'ui/View';
 import { getScreenDimensions, getRandomInt, debugPoint } from 'src/lib/utils';
 import { GameStates } from 'src/lib/enums';
-import level from 'conf/levels/index';
+import level from 'src/conf/levels/index';
 
 export default class World extends View {
   constructor (opts) {
@@ -16,7 +16,7 @@ export default class World extends View {
     this.left = this.center - this.walkableDistance;
     this.right = this.center + this.walkableDistance;
 
-    debugPoint();
+    debugPoint({});
   }
 
   init (ninja) {

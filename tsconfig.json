@@ -2,12 +2,43 @@
   "compilerOptions": {
     "target": "es6",
     "sourceMap": false,
-    // "allowJs": true,
+    "allowJs": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node"
+    "lib": ["dom", "es2018"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "strict": false,
+    "paths": {
+      "src/*": [
+        "./src/*",
+        "./node_modules/@blackstormlabs/timestep-core/src/*"
+      ],
+      "platforms/*": [
+        "./node_modules/@blackstormlabs/timestep-core/src/platforms/*"
+      ],
+      "ui/*": ["./node_modules/@blackstormlabs/timestep-core/src/ui/*"],
+      "movieclip/*": [
+        "./node_modules/@blackstormlabs/timestep-core/src/movieclip/*"
+      ]
+    }
   },
-  "include": [
-    "src",
-    "tests"
-  ]
+  "include": ["src/*", "src/**/*", "tests/*", "tests/**/*"]
 }
+
+// {
+//   "compilerOptions": {
+//     "target": "es6",
+//     "sourceMap": false,
+//     // "allowJs": true,
+//     "experimentalDecorators": true,
+//     "moduleResolution": "node"
+//   },
+//   "include": [
+//     "src",
+//     "tests"
+//   ]
+// }

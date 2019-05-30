@@ -31,11 +31,11 @@ export default class Tile extends ImageView {
     for (let y = 0; y < imageData.height; y++) {
       solidityMap[y] = [];
       for (let x = 0; x < imageData.width; x++) {
-        var index = (x + y * imageData.width) * 4;
-        var r = imageData.data[index];
-        var g = imageData.data[index + 1];
-        var b = imageData.data[index + 2];
-        var a = imageData.data[index + 3];
+        const index = (x + y * imageData.width) * 4;
+        const r = imageData.data[index];
+        const g = imageData.data[index + 1];
+        const b = imageData.data[index + 2];
+        const a = imageData.data[index + 3];
         // console.log(r, g, b, a);
 
         // if the pixel is not transparent set the solidity map value to "true"

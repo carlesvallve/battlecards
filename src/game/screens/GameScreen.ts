@@ -23,8 +23,8 @@ import Vector from '../../lib/vector';
 
 
 export default class GameScreen extends View {
-  constructor (opts) {
-    super(opts);
+  constructor () {
+    super({});
     this.screen = getScreenDimensions();
     this.generalScale = 1.75;
 
@@ -130,7 +130,7 @@ export default class GameScreen extends View {
   }
 
   gameOver () {
-    this.gameState = GameStates.gameOver;
+    this.gameState = GameStates.GameOver;
     sounds.playSong('loose');
     this.hud.emit('hud:gameover');
   }
@@ -275,7 +275,7 @@ export default class GameScreen extends View {
     }
 
     // if we are in 'continue' screen
-    if (this.gameState === GameStates.gameOver) {
+    if (this.gameState === GameStates.GameOver) {
       // actually, if we click here means we want to continue.
       // so respawn the ninja and refill one life!
       if (this.hud.gameOver.time <= 8) {

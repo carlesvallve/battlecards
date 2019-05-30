@@ -4,9 +4,8 @@ import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 
-
 export default class Ninja extends Entity {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
 
     this.gravity = 0.25;
@@ -41,8 +40,7 @@ export default class Ninja extends Entity {
     });
   }
 
-
-  createSprite () {
+  createSprite() {
     this.sprite = new SpriteView({
       parent: this,
       width: 16,
@@ -62,17 +60,16 @@ export default class Ninja extends Entity {
     // debugPoint(this);
   }
 
-  init () {
+  init() {
     this.action = Actions.Idle;
     this.respawning = false;
     this.dir = 1;
     this.speed = 0.1;
     this.color = 'black';
 
-    this.style.x = this.game.terrain.center.x, // this.game.world.center;
-    this.style.y = this.game.terrain.center.y, // this.screen.height / 2;
-
-    animate(this).clear();
+    (this.style.x = this.game.terrain.center.x), // this.game.world.center;
+      (this.style.y = this.game.terrain.center.y), // this.screen.height / 2;
+      animate(this).clear();
 
     this.setDirection(this.dir);
     this.idle();
@@ -81,31 +78,41 @@ export default class Ninja extends Entity {
     this.respawn();
   }
 
-  setDirection (dir) {
+  setDirection(dir) {
     this.dir = dir;
     this.style.flipX = dir === -1;
   }
 
-  idle () {
-    if (this.action === Actions.Idle) { return; }
+  idle() {
+    if (this.action === Actions.Idle) {
+      return;
+    }
     this.action = Actions.Idle;
     this.sprite.setFramerate(6);
     this.sprite.startAnimation('idle', { loop: true });
     animate(this).clear();
   }
 
-  run () {
-    if (this.action === Actions.Die) { return; }
-    if (this.action === Actions.Run) { return; }
+  run() {
+    if (this.action === Actions.Die) {
+      return;
+    }
+    if (this.action === Actions.Run) {
+      return;
+    }
     this.action = Actions.Run;
     this.sprite.setFramerate(10);
     this.sprite.startAnimation('run', { loop: true });
     this.setDirection(1);
   }
 
-  jump () {
-    if (this.action === Actions.Die) { return; }
-    if (this.action === Actions.Jump) { return; }
+  jump() {
+    if (this.action === Actions.Die) {
+      return;
+    }
+    if (this.action === Actions.Jump) {
+      return;
+    }
     this.action = Actions.Jump;
     this.setDirection(1);
     this.sprite.setFramerate(12);
@@ -113,12 +120,14 @@ export default class Ninja extends Entity {
       loop: false,
       callback: () => {
         this.idle();
-      }
+      },
     });
   }
 
-  attack ({ target }) {
-    if (this.action === Actions.Die || target.action === Actions.Attack) { return; }
+  attack({ target }) {
+    if (this.action === Actions.Die || target.action === Actions.Attack) {
+      return;
+    }
 
     this.action = Actions.Attack;
     this.sprite.setFramerate(12);
@@ -129,19 +138,29 @@ export default class Ninja extends Entity {
         if (this.goal) {
           this.moveTo({ x: this.goal.x, y: this.goal.y });
         }
-      }
+      },
     });
 
     // play attack sfx
     animate(this)
       .clear()
-      .wait(0).then(() => { sounds.playSound('swap'); })
-      .wait(150).then(() => { sounds.playSound('fall', 1); });
+      .wait(0)
+      .then(() => {
+        sounds.playSound('swap');
+      })
+      .wait(150)
+      .then(() => {
+        sounds.playSound('fall', 1);
+      });
   }
 
-  die () {
-    if (this.game.gameState === GameStates.Pause) { return; }
-    if (this.action === Actions.Die || this.respawning) { return; }
+  die() {
+    if (this.game.gameState === GameStates.Pause) {
+      return;
+    }
+    if (this.action === Actions.Die || this.respawning) {
+      return;
+    }
     this.idle();
     this.action = Actions.Die;
 
@@ -149,28 +168,31 @@ export default class Ninja extends Entity {
 
     // wait and die
     const anim = animate(this)
-    .clear()
-    .wait(100).then(() => {
-      this.game.hud.onResume();
-      sounds.playSound('explode');
-      this.game.emit('game:explosion', { slime: this });
-      this.hide();
-    })
-    .wait(500).then(() => {
-      this.game.hud.onResume();
-      // if no more hearts, gameover!
-      if (this.game.hud.hearts.length === 0) {
-        anim.clear();
-        this.game.emit('game:gameover');
-      }
-    })
-    .wait(500).then(() => {
-      // respawn ninja if we have hearts left
-      this.respawn();
-    });
+      .clear()
+      .wait(100)
+      .then(() => {
+        this.game.hud.onResume();
+        sounds.playSound('explode');
+        this.game.emit('game:explosion', { slime: this });
+        this.hide();
+      })
+      .wait(500)
+      .then(() => {
+        this.game.hud.onResume();
+        // if no more hearts, gameover!
+        if (this.game.hud.hearts.length === 0) {
+          anim.clear();
+          this.game.emit('game:gameover');
+        }
+      })
+      .wait(500)
+      .then(() => {
+        // respawn ninja if we have hearts left
+        this.respawn();
+      });
   }
 
-  respawn () {
+  respawn() {
     sounds.playSound('destroy');
     this.respawning = true;
     this.style.opacity = 0.6;
@@ -179,23 +201,52 @@ export default class Ninja extends Entity {
 
     const t = 100;
     animate({})
-      .wait(t).then(() => { this.style.opacity = 0; })
-      .wait(t).then(() => { this.style.opacity = 0.6; })
-      .wait(t).then(() => { this.style.opacity = 0; })
-      .wait(t).then(() => { this.style.opacity = 0.6; })
-      .wait(t).then(() => { this.style.opacity = 0; })
-      .wait(t).then(() => { this.style.opacity = 0.6; })
-      .wait(t).then(() => { this.style.opacity = 0; })
-      .wait(t).then(() => { this.style.opacity = 0.6; })
-      .wait(t).then(() => {
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0.6;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0.6;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0.6;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0;
+      })
+      .wait(t)
+      .then(() => {
+        this.style.opacity = 0.6;
+      })
+      .wait(t)
+      .then(() => {
         this.style.opacity = 1;
         this.respawning = false;
       });
   }
 
-  moveTo ({ x, y }) {
-    if (this.action === Actions.Attack) { return; }
-    if (this.action === Actions.Die && !this.style.visible) { return; }
+  moveTo({ x, y }) {
+    if (this.action === Actions.Attack) {
+      return;
+    }
+    if (this.action === Actions.Die && !this.style.visible) {
+      return;
+    }
     this.setDirection(x >= this.style.x ? 1 : -1);
 
     const speed = 10; // bigger is slower
@@ -208,17 +259,20 @@ export default class Ninja extends Entity {
 
     this.goal = { x, y };
 
-    animate(this).clear()
-    .now({ x: this.style.x }, 0, animate.linear)
-    .then({ x: x }, duration, animate.linear)
-    .then(() => {
-      this.idle();
-      this.goal = null;
-    });
+    animate(this)
+      .clear()
+      .now({ x: this.style.x }, 0, animate.linear)
+      .then({ x: x }, duration, animate.linear)
+      .then(() => {
+        this.idle();
+        this.goal = null;
+      });
   }
 
-  jumpTo ({ x, y }) {
-    if (this.action === Actions.Die) { return; }
+  jumpTo({ x, y }) {
+    if (this.action === Actions.Die) {
+      return;
+    }
     // if (this.action === Actions.Jump) { return; }
 
     this.vy = -16;
@@ -231,21 +285,19 @@ export default class Ninja extends Entity {
     this.sprite.startAnimation('roll', { loop: true });
     this.setDirection(x >= this.style.x ? 1 : -1);
 
-    animate(this).clear()
-    .then({ x: x, y: y }, duration, animate.linear);
+    animate(this)
+      .clear()
+      .then({ x: x, y: y }, duration, animate.linear);
     // // .then(() => {
     // //   this.idle();
     // // });
   }
 
-
-  tick (dt) {
+  tick(dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
 
     super.tick(dt);
   }
-
 }
-

@@ -1,7 +1,7 @@
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
-import { GameStates, Actions } from 'src/lib/enums.js';
+import { GameStates, Actions } from 'src/lib/enums';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 
 

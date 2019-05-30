@@ -99,7 +99,7 @@ export default class Explosion extends View {
       { x: 0, y: 1 },
       32,
       offset,
-      debug ? { debugView: this.parent, duration: 100 } : {}
+      { enabled: debug, debugView: this.parent, duration: 100 }
     );
 
     if (hit && hit.distance <= up) {
@@ -114,7 +114,7 @@ export default class Explosion extends View {
     }
   }
 
-  castRayForward (sprite, debug = false) {
+  castRayForward (sprite, dy, debug = false) {
     const me = sprite.style;
     const d = 2;
     const up = 2;
@@ -125,7 +125,7 @@ export default class Explosion extends View {
       { x: this.vx > 0 ? 1 : -1, y: 0 },
       16,
       offset,
-      debug ? { debugView: this.parent, duration: 100 } : {}
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     if (hit && hit.distance <= d) {

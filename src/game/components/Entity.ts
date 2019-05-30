@@ -1,15 +1,10 @@
-import animate from 'animate';
 import View from 'ui/View';
-import SpriteView from 'ui/SpriteView';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
-import { GameStates, Actions } from 'src/lib/enums';
-import sounds from 'src/lib/sounds';
-
-import { level, rayCast, debugRay } from 'src/lib/raycast';
-
+import { GameStates } from 'src/lib/enums';
+import { rayCast } from 'src/lib/raycast';
 
 export default class Entity extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();
     this.scale = opts.scale;
@@ -26,7 +21,7 @@ export default class Entity extends View {
     debugPoint(this);
   }
 
-  tick (dt) {
+  tick(dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
@@ -49,8 +44,10 @@ export default class Entity extends View {
   // Raycasting logic
   // ===============================================================
 
-  castRayDown (dx, debug = false) {
-    if (this.vy < 0) { return; }
+  castRayDown(dx, debug = false) {
+    if (this.vy < 0) {
+      return;
+    }
 
     const me = this.style;
     const up = 8;
@@ -60,9 +57,9 @@ export default class Entity extends View {
     const hit = rayCast(
       { x: me.x - forward, y: me.y - up }, // position,
       { x: 0, y: 1 }, // direction,
-      128,            // rayLength,
+      128, // rayLength,
       offset,
-      debug ? { debugView: this.parent, duration: 100 } : {}
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     if (hit && hit.distance <= up) {
@@ -80,18 +77,18 @@ export default class Entity extends View {
     }
   }
 
-  castRayForward (dy, debug = false) {
+  castRayForward(dy, debug = false) {
     const me = this.style;
     const d = 8;
     const up = 8;
     const offset = this.game.terrain.offset;
 
     const hit = rayCast(
-      { x: me.x, y: me.y -up },
+      { x: me.x, y: me.y - up },
       { x: this.dir, y: 0 },
       16,
       offset,
-      debug ? { debugView: this.parent, duration: 100 } : {}
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     if (hit && hit.distance <= d) {
@@ -111,7 +108,7 @@ export default class Entity extends View {
     }
   }
 
-  castRayClimb (dx, debug = false) {
+  castRayClimb(dx, debug = false) {
     const me = this.style;
     const up = 24;
     const offset = this.game.terrain.offset;
@@ -122,12 +119,12 @@ export default class Entity extends View {
       { x: 0, y: 1 },
       32,
       offset,
-      {} // { debugView: this.parent, duration: 100 }
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     // if there is a platform and the distance is not to high, we can climb
     if (hit) {
-      const dy= Math.abs(hit.position.y - me.y);
+      const dy = Math.abs(hit.position.y - me.y);
       if (dy <= 16) {
         // castRayDown will automatically put us on the upper platform
         // so just return hasClimbed value
@@ -137,6 +134,4 @@ export default class Entity extends View {
 
     return false;
   }
-
 }
-

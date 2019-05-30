@@ -61,56 +61,8 @@ export default class Application extends View {
           });
         // });
       });
-
-      // // fake loading of initial assets
-      // setTimeout(() => {
-      //   // console.log('Finished loading assets...');
-      //   setLoadingProgress(100);
-      //   clearInterval(progressUpdateHandle);
-      //   resolve();
-      // }, 1000);
     });
   }
-
-  // _loadAssets () {
-  //   // console.log('Start loading assets...');
-  //   // var initialAssets = loadingGroups.initialAssets;
-  //   var loadingProgress = 0;
-
-  //   function setLoadingProgress (progress) {
-  //     loadingProgress = progress;
-  //     platform.setLoadingProgress(progress);
-  //   }
-
-  //   function updateLoadingProgress () {
-  //     // Tricking the user by making the loading look fast
-  //     // The progress incrementally increases by 0.5% every tick until next progress level
-  //     // Capping at 99% to make sure we do not display 100% while game not entirely loaded
-  //     // var nextProgress = initialAssets.nextProgress * 100;
-  //     var progressStep = 0.5;
-  //     // console.log('updateLoadingProgress:', loadingProgress + progressStep);
-  //     setLoadingProgress(Math.min(99, loadingProgress + progressStep));
-  //   }
-
-  //   return new Promise ((resolve) => {
-  //     var progressUpdateHandle = setInterval(() => updateLoadingProgress(), 16);
-  //     // fake loading of initial assets
-  //     setTimeout(() => {
-  //       // console.log('Finished loading assets...');
-  //       setLoadingProgress(100);
-  //       clearInterval(progressUpdateHandle);
-  //       resolve();
-  //     }, 1000);
-
-  //     // load initial assets
-  //     //   initialAssets.load(() => {
-  //     //     setLoadingProgress(100);
-  //     //     clearInterval(progressUpdateHandle);
-  //     //     // entryStepComplete('initialAssetsLoaded');
-  //     //     resolve();
-  //     //   });
-  //   });
-  // }
 
   startGame () {
     // console.log('START GAME!');

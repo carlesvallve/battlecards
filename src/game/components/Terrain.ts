@@ -4,7 +4,7 @@ import Image from 'ui/resource/Image';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import Tile from 'src/game/components/Tile';
 
-import level from 'conf/levels/index';
+import level from 'src/conf/levels/index';
 
 
 export default class Terrain extends View {
