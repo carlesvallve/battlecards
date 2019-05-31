@@ -2,8 +2,15 @@ import AudioManager from 'AudioManager';
 import soundConfig from 'src/conf/soundConfig';
 
 class Sounds {
+  playingSong: string;
+  music: any;
+  sfx: any;
+  _musicMuted: boolean;
+  _sfxMuted: boolean;
+  _musicVolume: number;
+  _sfxVolume: number;
 
-  constructor () {
+  constructor() {
     this.playingSong = '';
 
     this._musicMuted = false;
@@ -13,67 +20,67 @@ class Sounds {
 
     this.music = new AudioManager({
       path: soundConfig.musicPath,
-      files: soundConfig.music
+      files: soundConfig.music,
     });
 
     this.sfx = new AudioManager({
       path: soundConfig.sfxPath,
-      files: soundConfig.sfx
+      files: soundConfig.sfx,
     });
   }
 
-  playSound (name, volume = 1) {
+  playSound(name, volume = 1) {
     if (this.sfxMuted) return;
     this.sfx.setVolume(name, this._sfxVolume * volume);
     this.sfx.play(name);
   }
 
-  stopSound (name) {
+  stopSound(name) {
     this.sfx.stop(name);
   }
 
-  playSong (name) {
+  playSong(name) {
     this.playingSong = name;
     this.music.setVolume(name, this._musicVolume);
     this.music.playBackgroundMusic(name);
   }
 
-  resumeSong () {
+  resumeSong() {
     if (this.playingSong) {
       this.playSong(this.playingSong);
     }
   }
 
-  pauseSong () {
+  pauseSong() {
     this.music.pauseBackgroundMusic();
   }
 
-  stopSong () {
+  stopSong() {
     if (this.playingSong) {
       this.music.stop(this.playingSong);
       this.playingSong = '';
     }
   }
 
-  get sfxMuted () {
+  get sfxMuted() {
     return this._sfxMuted;
   }
 
-  set sfxMuted (value) {
+  set sfxMuted(value) {
     this._sfxMuted = value;
     this.sfx.setEffectsMuted(value);
   }
 
-  get musicMuted () {
+  get musicMuted() {
     return this._musicMuted;
   }
 
-  set musicMuted (value) {
+  set musicMuted(value) {
     this._musicMuted = value;
     this.music.setMusicMuted(value);
   }
 
-  set musicVolume (value) {
+  set musicVolume(value) {
     if (value === 0) {
       this.musicMuted = true;
     } else {
@@ -86,11 +93,11 @@ class Sounds {
     this._musicVolume = value;
   }
 
-  get musicVolume () {
+  get musicVolume() {
     return this._musicVolume;
   }
 
-  set sfxVolume (value) {
+  set sfxVolume(value) {
     if (value === 0) {
       this.sfxMuted = true;
     } else if (this._sfxVolume === 0) {
@@ -100,7 +107,7 @@ class Sounds {
     this._sfxVolume = value;
   }
 
-  get sfxVolume () {
+  get sfxVolume() {
     return this._sfxVolume;
   }
 }
