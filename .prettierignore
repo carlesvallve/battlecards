@@ -1,5 +1,8 @@
 build/*
+imageCache-release/*
+resources/*
 
 .eslintrc.js
 package-lock.json
+timestep-workspace.config.json
 src/state/utils/immutable.ts
