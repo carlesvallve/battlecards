@@ -5,7 +5,7 @@ import { GameStates } from 'src/lib/enums';
 import level from 'src/conf/levels/index';
 
 export default class World extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();
     this.game = opts.parent;
@@ -19,7 +19,7 @@ export default class World extends View {
     debugPoint({});
   }
 
-  init (ninja) {
+  init(ninja) {
     this.centerAt(ninja);
 
     const t = 500;
@@ -30,36 +30,46 @@ export default class World extends View {
       .then({ opacity: 1, y: 0 }, t, easing);
   }
 
-  getFloorY (x) {
+  getFloorY(x) {
     let floorY = 0 + this.screen.height / 2;
-    if (x < this.left - 16 || x > this.right + 16) { floorY += 10; }
+    if (x < this.left - 16 || x > this.right + 16) {
+      floorY += 10;
+    }
     return floorY;
   }
 
-  getRandomPos () {
+  getRandomPos() {
     const { mapData, tileSize } = level;
     const ninja = this.game.ninja;
 
     const y = getRandomInt(this.screen.height / 3, -4 + this.screen.height / 2);
 
-    let left = ninja.style.x - getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
-    if (left < tileSize) { left = tileSize; }
-    let right = ninja.style.x + getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
-    if (right > (mapData[0].length - 1) * tileSize) { right = (mapData[0].length - 1) * tileSize; }
+    let left =
+      ninja.style.x -
+      getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
+    if (left < tileSize) {
+      left = tileSize;
+    }
+    let right =
+      ninja.style.x +
+      getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
+    if (right > (mapData[0].length - 1) * tileSize) {
+      right = (mapData[0].length - 1) * tileSize;
+    }
 
     const x = getRandomInt(1, 100) <= 50 ? left : right;
 
     return { x, y };
   }
 
-  centerAt (ninja) {
+  centerAt(ninja) {
     const targetX = -ninja.style.x + this.screen.width / 2;
     const targetY = -ninja.style.y + this.screen.height / 2;
     this.style.x = targetX;
     this.style.y = targetY;
   }
 
-  interpolate (ninja) {
+  interpolate(ninja) {
     const targetX = -ninja.style.x + this.screen.width / 2;
     const targetY = -ninja.style.y + this.screen.height / 2;
     const dx = (targetX - this.style.x) * this.elasticity;
@@ -68,7 +78,7 @@ export default class World extends View {
     this.style.y += dy;
   }
 
-  tick (dt) {
+  tick(dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }

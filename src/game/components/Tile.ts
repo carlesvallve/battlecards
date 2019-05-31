@@ -2,7 +2,7 @@ import ImageView from 'ui/ImageView';
 import { debugPoint } from 'src/lib/utils';
 
 export default class Tile extends ImageView {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
 
     this.parent = opts.parent;
@@ -11,7 +11,7 @@ export default class Tile extends ImageView {
     debugPoint(this);
   }
 
-  buildSolidityMap (size) {
+  buildSolidityMap(size) {
     const solidityMap = [];
     for (let y = 0; y < size; y++) {
       solidityMap[y] = [];
@@ -23,7 +23,7 @@ export default class Tile extends ImageView {
     return solidityMap;
   }
 
-  buildSolidityMap2 (imageData) {
+  buildSolidityMap2(imageData) {
     // console.log('>>>', imageData);
 
     const solidityMap = []; // new bool[bitmap.Width, bitmap.Height];

@@ -13,17 +13,17 @@ import Explosion from 'src/game/components/Explosion';
 import Hud from 'src/game/components/Hud';
 import sounds from 'src/lib/sounds';
 
+import Vector from 'src/lib/vector';
 import { GameStates, Actions } from 'src/lib/enums';
 import {
   getScreenDimensions,
   getRandomFloat,
   getRandomInt,
-  getRandomItemFromArray } from 'src/lib/utils';
-import Vector from '../../lib/vector';
-
+  getRandomItemFromArray,
+} from 'src/lib/utils';
 
 export default class GameScreen extends View {
-  constructor () {
+  constructor() {
     super({});
     this.screen = getScreenDimensions();
     this.generalScale = 1.75;
@@ -68,7 +68,7 @@ export default class GameScreen extends View {
       parent: this.world,
       x: this.world.center,
       y: this.screen.height / 2,
-      scale:this.generalScale,
+      scale: this.generalScale,
     });
 
     // slimes
@@ -96,7 +96,7 @@ export default class GameScreen extends View {
     this.on('game:gameover', this.gameOver.bind(this));
   }
 
-  init () {
+  init() {
     this.gameState = GameStates.Play;
     sounds.playSong('dubesque');
 
@@ -122,20 +122,20 @@ export default class GameScreen extends View {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    animate({}).
-      wait(this.options.slimeSpawnDelay)
+    animate({})
+      .wait(this.options.slimeSpawnDelay)
       .then(() => {
         this.createSlime(this.world.getRandomPos());
       });
   }
 
-  gameOver () {
+  gameOver() {
     this.gameState = GameStates.GameOver;
     sounds.playSong('loose');
     this.hud.emit('hud:gameover');
   }
 
-  createSlime (pos) {
+  createSlime(pos) {
     if (this.gameState === GameStates.Pause) {
       return;
     }
@@ -163,7 +163,7 @@ export default class GameScreen extends View {
       });
   }
 
-  explosion ({ slime }) {
+  explosion({ slime }) {
     // escape if no slime exist
     if (!slime) {
       return;
@@ -193,8 +193,8 @@ export default class GameScreen extends View {
     slime = null;
   }
 
-  removeSlimeFromArray (slime) {
-    for (let i in this.slimes ){
+  removeSlimeFromArray(slime) {
+    for (let i in this.slimes) {
       if (this.slimes[i] === slime) {
         this.slimes.splice(i, 1);
         break;
@@ -202,7 +202,7 @@ export default class GameScreen extends View {
     }
   }
 
-  spawnChest ({ slime }) {
+  spawnChest({ slime }) {
     // escape if no slime exist
     if (!slime) {
       return;
@@ -218,7 +218,7 @@ export default class GameScreen extends View {
     });
   }
 
-  spawnStars ({ chest }) {
+  spawnStars({ chest }) {
     // escape if no chest exist
     if (!chest) {
       return;
@@ -235,7 +235,9 @@ export default class GameScreen extends View {
 
     new Stars({
       parent: this.world,
-      backgroundColor: 'yellow', width: 20, height: 20,
+      backgroundColor: 'yellow',
+      width: 20,
+      height: 20,
       sc: this.generalScale,
       max: getRandomInt(1, 3),
       startX: chest.style.x,
@@ -246,7 +248,7 @@ export default class GameScreen extends View {
 
   // ======================== game input =======================
 
-  setInput () {
+  setInput() {
     this.inputView = new InputView({
       parent: this,
       zIndex: 998,
@@ -265,7 +267,7 @@ export default class GameScreen extends View {
     // this.inputView.registerHandlerForDragFinish((dx, dy) => this.onDragFinish(dx, dy));
   }
 
-  onTap (x, y) {
+  onTap(x, y) {
     // console.log('onTap', x, y);
 
     // clicking anywhere while paused will resume the game
@@ -302,7 +304,7 @@ export default class GameScreen extends View {
   //   }
   // }
 
-  onDrag (dx, dy) {
+  onDrag(dx, dy) {
     // first attempt on jump feature
     const d = 16;
     const vec = new Vector(dx, dy).multiplyScalar(d).limit(64);
@@ -319,5 +321,4 @@ export default class GameScreen extends View {
   // }
 
   // ===================================================================
-
 }

@@ -3,9 +3,8 @@ import View from 'ui/View';
 import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 
-
 export default class Hud extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();
@@ -14,7 +13,7 @@ export default class Hud extends View {
     this.createGameOverLabels();
   }
 
-  createGameOverLabels () {
+  createGameOverLabels() {
     this.gameoverLabel = new FixedTextView({
       parent: this,
       centerOnOrigin: true,
@@ -81,8 +80,7 @@ export default class Hud extends View {
     this.hide();
   }
 
-
-  init () {
+  init() {
     this.gameoverLabel.style.opacity = 0;
     this.continueLabel.style.opacity = 0;
     this.continueNumber.style.opacity = 0;
@@ -103,16 +101,16 @@ export default class Hud extends View {
     // continue label
     y = 28 + this.screen.height * 0.225;
     animate(this.continueLabel)
-    .clear()
-    .now({ y: y + 10, opacity: 0 }, 0, easing)
-    .then({ y: y + 0, opacity: 1 }, t, easing);
+      .clear()
+      .now({ y: y + 10, opacity: 0 }, 0, easing)
+      .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // continue number
     y = 72 + this.screen.height * 0.225;
     animate(this.continueNumber)
-    .clear()
-    .now({ y: y + 10, opacity: 0 }, 0, easing)
-    .then({ y: y + 0, opacity: 1 }, t, easing);
+      .clear()
+      .now({ y: y + 10, opacity: 0 }, 0, easing)
+      .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // countdown
     this.time = 9;
@@ -129,7 +127,7 @@ export default class Hud extends View {
     }, 500);
   }
 
-  hide () {
+  hide() {
     this.gameoverLabel.hide();
     this.continueLabel.hide();
     this.continueNumber.hide();
@@ -137,5 +135,4 @@ export default class Hud extends View {
       clearInterval(this.interval);
     }
   }
-
 }

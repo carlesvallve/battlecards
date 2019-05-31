@@ -4,9 +4,8 @@ import Image from 'ui/resource/Image';
 import { GameStates, Actions } from 'src/lib/enums';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 
-
 export default class Chest extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();
     this.sc = opts.sc;
@@ -28,7 +27,7 @@ export default class Chest extends View {
     this.vy = getRandomInt(-24, -12) * 0.75;
   }
 
-  createSprite () {
+  createSprite() {
     const size = 10;
 
     const sprite = new ImageView({
@@ -42,13 +41,13 @@ export default class Chest extends View {
       image: new Image({ url: 'resources/images/8bit-ninja/chest-closed.png' }),
     });
 
-    sprite.style.offsetX = (-size / 2);
+    sprite.style.offsetX = -size / 2;
     sprite.style.offsetY = -size;
 
     return sprite;
   }
 
-  tick (dt) {
+  tick(dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
@@ -88,10 +87,9 @@ export default class Chest extends View {
     if (me.y === floorY) {
       this.checkNinjaDistance();
     }
-
   }
 
-  checkNinjaDistance () {
+  checkNinjaDistance() {
     if (this.ninja.action === Actions.Die) {
       return;
     }
@@ -104,7 +102,7 @@ export default class Chest extends View {
     }
   }
 
-  die () {
+  die() {
     this.game.emit('game:spawnStars', { chest: this });
     this.removeFromSuperview();
   }

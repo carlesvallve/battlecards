@@ -6,9 +6,8 @@ import Tile from 'src/game/components/Tile';
 
 import level from 'src/conf/levels/index';
 
-
 export default class Terrain extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();
     this.game = opts.parent.game;
@@ -21,11 +20,17 @@ export default class Terrain extends View {
     debugPoint(this);
   }
 
-  createMap () {
+  createMap() {
     const tileImages = {
-      topLeft: new Image({ url: 'resources/images/8bit-ninja/terrain-top-left.png' }),
-      topRight: new Image({ url: 'resources/images/8bit-ninja/terrain-top-right.png' }),
-      center: new Image({ url: 'resources/images/8bit-ninja/terrain-center.png' }),
+      topLeft: new Image({
+        url: 'resources/images/8bit-ninja/terrain-top-left.png',
+      }),
+      topRight: new Image({
+        url: 'resources/images/8bit-ninja/terrain-top-right.png',
+      }),
+      center: new Image({
+        url: 'resources/images/8bit-ninja/terrain-center.png',
+      }),
       lava: new Image({ url: 'resources/images/8bit-ninja/lava-1.png' }),
     };
 
@@ -37,12 +42,12 @@ export default class Terrain extends View {
 
     this.offset = {
       x: this.game.world.left - tileSize,
-      y: this.screen.height / 2 - mapWidth * tileSize / 2
+      y: this.screen.height / 2 - (mapWidth * tileSize) / 2,
     };
 
     this.center = {
-      x: this.offset.x + mapWidth * tileSize / 2,
-      y: this.offset.y + mapWidth * tileSize / 2
+      x: this.offset.x + (mapWidth * tileSize) / 2,
+      y: this.offset.y + (mapWidth * tileSize) / 2,
     };
 
     const mapBox = new View({
@@ -51,7 +56,7 @@ export default class Terrain extends View {
       width: mapWidth * tileSize,
       height: mapHeight * tileSize,
       x: this.offset.x,
-      y: this.offset.y ,
+      y: this.offset.y,
     });
 
     const map = [];
@@ -71,7 +76,7 @@ export default class Terrain extends View {
             height: tileSize,
             x: tileOffset.x + x * tileSize,
             y: tileOffset.y + y * tileSize,
-            image:tileImages.center,
+            image: tileImages.center,
           });
         }
       }
@@ -99,42 +104,50 @@ export default class Terrain extends View {
     level.map = map;
   }
 
-  createTiles () {
+  createTiles() {
     const tileImages = {
       lava: new Image({ url: 'resources/images/8bit-ninja/lava-1.png' }),
-      ground: 'resources/images/8bit-ninja/terrain-center.png'
+      ground: 'resources/images/8bit-ninja/terrain-center.png',
     };
 
-    const getTileType = (tx, x ,y, size) => {
-      if (y === 0 && (
-          tx + x * size < this.game.world.left - size ||
-          tx + x * size >= this.game.world.right + size
-      )) {
+    const getTileType = (tx, x, y, size) => {
+      if (
+        y === 0 &&
+        (tx + x * size < this.game.world.left - size ||
+          tx + x * size >= this.game.world.right + size)
+      ) {
         return 'lava';
       }
 
-      if (y > 0) { return 'ground'; }
+      if (y > 0) {
+        return 'ground';
+      }
       return null;
     };
 
     const size = 10;
 
     const tilesInScreen = Math.ceil(this.screen.width / size);
-    const tilesInWalkableDistance = 2 + ((this.game.world.walkableDistance * 2) / size);
+    const tilesInWalkableDistance =
+      2 + (this.game.world.walkableDistance * 2) / size;
 
-    const tx = (this.game.world.left - size) - (size * (tilesInScreen / 2));
+    const tx = this.game.world.left - size - size * (tilesInScreen / 2);
     const maxX = tilesInScreen + tilesInWalkableDistance;
-    const maxY = Math.ceil((this.screen.height / 2) / size);
+    const maxY = Math.ceil(this.screen.height / 2 / size);
 
     for (let y = 0; y < maxY; y++) {
       for (let x = 0; x < maxX; x++) {
         const type = getTileType(tx, x, y, size);
-        if (type === null) { continue; }
+        if (type === null) {
+          continue;
+        }
         let img = tileImages[type];
 
         // get y by tile type
-        let yy = y * (size) + this.screen.height / 2;
-        if (type === 'lava') { yy += 4; }
+        let yy = y * size + this.screen.height / 2;
+        if (type === 'lava') {
+          yy += 4;
+        }
 
         new ImageView({
           parent: this,
@@ -148,21 +161,31 @@ export default class Terrain extends View {
     }
   }
 
-  createPlatform () {
+  createPlatform() {
     const tileImages = {
-      left: new Image({ url: 'resources/images/8bit-ninja/terrain-top-left.png' }),
-      right: new Image({ url: 'resources/images/8bit-ninja/terrain-top-right.png' }),
-      center: new Image({ url: 'resources/images/8bit-ninja/terrain-center.png' }),
+      left: new Image({
+        url: 'resources/images/8bit-ninja/terrain-top-left.png',
+      }),
+      right: new Image({
+        url: 'resources/images/8bit-ninja/terrain-top-right.png',
+      }),
+      center: new Image({
+        url: 'resources/images/8bit-ninja/terrain-center.png',
+      }),
     };
 
     const size = 10;
     const tx = this.game.world.left - size;
-    const max =  2 + ((this.game.world.walkableDistance * 2) / size);
+    const max = 2 + (this.game.world.walkableDistance * 2) / size;
 
     for (let i = 0; i < max; i++) {
       let img = tileImages.center;
-      if (i === 0) { img = tileImages.left; }
-      if (i === max - 1) { img = tileImages.right; }
+      if (i === 0) {
+        img = tileImages.left;
+      }
+      if (i === max - 1) {
+        img = tileImages.right;
+      }
 
       new Tile({
         parent: this,
@@ -174,5 +197,4 @@ export default class Terrain extends View {
       });
     }
   }
-
 }

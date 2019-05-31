@@ -5,9 +5,9 @@ export const GameStates = {
 };
 
 export const Actions = {
-    Idle: 'Idle',
-    Run: 'Run',
-    Jump: 'Jump',
-    Attack: 'Attack',
-    Die: 'Die',
-  };
+  Idle: 'Idle',
+  Run: 'Run',
+  Jump: 'Jump',
+  Attack: 'Attack',
+  Die: 'Die',
+};

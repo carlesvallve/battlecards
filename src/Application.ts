@@ -12,17 +12,17 @@ import platform from 'platform';
 import loadingGroups from 'src/loadingGroups';
 
 export default class Application extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     // console.log('Initializing Application...');
 
     this.loadAssets()
-      .then(() =>  platform.startGameAsync())
+      .then(() => platform.startGameAsync())
       .then(() => this.startGame());
     // device.screen.on('Resize', () => this.resize());
   }
 
-  loadAssets () {
+  loadAssets() {
     let loadingProgress = 0;
 
     const setLoadingProgress = (progress) => {
@@ -40,7 +40,7 @@ export default class Application extends View {
       setLoadingProgress(Math.min(99, loadingProgress + progressStep));
     };
 
-    return new Promise ((resolve) => {
+    return new Promise((resolve) => {
       const initialAssets = loadingGroups.initialAssets;
 
       const progressUpdateHandle = setInterval(() => {
@@ -51,50 +51,50 @@ export default class Application extends View {
       initialAssets.load(() => {
         // i18n.loadLocale('en')
         // .then(() => {
-          setLoadingProgress(100);
-          clearInterval(progressUpdateHandle);
-          // entryStepComplete('initialAssetsLoaded');
-          resolve();
+        setLoadingProgress(100);
+        clearInterval(progressUpdateHandle);
+        // entryStepComplete('initialAssetsLoaded');
+        resolve();
 
-          loadingGroups.soundAssets.load(() => {
-            console.log('sounds were preloaded!');
-          });
+        loadingGroups.soundAssets.load(() => {
+          console.log('sounds were preloaded!');
+        });
         // });
       });
     });
   }
 
-  startGame () {
+  startGame() {
     // console.log('START GAME!');
-		this.style.backgroundColor = '#444';
+    this.style.backgroundColor = '#444';
 
-		var rootView = new StackView({
-			parent: this,
-			x: 0,
-			y: 0,
-			width: device.screen.width,
-			height: device.screen.height,
-			clip: false,
-			scale: device.width / 320,
-		});
+    var rootView = new StackView({
+      parent: this,
+      x: 0,
+      y: 0,
+      width: device.screen.width,
+      height: device.screen.height,
+      clip: false,
+      scale: device.width / 320,
+    });
 
-		const titleScreen = new TitleScreen();
-		const gameScreen = new GameScreen();
+    const titleScreen = new TitleScreen();
+    const gameScreen = new GameScreen();
 
-		rootView.push(titleScreen);
-		sounds.playSong('win');
+    rootView.push(titleScreen);
+    sounds.playSong('win');
 
-		titleScreen.on('titlescreen:start', () => {
-			// sounds.playSong('dubesque');
-			rootView.push(gameScreen, true);
-			gameScreen.emit('game:start');
-		});
+    titleScreen.on('titlescreen:start', () => {
+      // sounds.playSong('dubesque');
+      rootView.push(gameScreen, true);
+      gameScreen.emit('game:start');
+    });
 
-		gameScreen.on('game:end', () => {
-			rootView.pop(true);
-			sounds.playSong('win');
-		});
-	}
+    gameScreen.on('game:end', () => {
+      rootView.pop(true);
+      sounds.playSong('win');
+    });
+  }
 }
 
 startApplication(Application);

@@ -1,15 +1,12 @@
-
 import View from 'ui/View';
 import FixedTextView from 'src/lib/ui/FixedTextView';
 import InputView from 'src/lib/ui/InputView';
-
 
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 
 export default class TitleScreen extends View {
-
-  constructor () {
+  constructor() {
     super({});
     this.screen = getScreenDimensions();
     console.log('dimensions:', this.screen.width, this.screen.height);

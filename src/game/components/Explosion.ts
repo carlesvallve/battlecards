@@ -8,14 +8,14 @@ const pool = new QuickViewPool({
   ctor: View,
   initOpts: {
     centerOnOrigin: true,
-    centerAnchor: true
-  }
+    centerAnchor: true,
+  },
 });
 
 // todo: we should turn this into an abstract class since we are not the parent anymore
 
 export default class Explosion extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
 
     this.game = opts.parent.game;
@@ -33,7 +33,7 @@ export default class Explosion extends View {
     }
   }
 
-  createSprite ({ startX, startY, color, sc }) {
+  createSprite({ startX, startY, color, sc }) {
     const size = getRandomFloat(1.5, 3);
 
     // using timestep's ViewPool2
@@ -55,13 +55,13 @@ export default class Explosion extends View {
     return sprite;
   }
 
-  tick (dt) {
+  tick(dt) {
     if (this.game.gameState === GameStates.Pause) {
       return;
     }
 
     // remove explosion when there are no sprites left alive
-    if ( this.sprites.length === 0) {
+    if (this.sprites.length === 0) {
       this.removeFromSuperview();
       return;
     }
@@ -88,7 +88,7 @@ export default class Explosion extends View {
     }
   }
 
-  castRayDown (sprite, dx, debug = false) {
+  castRayDown(sprite, dx, debug = false) {
     const me = sprite.style;
     const up = 1;
     const forward = 0;
@@ -99,7 +99,7 @@ export default class Explosion extends View {
       { x: 0, y: 1 },
       32,
       offset,
-      { enabled: debug, debugView: this.parent, duration: 100 }
+      { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
     if (hit && hit.distance <= up) {
@@ -114,14 +114,14 @@ export default class Explosion extends View {
     }
   }
 
-  castRayForward (sprite, dy, debug = false) {
+  castRayForward(sprite, dy, debug = false) {
     const me = sprite.style;
     const d = 2;
     const up = 2;
     const offset = this.game.terrain.offset;
 
     const hit = rayCast(
-      { x: me.x, y: me.y -up },
+      { x: me.x, y: me.y - up },
       { x: this.vx > 0 ? 1 : -1, y: 0 },
       16,
       offset,

@@ -9,9 +9,8 @@ import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';
 import { GameStates } from 'src/lib/enums';
 
-
 export default class Hud extends View {
-  constructor (opts) {
+  constructor(opts) {
     super(opts);
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();
@@ -35,7 +34,7 @@ export default class Hud extends View {
     this.on('hud:gameover', this.onGameOver.bind(this));
   }
 
-  init () {
+  init() {
     const gameData = this.loadGameData();
     // console.log('gameData:', gameData);
 
@@ -51,7 +50,7 @@ export default class Hud extends View {
     this.pauseButton.show();
   }
 
-  continue () {
+  continue() {
     this.createHearts(1);
     this.gameOver.hide();
     this.pauseButton.show();
@@ -61,7 +60,7 @@ export default class Hud extends View {
   // Hud Events (score, stars, hearts, gameOver)
   // =====================================================================
 
-  onUpdateScore ({ points }) {
+  onUpdateScore({ points }) {
     const t = 100;
     const easing = animate.easeOut;
 
@@ -76,7 +75,7 @@ export default class Hud extends View {
       .then({ scale: 1 }, t, easing);
   }
 
-  onUpdateStars ({ ammount }) {
+  onUpdateStars({ ammount }) {
     const t = 100;
     const easing = animate.easeOut;
 
@@ -91,7 +90,7 @@ export default class Hud extends View {
       .then({ scale: 1 }, t, easing);
   }
 
-  onRemoveHeart () {
+  onRemoveHeart() {
     const heart = this.hearts[this.hearts.length - 1];
     if (!heart) {
       return;
@@ -106,7 +105,7 @@ export default class Hud extends View {
       });
   }
 
-  onGameOver () {
+  onGameOver() {
     this.saveGameData();
     this.gameOver.init();
     this.pauseButton.hide();
@@ -116,8 +115,9 @@ export default class Hud extends View {
   // Create hud header elements (stars, score, hearts)
   // =====================================================================
 
-  createStars () {
-    new ImageView({ // star icon
+  createStars() {
+    new ImageView({
+      // star icon
       parent: this,
       x: 11,
       y: 11,
@@ -151,8 +151,9 @@ export default class Hud extends View {
     });
   }
 
-  createScoreLabel () {
-    new FixedTextView({ // score label
+  createScoreLabel() {
+    new FixedTextView({
+      // score label
       parent: this,
       text: 'SCORE',
       color: '#fff',
@@ -195,7 +196,7 @@ export default class Hud extends View {
     });
   }
 
-  createHearts (max) {
+  createHearts(max) {
     this.hearts = [];
     for (let i = 0; i < max; i++) {
       const heart = new ImageView({
@@ -207,7 +208,9 @@ export default class Hud extends View {
         scale: 1.75,
       });
 
-      heart.setImage(new Image({ url: 'resources/images/8bit-ninja/heart16.png' }));
+      heart.setImage(
+        new Image({ url: 'resources/images/8bit-ninja/heart16.png' }),
+      );
       heart.show();
 
       this.hearts.push(heart);
@@ -218,7 +221,7 @@ export default class Hud extends View {
   // Create hud footer elements (pause)
   // =====================================================================
 
-  createPauseButton () {
+  createPauseButton() {
     this.pauseLabel = new FixedTextView({
       parent: this,
       text: 'PAUSE',
@@ -253,17 +256,17 @@ export default class Hud extends View {
         } else {
           this.onResume();
         }
-      }
+      },
     });
   }
 
-  onPause () {
+  onPause() {
     this.game.gameState = GameStates.Pause;
     this.game.inputView.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     this.pauseLabel.show();
   }
 
-  onResume () {
+  onResume() {
     this.game.gameState = GameStates.Play;
     this.game.inputView.style.backgroundColor = null;
     this.pauseLabel.hide();
@@ -276,18 +279,20 @@ export default class Hud extends View {
   // Load and save game data
   // =====================================================================
 
-  saveGameData () {
+  saveGameData() {
     // save highscore and current stars to localstorage
-    localStorage.setItem('gameData', JSON.stringify({
-      stars: this.stars,
-      highscore: this.score > this.highscore ? this.score : this.highscore,
-    }));
+    localStorage.setItem(
+      'gameData',
+      JSON.stringify({
+        stars: this.stars,
+        highscore: this.score > this.highscore ? this.score : this.highscore,
+      }),
+    );
   }
 
-  loadGameData () {
+  loadGameData() {
     // Retrieve game data from local storage.
     const data = JSON.parse(localStorage.getItem('gameData'));
     return data || { stars: 0, highscore: 0 };
   }
-
 }

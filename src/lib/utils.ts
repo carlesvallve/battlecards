@@ -24,7 +24,7 @@ export const getRandomItemFromArray = (arr) => {
 };
 
 export const getRandomPos = (min, max) => {
-  const screen  = getScreenDimensions();
+  const screen = getScreenDimensions();
   const x = getRandomInt(20, screen.width - 20);
   const y = getRandomInt(20, -4 + screen.height / 2);
   return { x, y };
@@ -52,4 +52,3 @@ export const debugPoint = (parent, color = 'yellow', display = false) => {
     backgroundColor: color,
   });
 };
-
