@@ -1,8 +1,12 @@
 build/*
 imageCache-release/*
 resources/*
+.cache/*
 
 .eslintrc.js
 package-lock.json
+.vscode/settings.json
+fbapp-config.json
+tsconfig.json
 timestep-workspace.config.json
-src/state/utils/immutable.ts
+
