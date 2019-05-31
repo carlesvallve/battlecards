@@ -1,6 +1,6 @@
 import animate from 'animate';
 import View from 'ui/View';
-import FixedTextView from 'src/lib/FixedTextView';
+import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 
 

@@ -1,7 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
-import InputView from 'src/lib/InputView';
+import InputView from 'src/lib/ui/InputView';
 
 import World from 'src/game/components/World';
 import Terrain from 'src/game/components/Terrain';

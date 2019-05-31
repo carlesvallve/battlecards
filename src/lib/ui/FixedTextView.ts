@@ -2,19 +2,24 @@ import Canvas from 'platforms/browser/Canvas';
 import TextView from 'ui/TextView';
 
 class SingleTextBuffer {
-  constructor () {
+  _canvas: Canvas;
+  _ctx: any;
+  _width: number;
+  _height: number;
+
+  constructor() {
     this._ctx = null;
     this._canvas = null;
     this._width = 0;
     this._height = 0;
   }
 
-  build (width, height) {
+  build(width, height) {
     if (this._width >= width && this._height >= height) return this;
 
     this._canvas = new Canvas({
       width: width,
-      height: height
+      height: height,
     });
 
     this._ctx = this._canvas.getContext('2d');
@@ -31,18 +36,20 @@ class SingleTextBuffer {
 }
 
 export default class FixedTextView extends TextView {
-  constructor (opts) {
+  textBuffer: SingleTextBuffer;
+
+  constructor(opts) {
     opts.buffer = true;
     super(opts);
     this.textBuffer = new SingleTextBuffer();
   }
 
-  _updateCtx (ctx) {
+  _updateCtx(ctx) {
     super._updateCtx(ctx);
     ctx.lineJoin = 'round';
   }
 
-  _renderBuffer (ctx) {
+  _renderBuffer(ctx) {
     var offsetRect = this._textFlow.getOffsetRect();
     var width = offsetRect.width;
     var height = offsetRect.height;
@@ -63,6 +70,16 @@ export default class FixedTextView extends TextView {
       fontBuffer._canvas.__needsUpload = true;
     }
 
-    ctx.drawImage(fontBuffer._canvas, 0, 0, width, height, offsetRect.x, offsetRect.y, width, height);
+    ctx.drawImage(
+      fontBuffer._canvas,
+      0,
+      0,
+      width,
+      height,
+      offsetRect.x,
+      offsetRect.y,
+      width,
+      height,
+    );
   }
 }

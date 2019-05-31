@@ -3,7 +3,7 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
-import FixedTextView from 'src/lib/FixedTextView';
+import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';

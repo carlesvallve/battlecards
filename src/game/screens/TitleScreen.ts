@@ -1,7 +1,7 @@
 
 import View from 'ui/View';
-import FixedTextView from 'src/lib/FixedTextView';
-import InputView from 'src/lib/InputView';
+import FixedTextView from 'src/lib/ui/FixedTextView';
+import InputView from 'src/lib/ui/InputView';
 
 
 import { getScreenDimensions } from 'src/lib/utils';
