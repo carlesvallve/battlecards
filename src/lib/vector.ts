@@ -5,19 +5,11 @@
  * @param y {Number} position of the point
  */
 export default class Vector {
-  constructor (x, y) {
-    /**
-    * @property x
-    * @type Number
-    * @default 0
-    */
-    this.x = x || 0;
+  x: number;
+  y: number;
 
-    /**
-    * @property y
-    * @type Number
-    * @default 0
-    */
+  constructor (x, y) {
+    this.x = x || 0;
     this.y = y || 0;
   }
 
@@ -31,13 +23,13 @@ export default class Vector {
     return new Vector(this.x, this.y);
   }
 
-  add () {
+  add (v) {
     this.x += v.x;
     this.y += v.y;
     return this;
   }
 
-  sub () {
+  sub (v) {
     this.x -= v.x;
     this.y -= v.y;
     return this;
@@ -67,7 +59,7 @@ export default class Vector {
     return this;
   }
 
-  dot () {
+  dot (v) {
     return this.x * v.x + this.y * v.y;
   }
 
@@ -83,11 +75,11 @@ export default class Vector {
     return this.divideScalar(this.length());
   }
 
-  distanceTo () {
+  distanceTo (v) {
     return Math.sqrt(this.distanceToSq(v));
   }
 
-  distanceToSq () {
+  distanceToSq (v) {
     var dx = this.x - v.x, dy = this.y - v.y;
     return dx * dx + dy * dy;
   }
@@ -131,7 +123,7 @@ export default class Vector {
     return this.rad() * 180 / Math.PI;
   }
 
-  equals () {
+  equals (v) {
     return this.x === v.x && this.y === v.y;
   }
 
