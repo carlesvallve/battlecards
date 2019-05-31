@@ -93,7 +93,7 @@ export default class Entity extends View {
 
     if (hit && hit.distance <= d) {
       // check if we can climb forward
-      const hasClimbed = this.castRayClimb(d, true);
+      const hasClimbed = this.castRayClimb(d);
 
       // stop moving if we cannot climb
       if (!hasClimbed) {
