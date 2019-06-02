@@ -31,7 +31,7 @@ export default class Ninja extends Entity {
       }
     });
     this.on('collision:wall', () => {
-      console.log('collision:wall');
+      // console.log('collision:wall');
       // stop interpolating and animating character
       if (this.action === Actions.Run) {
         animate(this).clear();
@@ -273,6 +273,10 @@ export default class Ninja extends Entity {
     if (this.action === Actions.Die) {
       return;
     }
+
+    // if (this.vy < 0) {
+    //   return;
+    // }
     // if (this.action === Actions.Jump) { return; }
 
     this.vy = -16;

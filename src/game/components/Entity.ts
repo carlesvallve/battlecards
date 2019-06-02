@@ -14,7 +14,7 @@ export default class Entity extends View {
     // initialize gravity and velocity
     this.gravity = 0.25;
     this.impulse = 10;
-    this.vx = 0; // getRandomFloat(-10, 10);
+    this.vx = 0;
     this.vy = 0;
     this.grounded = false;
 
@@ -44,7 +44,7 @@ export default class Entity extends View {
   // Raycasting logic
   // ===============================================================
 
-  castRayDown(dx, debug = false) {
+  castRayDown(dx: number, debug: boolean = false) {
     if (this.vy < 0) {
       return;
     }
@@ -77,7 +77,7 @@ export default class Entity extends View {
     }
   }
 
-  castRayForward(dy, debug = false) {
+  castRayForward(dy: number, debug: boolean = false) {
     const me = this.style;
     const d = 8;
     const up = 8;
@@ -108,7 +108,7 @@ export default class Entity extends View {
     }
   }
 
-  castRayClimb(dx, debug = false) {
+  castRayClimb(dx: number, debug: boolean = false) {
     const me = this.style;
     const up = 24;
     const offset = this.game.terrain.offset;

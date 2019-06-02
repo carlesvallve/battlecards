@@ -88,7 +88,7 @@ export default class Explosion extends View {
     }
   }
 
-  castRayDown(sprite, dx, debug = false) {
+  castRayDown(sprite: View, dx: number, debug: boolean = false) {
     const me = sprite.style;
     const up = 1;
     const forward = 0;
@@ -114,7 +114,7 @@ export default class Explosion extends View {
     }
   }
 
-  castRayForward(sprite, dy, debug = false) {
+  castRayForward(sprite: View, dy: number, debug: boolean = false) {
     const me = sprite.style;
     const d = 2;
     const up = 2;

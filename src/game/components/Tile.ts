@@ -6,20 +6,25 @@ export default class Tile extends ImageView {
     super(opts);
 
     this.parent = opts.parent;
-    this.solidityMap = this.buildSolidityMap(opts.width);
+    this.data = opts.data;
+    if (this.data.walkable) {
+      this.solidityMap = this.buildSolidityMap(opts.width, opts.height, this.data.walkable);
+    }
+    
+    // console.log(this.data)
 
     debugPoint(this);
   }
 
-  buildSolidityMap(size) {
+  buildSolidityMap(width, height, walkable) {
     const solidityMap = [];
-    for (let y = 0; y < size; y++) {
+    for (let y = 0; y < height; y++) {
       solidityMap[y] = [];
-      for (let x = 0; x < size; x++) {
+      for (let x = 0; x < width; x++) {
         solidityMap[y][x] = 1;
       }
     }
-
+    // console.log(walkable, solidityMap)
     return solidityMap;
   }
 

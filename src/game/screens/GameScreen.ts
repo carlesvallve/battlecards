@@ -21,8 +21,9 @@ import {
   getRandomInt,
   getRandomItemFromArray,
 } from 'src/lib/utils';
+import { onSwipe } from 'src/lib/swipe';
 
-export default class GameScreen extends View {
+export default class GameScreen extends InputView {
   constructor() {
     super({});
     this.screen = getScreenDimensions();
@@ -75,7 +76,7 @@ export default class GameScreen extends View {
     this.slimes = [];
     this.stars = [];
 
-    // setup game interaction overlay
+    // setup game interaction
     this.setInput();
 
     // setup hud overlay
@@ -122,11 +123,11 @@ export default class GameScreen extends View {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    animate({})
-      .wait(this.options.slimeSpawnDelay)
-      .then(() => {
-        this.createSlime(this.world.getRandomPos());
-      });
+    // animate({})
+    //   .wait(this.options.slimeSpawnDelay)
+    //   .then(() => {
+    //     this.createSlime(this.world.getRandomPos());
+    //   });
   }
 
   gameOver() {
@@ -258,12 +259,13 @@ export default class GameScreen extends View {
       // backgroundColor: 'rgba(1, 0, 0, 0.5)',
     });
 
-    // this.inputView.style.backgroundColor = 'rgba(255, 0, 0, 0.5)',
+    // this.inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
+    onSwipe(this, 32, (v: Vector) => this.onSwipe(v));
 
     // set input handlers
     this.inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
     // this.inputView.registerHandlerForDoubleClick((x, y) => this.onDoubleClick(x, y));
-    this.inputView.registerHandlerForDrag((x, y) => this.onDrag(x, y));
+    // this.inputView.registerHandlerForDrag((x, y) => this.onDrag(x, y));
     // this.inputView.registerHandlerForDragFinish((dx, dy) => this.onDragFinish(dx, dy));
   }
 
@@ -304,10 +306,27 @@ export default class GameScreen extends View {
   //   }
   // }
 
-  onDrag(dx, dy) {
-    // first attempt on jump feature
-    const d = 16;
-    const vec = new Vector(dx, dy).multiplyScalar(d).limit(64);
+  // onDrag(dx, dy) {
+  //   // first attempt on jump feature
+  //   const d = 16;
+  //   const vec = new Vector(dx, dy).multiplyScalar(d).limit(64);
+  //   const pos = {
+  //     x: this.ninja.style.x + vec.x,
+  //     y: this.ninja.style.y + vec.y,
+  //   };
+
+  //   this.ninja.jumpTo(pos);
+  // }
+
+  // onDragFinish (dx, dy) {
+  //   console.log('onDragFinish', dx, dy);
+  // }
+
+  onSwipe(vec: Vector) {
+    const d = 32;
+    vec.multiplyScalar(d).limit(128);
+
+    console.log(vec);
     const pos = {
       x: this.ninja.style.x + vec.x,
       y: this.ninja.style.y + vec.y,
@@ -315,10 +334,6 @@ export default class GameScreen extends View {
 
     this.ninja.jumpTo(pos);
   }
-
-  // onDragFinish (dx, dy) {
-  //   console.log('onDragFinish', dx, dy);
-  // }
 
   // ===================================================================
 }

@@ -1,18 +1,14 @@
 /* eslint-disable no-use-before-define */
 
 import View from 'ui/View';
-import {
-  horizontalTileCount,
-  verticalTileCount,
-  tileSize,
-  getTile,
-} from 'src/conf/levels/index';
+import { mapWidth, mapHeight, tileSize, getTile } from 'src/conf/levels/index';
+import { point, debugLine } from './types';
 
 // ======================== global point to tile point
 
 // Find out if the given pixel is traversable.
 // X and Y are the scene pixel coordinates
-export const isPointTraversable = (x, y, offset) => {
+export const isPointTraversable = (x: number, y: number, offset: point) => {
   x -= offset.x;
   y -= offset.y;
 
@@ -22,15 +18,20 @@ export const isPointTraversable = (x, y, offset) => {
 
   // If the point is out of bound, we assume it's traversable
   if (tileX < 0) return true;
-  if (tileX >= horizontalTileCount) return true;
+  if (tileX >= mapWidth) return true;
   if (tileY < 0) return true;
-  if (tileY >= verticalTileCount) return true;
+  if (tileY >= mapHeight) return true;
 
   // Get the tile at tile coords
   const tile = getTile(tileX, tileY);
 
   // If the tile is blank the point is traversable
   if (tile == null) {
+    return true;
+  }
+
+  // if the tile is not walkablepoint is traversable
+  if (!tile.data.walkable) {
     return true;
   }
 
@@ -46,13 +47,18 @@ export const isPointTraversable = (x, y, offset) => {
 // ======================== Bresenham algorithm
 
 // Returns the list of points from p0 to p1
-export const bresenhamLineBetweenPoints = (p0, p1) => {
+export const bresenhamLineBetweenPoints = (p0: point, p1: point) => {
   // returns List<Point>
   return bresenhamLine(p0.x, p0.y, p1.x, p1.y);
 };
 
 // Returns the list of points from (x0, y0) to (x1, y1) : List<Point>
-export const bresenhamLine = (x0, y0, x1, y1) => {
+export const bresenhamLine = (
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+) => {
   const result = []; // array of points
 
   const steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
@@ -98,7 +104,7 @@ export const bresenhamLine = (x0, y0, x1, y1) => {
 
 // ======================== Raycast algorithm
 
-export const normalize = (point, scale = 1) => {
+export const normalize = (point: point, scale: number = 1) => {
   const norm = Math.sqrt(point.x * point.x + point.y * point.y);
   if (norm != 0) {
     // as3 return 0,0 for a point of zero length
@@ -110,11 +116,15 @@ export const normalize = (point, scale = 1) => {
 };
 
 export const rayCast = (
-  position,
-  direction,
-  rayLength,
-  offset,
-  debugOpts = { enabled: false, debugView: null, duration: 100 },
+  position: point,
+  direction: point,
+  rayLength: number,
+  offset: point,
+  debugOpts: debugLine = {
+    enabled: false,
+    debugView: null,
+    duration: 100,
+  },
 ) => {
   // set result defaults
   const result = {
@@ -192,11 +202,11 @@ export const rayCast = (
 };
 
 export const drawNode = (
-  x,
-  y,
-  color,
-  size = 1,
-  opts = { enabled: false, debugView: null, duration: 100 },
+  x: number,
+  y: number,
+  color: string,
+  size: number = 1,
+  opts: debugLine = { enabled: false, debugView: null, duration: 100 },
 ) => {
   const { enabled, debugView, duration } = opts;
   if (!enabled || !debugView || duration === 0) {
