@@ -1,21 +1,27 @@
 import Image from 'ui/resource/Image';
-
+import Tile from 'src/game/components/Tile';
 import level1 from './01';
+import { point } from 'src/lib/types';
 
 const level = level1;
 export const mapWidth = level.mapData[0].length;
 export const mapHeight = level.mapData.length;
 export const tileSize = level.tileSize;
 
-export const getTile = (x, y) => {
+export const getTile = (x: number, y: number): Tile => {
   return level.map[y][x] || null;
 };
 
-export const getTileType = (x, y) => {
+export const getTileType = (x: number, y: number): number => {
   return level.mapData[y][x] || null;
 };
 
-export const getTileData = (x: number, y: number) => {
+export const getTileData = (x: number, y: number): {
+  type: number,
+  image: Image,
+  offset: point,
+  walkable: boolean,
+} => {
   const type = getTileType(x, y);
 
   switch (type) {
@@ -60,7 +66,7 @@ const tileImages = {
   lava: new Image({ url: 'resources/images/8bit-ninja/lava-1.png' }),
 };
 
-export const getTileImage = (x, y) => {
+export const getTileImage = (x: number, y: number): Image => {
   const neighbours = getNeighbours(x, y);
 
   if (!neighbours.includes('N') && !neighbours.includes('W')) {
@@ -96,7 +102,7 @@ const NEIGHBOURS = {
   SE: { x: 1, y: 1 },
 };
 
-export const getNeighbours = (x, y) => {
+export const getNeighbours = (x: number, y: number): string[] => {
   const neighbours = [];
   for (const [key, value] of Object.entries(NEIGHBOURS)) {
     const xx = x + value.x;

@@ -13,10 +13,15 @@ import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 
 export default class Stars extends View {
-  constructor(opts) {
+  constructor(opts: {
+    parent: View;
+    startX: number;
+    startY: number;
+    max: number;
+  }) {
     super(opts);
     this.screen = getScreenDimensions();
-    this.sc = opts.sc;
+    // this.sc = opts.sc;
     this.game = opts.parent.game;
     this.ninja = this.game.ninja;
 
@@ -53,7 +58,7 @@ export default class Stars extends View {
     sprite.style.offsetY = -size;
 
     sprite.vx = getRandomInt(-15, 15) * 0.5;
-    sprite.vy = getRandomInt(-16, -4) * 0.75; // 0.75;
+    sprite.vy = getRandomInt(-16, -4) * 0.75;
 
     sprite.action = Actions.Run;
     animate(sprite)
@@ -116,7 +121,7 @@ export default class Stars extends View {
     }
   }
 
-  checkNinjaDistance(sprite) {
+  checkNinjaDistance(sprite: View) {
     if (this.ninja.action === Actions.Die) {
       return;
     }
@@ -128,13 +133,13 @@ export default class Stars extends View {
     }
   }
 
-  collect(sprite) {
+  collect(sprite: View) {
     this.removeSprite(sprite);
     sounds.playSound('combo_x' + getRandomInt(2, 6), 0.4);
     this.game.hud.emit('hud:updateStars', { ammount: 1 });
   }
 
-  die(sprite) {
+  die(sprite: View) {
     animate(sprite)
       .clear()
       .now({ scale: sprite.style.scale }, 0, animate.linear)
@@ -144,7 +149,7 @@ export default class Stars extends View {
       });
   }
 
-  removeSprite(sprite) {
+  removeSprite(sprite: View) {
     sprite.removeFromSuperview();
     for (let i in this.sprites) {
       if (this.sprites[i] === sprite) {
@@ -157,7 +162,7 @@ export default class Stars extends View {
     }
   }
 
-  castRayDown(sprite, dx, debug = false) {
+  castRayDown(sprite: View, dx: number, debug: boolean = false) {
     const me = sprite.style;
     const up = 6;
     const forward = 0;
@@ -183,7 +188,7 @@ export default class Stars extends View {
     }
   }
 
-  castRayForward(sprite, dy, debug = false) {
+  castRayForward(sprite: View, dy: number, debug: boolean = false) {
     const me = sprite.style;
     const d = 6;
     const up = 6;

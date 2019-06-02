@@ -13,23 +13,17 @@ export default class Vector {
     this.y = y || 0;
   }
 
-  /**
-   * Creates a clone of this point
-   *
-   * @method clone
-   * @return {Vector} a copy of the point
-   */
-  clone() {
+  clone(): Vector {
     return new Vector(this.x, this.y);
   }
 
-  add(v) {
+  add(v: Vector) {
     this.x += v.x;
     this.y += v.y;
     return this;
   }
 
-  sub(v) {
+  sub(v: Vector) {
     this.x -= v.x;
     this.y -= v.y;
     return this;
@@ -41,13 +35,13 @@ export default class Vector {
     return this;
   }
 
-  multiplyScalar(s) {
+  multiplyScalar(s: number) {
     this.x *= s;
     this.y *= s;
     return this;
   }
 
-  divideScalar(s) {
+  divideScalar(s: number) {
     if (s === 0) {
       this.x = 0;
       this.y = 0;
@@ -59,7 +53,7 @@ export default class Vector {
     return this;
   }
 
-  dot(v) {
+  dot(v: Vector) {
     return this.x * v.x + this.y * v.y;
   }
 
@@ -75,33 +69,33 @@ export default class Vector {
     return this.divideScalar(this.length());
   }
 
-  distanceTo(v) {
+  distanceTo(v: Vector) {
     return Math.sqrt(this.distanceToSq(v));
   }
 
-  distanceToSq(v) {
+  distanceToSq(v: Vector) {
     var dx = this.x - v.x,
       dy = this.y - v.y;
     return dx * dx + dy * dy;
   }
 
-  set(x, y) {
+  set(x: number, y: number) {
     this.x = x;
     this.y = y;
     return this;
   }
 
-  setX(x) {
+  setX(x: number) {
     this.x = x;
     return this;
   }
 
-  setY(y) {
+  setY(y: number) {
     this.y = y;
     return this;
   }
 
-  setLength(l) {
+  setLength(l: number) {
     var oldLength = this.length();
     if (oldLength !== 0 && l !== oldLength) {
       this.multiplyScalar(l / oldLength);
@@ -109,7 +103,7 @@ export default class Vector {
     return this;
   }
 
-  lerp(v, alpha) {
+  lerp(v: Vector, alpha: number) {
     this.x += (v.x - this.x) * alpha;
     this.y += (v.y - this.y) * alpha;
     return this;
@@ -124,18 +118,18 @@ export default class Vector {
     return (this.rad() * 180) / Math.PI;
   }
 
-  equals(v) {
+  equals(v: Vector) {
     return this.x === v.x && this.y === v.y;
   }
 
-  rotate(theta) {
+  rotate(theta: number) {
     var xtemp = this.x;
     this.x = this.x * Math.cos(theta) - this.y * Math.sin(theta);
     this.y = xtemp * Math.sin(theta) + this.y * Math.cos(theta);
     return this;
   }
 
-  limit(maxLength) {
+  limit(maxLength: number) {
     const lengthSquared = this.lengthSq(); // this.x*x + y*y;
     if (lengthSquared > maxLength * maxLength && lengthSquared > 0) {
       const ratio = maxLength / Math.sqrt(lengthSquared);

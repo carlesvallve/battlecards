@@ -5,10 +5,14 @@ import Tile from 'src/game/components/Tile';
 import level, { getTileData } from 'src/conf/levels/index';
 
 export default class Terrain extends View {
-  constructor(opts) {
+  constructor(opts: { parent: View }) {
     super(opts);
     this.screen = getScreenDimensions();
     this.game = opts.parent.game;
+
+    this.updateOpts({
+      zIndex: 997,
+    })
 
     this.createMap();
     debugPoint(this);

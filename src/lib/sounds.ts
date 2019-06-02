@@ -29,17 +29,17 @@ class Sounds {
     });
   }
 
-  playSound(name, volume = 1) {
+  playSound(name: string, volume: number = 1) {
     if (this.sfxMuted) return;
     this.sfx.setVolume(name, this._sfxVolume * volume);
     this.sfx.play(name);
   }
 
-  stopSound(name) {
+  stopSound(name: string) {
     this.sfx.stop(name);
   }
 
-  playSong(name) {
+  playSong(name: string) {
     this.playingSong = name;
     this.music.setVolume(name, this._musicVolume);
     this.music.playBackgroundMusic(name);
@@ -75,12 +75,12 @@ class Sounds {
     return this._musicMuted;
   }
 
-  set musicMuted(value) {
+  set musicMuted(value: boolean) {
     this._musicMuted = value;
     this.music.setMusicMuted(value);
   }
 
-  set musicVolume(value) {
+  set musicVolume(value: number) {
     if (value === 0) {
       this.musicMuted = true;
     } else {
@@ -97,7 +97,7 @@ class Sounds {
     return this._musicVolume;
   }
 
-  set sfxVolume(value) {
+  set sfxVolume(value: number) {
     if (value === 0) {
       this.sfxMuted = true;
     } else if (this._sfxVolume === 0) {

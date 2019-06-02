@@ -15,7 +15,14 @@ const pool = new QuickViewPool({
 // todo: we should turn this into an abstract class since we are not the parent anymore
 
 export default class Explosion extends View {
-  constructor(opts) {
+  constructor(opts: {
+    parent: View;
+    sc: number;
+    max: number;
+    startX: number;
+    startY: number;
+    color: string;
+  }) {
     super(opts);
 
     this.game = opts.parent.game;

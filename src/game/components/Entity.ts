@@ -4,7 +4,7 @@ import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 
 export default class Entity extends View {
-  constructor(opts) {
+  constructor(opts: { parent: View; scale: number }) {
     super(opts);
     this.screen = getScreenDimensions();
     this.scale = opts.scale;

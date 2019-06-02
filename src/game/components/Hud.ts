@@ -10,8 +10,9 @@ import GameOver from 'src/game/components/GameOver';
 import { GameStates } from 'src/lib/enums';
 
 export default class Hud extends View {
-  constructor(opts) {
+  constructor(opts: { parent: View }) {
     super(opts);
+
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();
     this.game = opts.parent;
@@ -19,6 +20,14 @@ export default class Hud extends View {
     this.highscore = 0;
     this.score = 0;
     this.stars = 0;
+
+    this.updateOpts({
+      x: 5,
+      y: 5 + 30,
+      width: this.screen.width - 10,
+      height: this.screen.height - 10,
+      zIndex: 999,
+    });
 
     this.createStars();
     this.createScoreLabel();

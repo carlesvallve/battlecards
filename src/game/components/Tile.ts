@@ -8,15 +8,13 @@ export default class Tile extends ImageView {
     this.parent = opts.parent;
     this.data = opts.data;
     if (this.data.walkable) {
-      this.solidityMap = this.buildSolidityMap(opts.width, opts.height, this.data.walkable);
+      this.solidityMap = this.buildSolidityMap(opts.width, opts.height);
     }
-    
-    // console.log(this.data)
 
     debugPoint(this);
   }
 
-  buildSolidityMap(width, height, walkable) {
+  buildSolidityMap(width: number, height: number) {
     const solidityMap = [];
     for (let y = 0; y < height; y++) {
       solidityMap[y] = [];
@@ -24,11 +22,11 @@ export default class Tile extends ImageView {
         solidityMap[y][x] = 1;
       }
     }
-    // console.log(walkable, solidityMap)
+
     return solidityMap;
   }
 
-  buildSolidityMap2(imageData) {
+  buildSolidityMap2(imageData: ImageData) {
     // console.log('>>>', imageData);
 
     const solidityMap = []; // new bool[bitmap.Width, bitmap.Height];

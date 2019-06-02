@@ -4,7 +4,7 @@ import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 
 export default class Hud extends View {
-  constructor(opts) {
+  constructor(opts: { parent: View }) {
     super(opts);
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();

@@ -1,5 +1,6 @@
 import View from 'ui/View';
 import Vector from './vector';
+import { point } from './types';
 
 export const onSwipe = (
   view: View,
@@ -9,36 +10,33 @@ export const onSwipe = (
   // handle swipes
 
   // mouse-down inside element
-  view.onInputStart = (evt, pt) => {
+  view.onInputStart = (evt: any, pt: point) => {
     view.dragStartPoint = pt;
   };
 
   // mouse-up inside element
-  view.onInputSelect = (evt, pt) => {
+  view.onInputSelect = (evt: any, pt: point) => {
     view.dragStartPoint = null;
   };
 
   // mouse-out-of-element
-  // view.onInputOut = (evt, pt) => {
-  //   view.dragStartPoint = null;
-  // };
+  view.onInputOut = (evt: any, pt: point) => {
+    view.dragStartPoint = null;
+  };
 
   // mouse-move-inside-element
-  view.onInputMove = (evt, pt) => {
+  view.onInputMove = (evt: any, pt: point) => {
     if (!view.dragStartPoint) {
       return;
     }
-
-    // const dx = view.dragStartPoint.x - pt.x;
-    // const dy = view.dragStartPoint.y - pt.y;
 
     const v = new Vector(
       pt.x - view.dragStartPoint.x,
       pt.y - view.dragStartPoint.y,
     );
     const dist = v.length();
-    // console.log('>>>', dist);
     if (dist > threshold) {
+      // console.log('>>>', v);
       cb && cb(v);
       view.dragStartPoint = null;
     }

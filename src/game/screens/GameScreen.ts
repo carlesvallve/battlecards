@@ -59,10 +59,7 @@ export default class GameScreen extends InputView {
     });
 
     // create terrain
-    this.terrain = new Terrain({
-      parent: this.world,
-      zIndex: 997,
-    });
+    this.terrain = new Terrain({ parent: this.world });
 
     // create ninja
     this.ninja = new Ninja({
@@ -80,14 +77,7 @@ export default class GameScreen extends InputView {
     this.setInput();
 
     // setup hud overlay
-    this.hud = new Hud({
-      parent: this,
-      x: 5,
-      y: 5 + 30,
-      width: this.screen.width - 10,
-      height: this.screen.height - 10,
-      zIndex: 999,
-    });
+    this.hud = new Hud({ parent: this });
 
     // game events
     this.on('game:start', this.init.bind(this));
@@ -123,11 +113,11 @@ export default class GameScreen extends InputView {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    // animate({})
-    //   .wait(this.options.slimeSpawnDelay)
-    //   .then(() => {
-    //     this.createSlime(this.world.getRandomPos());
-    //   });
+    animate({})
+      .wait(this.options.slimeSpawnDelay)
+      .then(() => {
+        this.createSlime(this.world.getRandomPos());
+      });
   }
 
   gameOver() {
@@ -173,7 +163,6 @@ export default class GameScreen extends InputView {
     // create explosion particles
     new Explosion({
       parent: this.world,
-      // backgroundColor: 'yellow', width: 20, height: 20,
       sc: this.generalScale * 0.9,
       max: getRandomInt(16, 32),
       startX: slime.style.x,
@@ -225,25 +214,11 @@ export default class GameScreen extends InputView {
       return;
     }
 
-    // create chest
-    // new Stars({
-    //   parent: this.world,
-    //   sc: this.generalScale,
-    //   startX: chest.style.x,
-    //   startY: chest.style.y + 4 * this.generalScale,
-    //   color: chest.color,
-    // });
-
     new Stars({
       parent: this.world,
-      backgroundColor: 'yellow',
-      width: 20,
-      height: 20,
-      sc: this.generalScale,
       max: getRandomInt(1, 3),
       startX: chest.style.x,
       startY: chest.style.y + 4 * this.generalScale,
-      color: chest.color,
     });
   }
 
@@ -298,29 +273,6 @@ export default class GameScreen extends InputView {
       this.ninja.emit('ninja:moveTo', { x, y });
     }
   }
-
-  // onDoubleClick (x, y) {
-  //   console.log('doubleClick', x, y);
-  //   if (this.ninja) {
-  //     this.ninja.emit('ninja:jumpTo', { x, y });
-  //   }
-  // }
-
-  // onDrag(dx, dy) {
-  //   // first attempt on jump feature
-  //   const d = 16;
-  //   const vec = new Vector(dx, dy).multiplyScalar(d).limit(64);
-  //   const pos = {
-  //     x: this.ninja.style.x + vec.x,
-  //     y: this.ninja.style.y + vec.y,
-  //   };
-
-  //   this.ninja.jumpTo(pos);
-  // }
-
-  // onDragFinish (dx, dy) {
-  //   console.log('onDragFinish', dx, dy);
-  // }
 
   onSwipe(vec: Vector) {
     const d = 32;

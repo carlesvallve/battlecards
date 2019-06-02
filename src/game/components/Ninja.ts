@@ -1,11 +1,12 @@
 import animate from 'animate';
+import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
 import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 
 export default class Ninja extends Entity {
-  constructor(opts) {
+  constructor(opts: { parent: View; x: number; y: number; scale: number }) {
     super(opts);
 
     this.gravity = 0.25;

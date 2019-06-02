@@ -9,9 +9,16 @@ import {
   debugPoint,
   getRandomItemFromArray,
 } from 'src/lib/utils';
+import View from 'ui/View';
 
 export default class Slime extends Entity {
-  constructor(opts) {
+  constructor(opts: {
+    parent: View;
+    x: number;
+    y: number;
+    scale: number;
+    color: string;
+  }) {
     super(opts);
     this.ninja = this.game.ninja;
 
@@ -75,7 +82,7 @@ export default class Slime extends Entity {
     this.checkNinjaDistance();
   }
 
-  setDirection(dir) {
+  setDirection(dir: number) {
     this.dir = dir;
     this.style.flipX = dir === -1;
   }

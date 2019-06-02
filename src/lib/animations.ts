@@ -1,6 +1,7 @@
 import animate from 'animate';
+import View from 'ui/View';
 
-export const blink = (elm, duration, iterations = 0) => {
+export const blink = (elm: View, duration: number, iterations: number = 0) => {
   elm.hide();
   const anim = animate(elm)
     .clear()
