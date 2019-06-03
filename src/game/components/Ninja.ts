@@ -4,6 +4,8 @@ import SpriteView from 'ui/SpriteView';
 import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
+import { debugPoint } from 'src/lib/utils';
+import { point } from 'src/lib/types';
 
 export default class Ninja extends Entity {
   constructor(opts: { parent: View; x: number; y: number; scale: number }) {
@@ -15,7 +17,7 @@ export default class Ninja extends Entity {
 
     this.createSprite();
 
-    this.on('ninja:start', this.init.bind(this));
+    this.on('ninja:start', this.init.bind(this, { x: opts.x, y: opts.y }));
     this.on('ninja:idle', this.idle.bind(this));
     this.on('ninja:run', this.run.bind(this));
     this.on('ninja:jump', this.jump.bind(this));
@@ -53,24 +55,33 @@ export default class Ninja extends Entity {
       autoStart: true,
       loop: true,
       scale: 1.0,
+      offsetX: -8,
+      offsetY: -16,
     });
 
-    this.sprite.style.offsetX = -8;
-    this.sprite.style.offsetY = -16;
+    // this.sprite.style.offsetX = -8;
+    // this.sprite.style.offsetY = -16;
 
-    // debugPoint(this);
+    debugPoint(this);
   }
 
-  init() {
+  init(pos: point) {
     this.action = Actions.Idle;
     this.respawning = false;
     this.dir = 1;
     this.speed = 0.1;
     this.color = 'black';
 
-    (this.style.x = this.game.terrain.center.x), // this.game.world.center;
-      (this.style.y = this.game.terrain.center.y), // this.screen.height / 2;
-      animate(this).clear();
+    console.log('>>>', pos);
+
+    this.updateOpts({
+      x: pos.x,
+      y: pos.y,
+    });
+
+    // (this.style.x = this.game.terrain.center.x), // this.game.world.center;
+    //   (this.style.y = this.game.terrain.center.y), // this.screen.height / 2;
+    animate(this).clear();
 
     this.setDirection(this.dir);
     this.idle();

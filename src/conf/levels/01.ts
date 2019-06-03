@@ -21,4 +21,5 @@ export default {
   ],
   map: null,
   tileSize: 16,
+  start: { x: (38 + 5.5) / 2 , y: 0 },
 };

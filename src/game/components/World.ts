@@ -17,7 +17,7 @@ export default class World extends View {
     this.left = this.center - this.walkableDistance;
     this.right = this.center + this.walkableDistance;
 
-    debugPoint({});
+    // debugPoint({});
   }
 
   init(ninja) {

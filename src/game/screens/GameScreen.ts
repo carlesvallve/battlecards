@@ -23,6 +23,7 @@ import {
   getRandomItemFromArray,
 } from 'src/lib/utils';
 import { onSwipe } from 'src/lib/swipe';
+import level from 'src/conf/levels';
 
 export default class GameScreen extends InputView {
   constructor() {
@@ -58,8 +59,8 @@ export default class GameScreen extends InputView {
     // create ninja
     this.ninja = new Ninja({
       parent: this.world,
-      x: this.world.center,
-      y: this.screen.height / 2,
+      x: level.start.x * level.tileSize,
+      y: level.start.y * level.tileSize,
       scale: this.generalScale,
     });
 
@@ -107,18 +108,7 @@ export default class GameScreen extends InputView {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    // if (settings.slimes.spawnInterval > 0) {
-    //   animate({})
-    //     .wait(settings.slimes.spawnInterval)
-    //     .then(() => {
-    //       this.createSlime(this.world.getRandomPos());
-    //     });
-    // } else {
-    //   this.createSlime(this.world.getRandomPos());
-    // }
-
-    this.spawnSlimes();
-    console.log('Init Game');
+    this.spawnSlimesSequence();
   }
 
   gameOver() {
@@ -127,7 +117,7 @@ export default class GameScreen extends InputView {
     this.hud.emit('hud:gameover');
   }
 
-  spawnSlimes() {
+  spawnSlimesSequence() {
     if (this.gameState === GameStates.Pause) {
       return;
     }
@@ -146,7 +136,7 @@ export default class GameScreen extends InputView {
         }
 
         // recursevely iterate
-        this.spawnSlimes();
+        this.spawnSlimesSequence();
       });
   }
 
