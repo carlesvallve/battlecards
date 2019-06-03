@@ -1,9 +1,13 @@
 import Image from 'ui/resource/Image';
 import Tile from 'src/game/components/Tile';
-import level1 from './01';
+import settings from 'src/conf/settings';
+import level1 from 'src/conf/levels/01';
+import level2 from 'src/conf/levels/01';
 import { point } from 'src/lib/types';
 
-const level = level1;
+const levels = [null, level1, level2];
+const level = levels[settings.currentMapLevel];
+
 export const mapWidth = level.mapData[0].length;
 export const mapHeight = level.mapData.length;
 export const tileSize = level.tileSize;
@@ -16,11 +20,14 @@ export const getTileType = (x: number, y: number): number => {
   return level.mapData[y][x] || null;
 };
 
-export const getTileData = (x: number, y: number): {
-  type: number,
-  image: Image,
-  offset: point,
-  walkable: boolean,
+export const getTileData = (
+  x: number,
+  y: number,
+): {
+  type: number;
+  image: Image;
+  offset: point;
+  walkable: boolean;
 } => {
   const type = getTileType(x, y);
 

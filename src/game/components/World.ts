@@ -1,5 +1,6 @@
 import animate from 'animate';
 import View from 'ui/View';
+import settings from 'src/conf/settings';
 import { getScreenDimensions, getRandomInt, debugPoint } from 'src/lib/utils';
 import { GameStates } from 'src/lib/enums';
 import level from 'src/conf/levels/index';
@@ -46,13 +47,13 @@ export default class World extends View {
 
     let left =
       ninja.style.x -
-      getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
+      getRandomInt(settings.slimes.spawnDistance, this.screen.width / 3);
     if (left < tileSize) {
       left = tileSize;
     }
     let right =
       ninja.style.x +
-      getRandomInt(this.game.options.slimeSpawnDistance, this.screen.width / 3);
+      getRandomInt(settings.slimes.spawnDistance, this.screen.width / 3);
     if (right > (mapData[0].length - 1) * tileSize) {
       right = (mapData[0].length - 1) * tileSize;
     }

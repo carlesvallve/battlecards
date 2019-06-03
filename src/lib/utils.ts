@@ -30,7 +30,7 @@ export const getRandomPos = (min: number, max: number): point => {
   return { x, y };
 };
 
-export const getDistanceBetweenViews = (view1: View, view2: View) => {
+export const getDistanceBetweenViews = (view1: View, view2: View): number => {
   const a = Math.abs(view2.style.x - view1.style.x);
   const b = Math.abs(view2.style.y - view1.style.y);
   const d = Math.sqrt(a * a + b * b) / 2;

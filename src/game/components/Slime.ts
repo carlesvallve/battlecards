@@ -1,5 +1,8 @@
 import animate from 'animate';
 import SpriteView from 'ui/SpriteView';
+
+import settings from 'src/conf/settings';
+
 import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums';
 import {
@@ -8,6 +11,7 @@ import {
   getDistanceBetweenViews,
   debugPoint,
   getRandomItemFromArray,
+  getScreenDimensions,
 } from 'src/lib/utils';
 import View from 'ui/View';
 
@@ -21,6 +25,7 @@ export default class Slime extends Entity {
   }) {
     super(opts);
     this.ninja = this.game.ninja;
+    this.screen = getScreenDimensions();
 
     this.dir = -1;
     this.speed = getRandomFloat(0.5, 1.5); // bigger is faster // 0.5, 3.0
@@ -102,6 +107,13 @@ export default class Slime extends Entity {
       return;
     }
 
+    // if the slime is far away from the ninja and walking in opposite direction, turn around
+    const dx = this.ninja.style.x - this.style.x;
+    // console.log(this.dir, dx);
+    if ((this.dir === -1 && dx <= -300) || (this.dir === 1 && dx >= -300)) {
+      this.setDirection(-this.dir);
+    }
+
     // if the slime gets near enough to the ninja...
     const dist = getDistanceBetweenViews(this, this.ninja);
     if (dist <= 6 * this.scale) {
@@ -111,8 +123,7 @@ export default class Slime extends Entity {
         // -> if the slime is looking in the ninja direction
         if (
           dir !== this.ninja.dir ||
-          (!this.game.options.autoAttackMode &&
-            this.ninja.action === Actions.Idle)
+          (!settings.player.autoAttack && this.ninja.action === Actions.Idle)
         ) {
           this.attack();
           return;

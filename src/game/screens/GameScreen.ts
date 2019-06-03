@@ -1,7 +1,8 @@
 import animate from 'animate';
-import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
 import InputView from 'src/lib/ui/InputView';
+
+import settings from 'src/conf/settings';
 
 import World from 'src/game/components/World';
 import Terrain from 'src/game/components/Terrain';
@@ -28,13 +29,6 @@ export default class GameScreen extends InputView {
     super({});
     this.screen = getScreenDimensions();
     this.generalScale = 1.75;
-
-    // gameplay options
-    this.options = {
-      autoAttackMode: true,
-      slimeSpawnDistance: 80,
-      slimeSpawnDelay: 500,
-    };
 
     // create bg
     this.bg = new ImageScaleView({
@@ -113,11 +107,18 @@ export default class GameScreen extends InputView {
     this.world.init(this.ninja);
 
     // start spawning slimes
-    animate({})
-      .wait(this.options.slimeSpawnDelay)
-      .then(() => {
-        this.createSlime(this.world.getRandomPos());
-      });
+    // if (settings.slimes.spawnInterval > 0) {
+    //   animate({})
+    //     .wait(settings.slimes.spawnInterval)
+    //     .then(() => {
+    //       this.createSlime(this.world.getRandomPos());
+    //     });
+    // } else {
+    //   this.createSlime(this.world.getRandomPos());
+    // }
+
+    this.spawnSlimes();
+    console.log('Init Game');
   }
 
   gameOver() {
@@ -126,32 +127,41 @@ export default class GameScreen extends InputView {
     this.hud.emit('hud:gameover');
   }
 
-  createSlime(pos) {
+  spawnSlimes() {
     if (this.gameState === GameStates.Pause) {
       return;
     }
 
     // wait and create a new slime
-    const delay = getRandomFloat(500, 1000);
+    const interval = settings.slimes.spawnInterval;
+    const delay = getRandomFloat(interval[0], interval[1]);
+
     animate(this)
       .clear()
       .wait(delay)
       .then(() => {
         // create new slime
         if (this.ninja.action !== Actions.Die) {
-          const slime = new Slime({
-            parent: this.world,
-            x: pos.x,
-            y: pos.y,
-            scale: this.generalScale,
-            color: getRandomItemFromArray(['black', 'black', 'black', 'red']),
-          });
-          this.slimes.push(slime);
+          this.createSlime();
         }
 
         // recursevely iterate
-        this.createSlime(this.world.getRandomPos());
+        this.spawnSlimes();
       });
+  }
+
+  createSlime() {
+    const pos = this.world.getRandomPos();
+    const color = getRandomItemFromArray(['black', 'black', 'black', 'red']);
+
+    const slime = new Slime({
+      parent: this.world,
+      x: pos.x,
+      y: pos.y,
+      scale: this.generalScale,
+      color,
+    });
+    this.slimes.push(slime);
   }
 
   explosion({ slime }) {
