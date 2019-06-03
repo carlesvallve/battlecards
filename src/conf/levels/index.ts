@@ -45,7 +45,7 @@ export const getTileData = (
       return {
         type,
         image: tileImages.lava,
-        offset: { x: 0, y: tileSize * 0.3 },
+        offset: { x: 0, y: tileSize * 0.4 },
         walkable: false,
       };
   }

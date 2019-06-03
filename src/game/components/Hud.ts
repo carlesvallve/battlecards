@@ -125,8 +125,7 @@ export default class Hud extends View {
   // =====================================================================
 
   createStars() {
-    new ImageView({
-      // star icon
+    const starIcon = new ImageView({
       parent: this,
       x: 11,
       y: 11,
@@ -161,14 +160,12 @@ export default class Hud extends View {
   }
 
   createScoreLabel() {
-    new FixedTextView({
-      // score label
+    const scoreTitle = new FixedTextView({
       parent: this,
       text: 'SCORE',
       color: '#fff',
       x: this.screen.width / 2,
       y: 10,
-      // width: 40,
       height: 12,
       fontFamily: 'Verdana',
       fontWeight: 'bold',
@@ -281,7 +278,7 @@ export default class Hud extends View {
     this.pauseLabel.hide();
 
     // continue spawning slimes
-    this.game.createSlime(this.game.world.getRandomPos());
+    this.game.spawnSlimesSequence();
   }
 
   // =====================================================================

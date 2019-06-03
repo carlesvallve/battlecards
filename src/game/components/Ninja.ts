@@ -59,9 +59,6 @@ export default class Ninja extends Entity {
       offsetY: -16,
     });
 
-    // this.sprite.style.offsetX = -8;
-    // this.sprite.style.offsetY = -16;
-
     debugPoint(this);
   }
 
@@ -72,15 +69,11 @@ export default class Ninja extends Entity {
     this.speed = 0.1;
     this.color = 'black';
 
-    console.log('>>>', pos);
-
     this.updateOpts({
       x: pos.x,
       y: pos.y,
     });
 
-    // (this.style.x = this.game.terrain.center.x), // this.game.world.center;
-    //   (this.style.y = this.game.terrain.center.y), // this.screen.height / 2;
     animate(this).clear();
 
     this.setDirection(this.dir);
@@ -214,37 +207,21 @@ export default class Ninja extends Entity {
     const t = 100;
     animate({})
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0;
-      })
+      .then(() => (this.style.opacity = 0))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0.6;
-      })
+      .then(() => (this.style.opacity = 0.6))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0;
-      })
+      .then(() => (this.style.opacity = 0))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0.6;
-      })
+      .then(() => (this.style.opacity = 0.6))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0;
-      })
+      .then(() => (this.style.opacity = 0))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0.6;
-      })
+      .then(() => (this.style.opacity = 0.6))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0;
-      })
+      .then(() => (this.style.opacity = 0))
       .wait(t)
-      .then(() => {
-        this.style.opacity = 0.6;
-      })
+      .then(() => (this.style.opacity = 0.6))
       .wait(t)
       .then(() => {
         this.style.opacity = 1;
@@ -286,14 +263,11 @@ export default class Ninja extends Entity {
       return;
     }
 
-    // if (this.vy < 0) {
-    //   return;
-    // }
+    // if (this.vy < 0) return;
     // if (this.action === Actions.Jump) { return; }
 
     this.vy = -16;
-
-    const duration = 200;
+    const duration = 300;
     this.goal = null;
 
     this.action = Actions.Jump;
@@ -304,9 +278,7 @@ export default class Ninja extends Entity {
     animate(this)
       .clear()
       .then({ x: x, y: y }, duration, animate.linear);
-    // // .then(() => {
-    // //   this.idle();
-    // // });
+    // .then(() => this.idle());
   }
 
   tick(dt) {

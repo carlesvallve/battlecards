@@ -29,7 +29,6 @@ export default class GameScreen extends InputView {
   constructor() {
     super({});
     this.screen = getScreenDimensions();
-    this.generalScale = 1.75;
 
     // create bg
     this.bg = new ImageScaleView({
@@ -38,12 +37,12 @@ export default class GameScreen extends InputView {
       y: 0,
       anchorX: 0,
       anchorY: 0,
-      width: 3000,
-      height: this.screen.height / 2,
-      scale: 1,
+      width: this.screen.width * 2, // 3000,
+      height: this.screen.height * 2,
+      // scale: 1,
       image: 'resources/images/bg/gradient.jpg',
-      scaleMethod: 'tile',
-      columns: 3,
+      // scaleMethod: 'tile',
+      // columns: 3,
     });
 
     // create world
@@ -61,7 +60,7 @@ export default class GameScreen extends InputView {
       parent: this.world,
       x: level.start.x * level.tileSize,
       y: level.start.y * level.tileSize,
-      scale: this.generalScale,
+      scale: settings.worldScale,
     });
 
     // slimes
@@ -105,7 +104,7 @@ export default class GameScreen extends InputView {
     this.hud.emit('hud:start');
 
     // init world animation
-    this.world.init(this.ninja);
+    this.world.init();
 
     // start spawning slimes
     this.spawnSlimesSequence();
@@ -141,14 +140,12 @@ export default class GameScreen extends InputView {
   }
 
   createSlime() {
-    const pos = this.world.getRandomPos();
     const color = getRandomItemFromArray(['black', 'black', 'black', 'red']);
-
     const slime = new Slime({
       parent: this.world,
-      x: pos.x,
-      y: pos.y,
-      scale: this.generalScale,
+      x: 0,
+      y: 0,
+      scale: settings.worldScale,
       color,
     });
     this.slimes.push(slime);
@@ -163,10 +160,10 @@ export default class GameScreen extends InputView {
     // create explosion particles
     new Explosion({
       parent: this.world,
-      sc: this.generalScale * 0.9,
+      sc: settings.worldScale * 0.9,
       max: getRandomInt(16, 32),
       startX: slime.style.x,
-      startY: slime.style.y + 4 * this.generalScale,
+      startY: slime.style.y + 4 * settings.worldScale,
       color: slime.color,
     });
 
@@ -201,9 +198,9 @@ export default class GameScreen extends InputView {
     // create chest
     new Chest({
       parent: this.world,
-      sc: this.generalScale,
+      sc: settings.worldScale,
       startX: slime.style.x,
-      startY: slime.style.y + 4 * this.generalScale,
+      startY: slime.style.y + 4 * settings.worldScale,
       color: slime.color,
     });
   }
@@ -218,7 +215,7 @@ export default class GameScreen extends InputView {
       parent: this.world,
       max: getRandomInt(1, 3),
       startX: chest.style.x,
-      startY: chest.style.y + 4 * this.generalScale,
+      startY: chest.style.y + 4 * settings.worldScale,
     });
   }
 

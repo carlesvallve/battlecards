@@ -26,7 +26,7 @@ export default class Terrain extends View {
     const mapHeight = mapData.length;
 
     this.offset = {
-      x: this.game.world.left - tileSize,
+      x: 0,
       y: this.screen.height / 2 - (mapHeight * tileSize) / 2,
     };
 

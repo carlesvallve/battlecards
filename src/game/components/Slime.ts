@@ -14,6 +14,8 @@ import {
   getScreenDimensions,
 } from 'src/lib/utils';
 import View from 'ui/View';
+import level from 'src/conf/levels';
+import { point } from 'src/lib/types';
 
 export default class Slime extends Entity {
   constructor(opts: {
@@ -37,7 +39,12 @@ export default class Slime extends Entity {
 
     this.action = Actions.Idle;
 
-    this.style.zIndex = 100;
+    const pos = this.getSpawnPosition();
+    this.updateOpts({
+      x: pos.x,
+      y: pos.y,
+      zIndex: 100,
+    });
 
     this.createSprite();
     this.setDirection(getRandomItemFromArray([-1, 1]));
@@ -48,6 +55,32 @@ export default class Slime extends Entity {
       animate(this).clear();
       this.setDirection(-this.dir);
     });
+  }
+
+  getSpawnPosition(): point {
+    const { mapData, tileSize } = level;
+    const ninja = this.ninja;
+
+    const y = ninja.style.y + getRandomInt(0, -100);
+
+    const min = settings.slimes.spawnDistance[0];
+    const max = settings.slimes.spawnDistance[1];
+
+    let left = ninja.style.x - getRandomInt(min, max);
+    let right = ninja.style.x + getRandomInt(min, max);
+
+    // always between map limits
+    if (left < tileSize) {
+      left = tileSize;
+    }
+    if (right > (mapData[0].length - 1) * tileSize) {
+      right = (mapData[0].length - 1) * tileSize;
+    }
+
+    // choose left or right
+    const x = getRandomInt(1, 100) <= 50 ? left : right;
+
+    return { x, y };
   }
 
   createSprite() {
