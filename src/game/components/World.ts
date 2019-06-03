@@ -43,21 +43,23 @@ export default class World extends View {
     const { mapData, tileSize } = level;
     const ninja = this.game.ninja;
 
-    const y = getRandomInt(this.screen.height / 3, -4 + this.screen.height / 2);
+    const y = ninja.style.y + getRandomInt(0, -100);
 
-    let left =
-      ninja.style.x -
-      getRandomInt(settings.slimes.spawnDistance, this.screen.width / 3);
+    const min = settings.slimes.spawnDistance[0];
+    const max = settings.slimes.spawnDistance[1];
+
+    let left = ninja.style.x - getRandomInt(min, max);
+    let right = ninja.style.x + getRandomInt(min, max);
+
+    // always between map limits
     if (left < tileSize) {
       left = tileSize;
     }
-    let right =
-      ninja.style.x +
-      getRandomInt(settings.slimes.spawnDistance, this.screen.width / 3);
     if (right > (mapData[0].length - 1) * tileSize) {
       right = (mapData[0].length - 1) * tileSize;
     }
 
+    // choose left or right
     const x = getRandomInt(1, 100) <= 50 ? left : right;
 
     return { x, y };

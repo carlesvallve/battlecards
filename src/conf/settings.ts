@@ -1,8 +1,8 @@
 export default {
   currentMapLevel: 1,
   slimes: {
-    spawnDistance: 80,
-    spawnInterval: [500, 1000], // 0, // 500,
+    spawnDistance: [80, 150],
+    spawnInterval: [1000, 2000],
     maxDistanceFromPlayer: 300,
     turnOnScreenLimit: true,
   },

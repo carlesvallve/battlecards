@@ -102,16 +102,18 @@ export default class Slime extends Entity {
       return;
     }
 
+    // if the slime is far away from the ninja and walking in opposite direction, turn around
+    if (settings.slimes.turnOnScreenLimit) {
+      const max = this.screen.width / 2;
+      const dx = this.style.x - this.ninja.style.x;
+      if ((this.dir === -1 && dx <= -max) || (this.dir === 1 && dx >= max)) {
+        this.setDirection(-this.dir);
+      }
+    }
+
     // escape if ninja is alredy dying
     if (this.ninja.action === Actions.Die) {
       return;
-    }
-
-    // if the slime is far away from the ninja and walking in opposite direction, turn around
-    const dx = this.ninja.style.x - this.style.x;
-    // console.log(this.dir, dx);
-    if ((this.dir === -1 && dx <= -300) || (this.dir === 1 && dx >= -300)) {
-      this.setDirection(-this.dir);
     }
 
     // if the slime gets near enough to the ninja...
