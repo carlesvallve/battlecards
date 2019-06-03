@@ -12,7 +12,7 @@ export default class Terrain extends View {
 
     this.updateOpts({
       zIndex: 997,
-    })
+    });
 
     this.createMap();
     debugPoint(this);
@@ -20,8 +20,6 @@ export default class Terrain extends View {
 
   createMap() {
     const { mapData, tileSize } = level;
-    console.log('mapData:', mapData);
-
     const mapWidth = mapData[0].length;
     const mapHeight = mapData.length;
 
@@ -66,7 +64,6 @@ export default class Terrain extends View {
       }
     }
 
-    console.log('map:', map);
     level.map = map;
   }
 }

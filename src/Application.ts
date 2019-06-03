@@ -10,15 +10,20 @@ import sounds from 'src/lib/sounds';
 import platform from 'platform';
 
 import loadingGroups from 'src/loadingGroups';
+import { waitForIt } from './lib/utils';
 
 export default class Application extends View {
   constructor(opts) {
     super(opts);
-    // console.log('Initializing Application...');
 
     this.loadAssets()
       .then(() => platform.startGameAsync())
-      .then(() => this.startGame());
+      .then(() => {
+        waitForIt(() => {
+          this.startGame();
+        }, 300);
+      });
+
     // device.screen.on('Resize', () => this.resize());
   }
 
@@ -66,10 +71,11 @@ export default class Application extends View {
 
   startGame() {
     // console.log('START GAME!');
-    this.style.backgroundColor = '#444';
+    // this.style.backgroundColor = '#444';
 
     var rootView = new StackView({
       parent: this,
+      backgroundColor: '#444',
       x: 0,
       y: 0,
       width: device.screen.width,

@@ -1,6 +1,18 @@
 import device from 'device';
+import animate from 'animate';
 import View from 'ui/View';
 import { point } from './types';
+
+export const waitForIt = (cb: any, duration: number = 300, it?: View) => {
+  animate(it || {})
+    .clear()
+    .wait(duration)
+    .then(cb);
+};
+
+export const waitForItPromise = async (duration: number = 300) => {
+  return new Promise((resolve) => waitForIt(resolve, duration));
+};
 
 export const getScreenDimensions = (): { width: number; height: number } => {
   const scale = device.width / 320;

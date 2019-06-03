@@ -7,7 +7,7 @@ import { point } from 'src/lib/types';
 
 const levels = [null, level1, level2];
 const level = levels[settings.currentMapLevel];
-console.log(settings.currentMapLevel, level);
+console.log('Level', settings.currentMapLevel, level);
 
 export const mapWidth = level.mapData[0].length;
 export const mapHeight = level.mapData.length;
