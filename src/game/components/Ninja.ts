@@ -120,7 +120,7 @@ export default class Ninja extends Entity {
     }
     this.action = Actions.Jump;
     this.setDirection(1);
-    this.sprite.setFramerate(12);
+    this.sprite.setFramerate(16); //12);
     this.sprite.startAnimation('roll', {
       loop: false,
       callback: () => {

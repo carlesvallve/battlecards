@@ -32,9 +32,12 @@ export default class World extends View {
     const targetX = -ninja.style.x + this.screen.width / 2;
     const targetY = -ninja.style.y + this.screen.height / 2;
     const dx = (targetX - this.style.x) * this.elasticity;
-    const dy = (targetY - this.style.y) * this.elasticity;
     this.style.x += dx;
-    this.style.y += dy;
+
+    if (ninja.isGrounded()) {
+      const dy = (targetY - this.style.y) * this.elasticity;
+      this.style.y += dy;
+    }
   }
 
   tick(dt) {

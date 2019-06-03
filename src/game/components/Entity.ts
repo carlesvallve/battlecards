@@ -134,4 +134,8 @@ export default class Entity extends View {
 
     return false;
   }
+
+  isGrounded() {
+    return this.grounded;
+  }
 }
