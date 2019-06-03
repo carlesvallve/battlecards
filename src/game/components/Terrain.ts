@@ -33,7 +33,7 @@ export default class Terrain extends View {
       y: this.offset.y + (mapHeight * tileSize) / 2,
     };
 
-    const mapBox = new View({
+    this.mapbox = new View({
       parent: this,
       // backgroundColor: 'rgba(0.5,0.5,0.5,0.5)',
       width: mapWidth * tileSize,
@@ -50,7 +50,7 @@ export default class Terrain extends View {
 
         if (tileData) {
           map[y][x] = new Tile({
-            parent: mapBox,
+            parent: this.mapbox,
             width: tileSize,
             height: tileSize,
             x: tileData.offset.x + x * tileSize,

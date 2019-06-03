@@ -13,6 +13,12 @@ export const mapWidth = level.mapData[0].length;
 export const mapHeight = level.mapData.length;
 export const tileSize = level.tileSize;
 
+export const getTileAtPixel = (px: number, py: number): Tile => {
+  const x = Math.round(px / tileSize);
+  const y = Math.round(py / tileSize);
+  return level.map[y][x] || null;
+};
+
 export const getTile = (x: number, y: number): Tile => {
   return level.map[y][x] || null;
 };

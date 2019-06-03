@@ -6,6 +6,7 @@ import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 import { debugPoint } from 'src/lib/utils';
 import { point } from 'src/lib/types';
+import { getTileAtPixel } from 'src/conf/levels';
 
 export default class Ninja extends Entity {
   constructor(opts: { parent: View; x: number; y: number; scale: number }) {
@@ -288,5 +289,15 @@ export default class Ninja extends Entity {
     }
 
     super.tick(dt);
+
+    // console.log(this.game)
+
+    // const tile = getTileAtPixel(
+    //   this.style.x + this.game.terrain.mapbox.style.x,
+    //   this.style.y + this.game.terrain.mapbox.style.y - 16,
+    // );
+    // if (tile) {
+    //   console.log(tile.data.type);
+    // }
   }
 }
