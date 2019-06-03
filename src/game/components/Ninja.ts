@@ -230,9 +230,9 @@ export default class Ninja extends Entity {
   }
 
   moveTo({ x, y }) {
-    if (this.action === Actions.Attack) {
-      return;
-    }
+    // if (this.action === Actions.Attack) {
+    //   return;
+    // }
     if (this.action === Actions.Die && !this.style.visible) {
       return;
     }
@@ -263,8 +263,9 @@ export default class Ninja extends Entity {
       return;
     }
 
+    // if (!this.isGrounded()) return;
     // if (this.vy < 0) return;
-    // if (this.action === Actions.Jump) { return; }
+    // if (this.action === Actions.Jump) return;
 
     this.vy = -16;
     const duration = 300;
