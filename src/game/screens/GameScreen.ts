@@ -23,7 +23,7 @@ import {
   getRandomItemFromArray,
 } from 'src/lib/utils';
 import { onSwipe } from 'src/lib/swipe';
-import level from 'src/conf/levels';
+import level, { mapWidth } from 'src/conf/levels';
 
 export default class GameScreen extends InputView {
   constructor() {
@@ -31,18 +31,16 @@ export default class GameScreen extends InputView {
     this.screen = getScreenDimensions();
 
     // create bg
+    const w = Math.max(mapWidth * level.tileSize, this.screen.width * 2); // 3000
     this.bg = new ImageScaleView({
       superview: this,
       x: 0,
       y: 0,
       anchorX: 0,
       anchorY: 0,
-      width: this.screen.width * 2, // 3000,
+      width: w,
       height: this.screen.height * 2,
-      // scale: 1,
       image: 'resources/images/bg/gradient.jpg',
-      // scaleMethod: 'tile',
-      // columns: 3,
     });
 
     // create world

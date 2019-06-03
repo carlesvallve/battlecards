@@ -1,6 +1,6 @@
 export default {
   worldScale: 1.75,
-  currentMapLevel: 2,
+  currentMapLevel: 1,
   slimes: {
     spawnDistance: [80, 150],
     spawnInterval: [1000, 2000],
