@@ -4,6 +4,14 @@ import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 
 export default class Hud extends View {
+  screen: { width: number; height: number };
+  hud: View;
+  gameoverLabel: FixedTextView;
+  continueLabel: FixedTextView;
+  continueNumber: FixedTextView;
+  interval: any; // todo: NodeJS.Timeout;
+  time: number;
+
   constructor(opts: { parent: View }) {
     super(opts);
     this.canHandleEvents(false, false);

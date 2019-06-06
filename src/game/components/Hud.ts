@@ -10,6 +10,18 @@ import GameOver from 'src/game/components/GameOver';
 import { GameStates } from 'src/lib/enums';
 
 export default class Hud extends View {
+  screen: { width: number; height: number };
+  game: View;
+  highscore: number;
+  score: number;
+  stars: number;
+  hearts: ImageView[];
+  gameOver: GameOver;
+  starLabel:FixedTextView;
+  scoreLabel:FixedTextView;
+  pauseLabel:FixedTextView;
+  pauseButton: ButtonView
+  
   constructor(opts: { parent: View }) {
     super(opts);
 

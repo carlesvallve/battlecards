@@ -2,8 +2,24 @@ import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
+import GameScreen from '../screens/GameScreen';
 
 export default class Entity extends View {
+  screen: { width: number; height: number };
+  scale: number;
+  parent: View;
+  game: GameScreen;
+  gravity: number;
+  impulse: number;
+  vx: number;
+  vy: number;
+  grounded: boolean;
+
+  action: string;
+  dir: number;
+  speed: number;
+  color: string;
+
   constructor(opts: { parent: View; scale: number }) {
     super(opts);
     this.screen = getScreenDimensions();

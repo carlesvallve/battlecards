@@ -26,6 +26,17 @@ import { onSwipe } from 'src/lib/swipe';
 import level, { mapWidth } from 'src/conf/levels';
 
 export default class GameScreen extends InputView {
+  screen: { width: number; height: number };
+  bg: ImageScaleView;
+  world: World;
+  terrain: Terrain;
+  ninja: Ninja;
+  slimes: any; // todo splice problem with Slime[];
+  stars: Stars[];
+  hud: Hud;
+  gameState: string; // todo setup type
+  inputView: InputView;
+
   constructor() {
     super({});
     this.screen = getScreenDimensions();

@@ -1,7 +1,12 @@
 import ImageView from 'ui/ImageView';
 import { debugPoint } from 'src/lib/utils';
+import View from 'ui/View';
 
 export default class Tile extends ImageView {
+  parent: View;
+  data: any; // todo
+  solidityMap: number[];
+
   constructor(opts) {
     super(opts);
 
@@ -14,7 +19,7 @@ export default class Tile extends ImageView {
     debugPoint(this);
   }
 
-  buildSolidityMap(width: number, height: number) {
+  buildSolidityMap(width: number, height: number): number[] {
     const solidityMap = [];
     for (let y = 0; y < height; y++) {
       solidityMap[y] = [];

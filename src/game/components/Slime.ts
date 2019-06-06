@@ -16,8 +16,14 @@ import {
 import View from 'ui/View';
 import level from 'src/conf/levels';
 import { point } from 'src/lib/types';
+import Ninja from './Ninja';
 
 export default class Slime extends Entity {
+  sprite: SpriteView;
+  ninja: Ninja;
+  scorePoints: number;
+  starProbability: number;
+  
   constructor(opts: {
     parent: View;
     x: number;

@@ -3,8 +3,20 @@ import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
 import { GameStates, Actions } from 'src/lib/enums';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
+import GameScreen from '../screens/GameScreen';
+import Ninja from './Ninja';
 
 export default class Chest extends View {
+  sprite: ImageView;
+  screen: { width: number; height: number };
+  game: GameScreen;
+  ninja: Ninja;
+  gravity: number;
+  impulse: number;
+  vx: number;
+  vy: number;
+  sc: number;
+
   constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();

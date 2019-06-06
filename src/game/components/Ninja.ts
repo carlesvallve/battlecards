@@ -6,9 +6,13 @@ import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 import { debugPoint, waitForIt } from 'src/lib/utils';
 import { point } from 'src/lib/types';
-import level, { getTileAtPixel, getTileTypeAtPixel } from 'src/conf/levels';
+import level, { getTileTypeAtPixel } from 'src/conf/levels';
 
 export default class Ninja extends Entity {
+  sprite: SpriteView;
+  goal: point;
+  respawning: boolean;
+  
   constructor(opts: { parent: View; x: number; y: number; scale: number }) {
     super(opts);
 
@@ -290,16 +294,24 @@ export default class Ninja extends Entity {
 
     super.tick(dt);
 
-    this.checkForLava();
+    this.checkDeathByLava();
   }
 
   checkForLava() {
-    if (this.isDeadOrSpawning()) return;
+    if (this.isDeadOrSpawning()) return false;
     const { x, y } = this.style;
     const tileType = getTileTypeAtPixel(x, y - level.tileSize);
     if (tileType === 2) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeathByLava() {
+    if (this.checkForLava()) {
       waitForIt(() => {
         if (this.isDeadOrSpawning()) return;
+        if (!this.checkForLava()) return;
         console.log('Lava death!');
         this.die();
       }, 250);

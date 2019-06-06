@@ -11,8 +11,19 @@ import {
 import sounds from 'src/lib/sounds';
 import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
+import Ninja from './Ninja';
 
 export default class Stars extends View {
+  screen: { width: number; height: number };
+  game: View;
+  ninja: Ninja;
+  gravity: number;
+  impulse: number;
+  vx: number;
+  vy: number;
+  rot: number;
+  sprites: any; // todo: View[]; but splice fails...
+
   constructor(opts: {
     parent: View;
     startX: number;

@@ -6,6 +6,9 @@ import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 
 export default class TitleScreen extends View {
+  screen: { width: number; height: number };
+  inputView: InputView;
+
   constructor() {
     super({});
     this.screen = getScreenDimensions();

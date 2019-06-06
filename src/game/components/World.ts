@@ -6,6 +6,10 @@ import { GameStates } from 'src/lib/enums';
 import level from 'src/conf/levels/index';
 
 export default class World extends View {
+  screen: { width: number; height: number };
+  game: View;
+  elasticity: number;
+  
   constructor(opts) {
     super(opts);
     this.screen = getScreenDimensions();

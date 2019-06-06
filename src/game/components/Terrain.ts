@@ -3,8 +3,14 @@ import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import Tile from 'src/game/components/Tile';
 
 import level, { getTileData } from 'src/conf/levels/index';
+import { point } from 'src/lib/types';
 
 export default class Terrain extends View {
+  screen: { width: number; height: number };
+  game: View;
+  offset: point;
+  center: point;
+  
   constructor(opts: { parent: View }) {
     super(opts);
     this.screen = getScreenDimensions();
@@ -30,7 +36,7 @@ export default class Terrain extends View {
       y: this.offset.y + (mapHeight * tileSize) / 2,
     };
 
-    this.mapbox = new View({
+    const mapbox = new View({
       parent: this,
       // backgroundColor: 'rgba(0.5,0.5,0.5,0.5)',
       width: mapWidth * tileSize,
@@ -47,7 +53,7 @@ export default class Terrain extends View {
 
         if (tileData) {
           map[y][x] = new Tile({
-            parent: this.mapbox,
+            parent: mapbox,
             width: tileSize,
             height: tileSize,
             x: tileData.offset.x + x * tileSize,
