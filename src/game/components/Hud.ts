@@ -59,7 +59,7 @@ export default class Hud extends View {
 
     StateObserver.createSelector((state) => state.user.isPlaying).addListener(
       (isPlaying) => {
-        console.log('state:', isPlaying);
+        console.log('isPlaying:', isPlaying);
         if (isPlaying) {
           this.onResume();
         } else {
