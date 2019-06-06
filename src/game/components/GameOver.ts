@@ -2,9 +2,10 @@ import animate from 'animate';
 import View from 'ui/View';
 import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
+import { screen } from 'src/lib/types';
 
 export default class Hud extends View {
-  screen: { width: number; height: number };
+  screen: screen;
   hud: View;
   gameoverLabel: FixedTextView;
   continueLabel: FixedTextView;

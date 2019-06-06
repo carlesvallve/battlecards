@@ -1,16 +1,14 @@
-import startApplication from 'startApplication';
 
+import startApplication from 'startApplication';
+import platform from 'platform';
 import device from 'device';
 import View from 'ui/View';
 import StackView from 'ui/StackView';
+import loadingGroups from 'src/loadingGroups';
 import TitleScreen from 'src/game/screens/TitleScreen';
 import GameScreen from 'src/game/screens/GameScreen';
 import sounds from 'src/lib/sounds';
-
-import platform from 'platform';
-
-import loadingGroups from 'src/loadingGroups';
-import { waitForIt } from './lib/utils';
+import { waitForIt } from 'src/lib/utils';
 
 export default class Application extends View {
   constructor(opts) {

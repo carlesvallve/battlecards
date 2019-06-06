@@ -7,13 +7,14 @@ import sounds from 'src/lib/sounds';
 import { debugPoint, waitForIt } from 'src/lib/utils';
 import { point } from 'src/lib/types';
 import level, { getTileTypeAtPixel } from 'src/conf/levels';
+import World from './World';
 
 export default class Ninja extends Entity {
   sprite: SpriteView;
-  goal: point;
   respawning: boolean;
-  
-  constructor(opts: { parent: View; x: number; y: number; scale: number }) {
+  goal: point;
+
+  constructor(opts: { parent: World; x: number; y: number; scale: number }) {
     super(opts);
 
     this.gravity = 0.25;
@@ -88,7 +89,7 @@ export default class Ninja extends Entity {
     this.respawn();
   }
 
-  setDirection(dir) {
+  setDirection(dir: number) {
     this.dir = dir;
     this.style.flipX = dir === -1;
   }
@@ -104,12 +105,9 @@ export default class Ninja extends Entity {
   }
 
   run() {
-    if (this.action === Actions.Die) {
-      return;
-    }
-    if (this.action === Actions.Run) {
-      return;
-    }
+    if (this.action === Actions.Die) return;
+    if (this.action === Actions.Run) return;
+
     this.action = Actions.Run;
     this.sprite.setFramerate(10);
     this.sprite.startAnimation('run', { loop: true });
@@ -117,12 +115,9 @@ export default class Ninja extends Entity {
   }
 
   jump() {
-    if (this.action === Actions.Die) {
-      return;
-    }
-    if (this.action === Actions.Jump) {
-      return;
-    }
+    if (this.action === Actions.Die) return;
+    if (this.action === Actions.Jump) return;
+
     this.action = Actions.Jump;
     this.setDirection(1);
     this.sprite.setFramerate(16); //12);
@@ -134,8 +129,8 @@ export default class Ninja extends Entity {
     });
   }
 
-  attack({ target }) {
-    if (this.action === Actions.Die || target.action === Actions.Attack) {
+  attack(opts: { target: Entity }) {
+    if (this.action === Actions.Die || opts.target.action === Actions.Attack) {
       return;
     }
 
@@ -183,10 +178,10 @@ export default class Ninja extends Entity {
       .then(() => {
         this.game.hud.onResume();
         sounds.playSound('explode');
-        this.game.emit('game:explosion', { slime: this });
+        this.game.emit('game:explosion', { entity: this });
         this.hide();
       })
-      .wait(500)
+      .wait(500)  
       .then(() => {
         this.game.hud.onResume();
         // if no more hearts, gameover!
@@ -236,11 +231,10 @@ export default class Ninja extends Entity {
       });
   }
 
-  moveTo({ x, y }) {
-    // if (this.action === Actions.Attack) {
-    //   return;
-    // }
+  moveTo(pos: point) {
     if (this.action === Actions.Die) return;
+
+    const { x, y } = pos;
     this.setDirection(x >= this.style.x ? 1 : -1);
 
     const speed = 10; // bigger is slower
@@ -263,10 +257,12 @@ export default class Ninja extends Entity {
       });
   }
 
-  jumpTo({ x, y }) {
+  jumpTo(pos: point) {
     if (this.action === Actions.Die) {
       return;
     }
+
+    const { x, y } = pos;
 
     // if (!this.isGrounded()) return;
     // if (this.vy < 0) return;
@@ -314,7 +310,7 @@ export default class Ninja extends Entity {
         if (!this.checkForLava()) return;
         console.log('Lava death!');
         this.die();
-      }, 250);
+      }, 0);
     }
   }
 

@@ -5,10 +5,11 @@ import { GameStates, Actions } from 'src/lib/enums';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 import GameScreen from '../screens/GameScreen';
 import Ninja from './Ninja';
+import { screen } from 'src/lib/types';
 
 export default class Chest extends View {
   sprite: ImageView;
-  screen: { width: number; height: number };
+  screen: screen;
   game: GameScreen;
   ninja: Ninja;
   gravity: number;

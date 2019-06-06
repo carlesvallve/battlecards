@@ -1,9 +1,14 @@
 import animate from 'animate';
+import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
 
 import settings from 'src/conf/settings';
+import level from 'src/conf/levels';
+import { point } from 'src/lib/types';
 
 import Entity from 'src/game/components/Entity';
+import Ninja from './Ninja';
+
 import { GameStates, Actions } from 'src/lib/enums';
 import {
   getRandomFloat,
@@ -13,19 +18,16 @@ import {
   getRandomItemFromArray,
   getScreenDimensions,
 } from 'src/lib/utils';
-import View from 'ui/View';
-import level from 'src/conf/levels';
-import { point } from 'src/lib/types';
-import Ninja from './Ninja';
+import World from './World';
 
 export default class Slime extends Entity {
   sprite: SpriteView;
   ninja: Ninja;
   scorePoints: number;
   starProbability: number;
-  
+
   constructor(opts: {
-    parent: View;
+    parent: World;
     x: number;
     y: number;
     scale: number;
@@ -210,11 +212,11 @@ export default class Slime extends Entity {
   }
 
   die() {
-    this.game.emit('game:explosion', { slime: this });
+    this.game.emit('game:explosion', { entity: this });
 
     const r = getRandomInt(1, 100);
     if (r <= this.starProbability) {
-      this.game.emit('game:spawnstars', { chest: this });
+      this.game.emit('game:spawnstars', { entity: this });
     }
   }
 }

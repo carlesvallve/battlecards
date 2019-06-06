@@ -53,7 +53,7 @@ export const debugPoint = (
   parent: View,
   color: string = 'yellow',
   display: boolean = false,
-) => {
+): View => {
   if (!display) {
     return null;
   }

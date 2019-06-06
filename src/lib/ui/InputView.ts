@@ -5,6 +5,20 @@ var DEFAULT_MAX_DOUBLE_CLICK_MS = 200;
 var DEFAULT_DRAG_THRESHOLD = 15;
 
 export default class InputView extends View {
+  startEvents: any;
+  startPoints: { x: number; y: number; lastX: number; lastY: number }[];
+  lastStartID: number;
+  lastStartTime: number;
+
+  handlersForDrag: any;
+  handlersForDragFinish: any;
+  handlersForTouch: any;
+  handlersForClick: any;
+  handlersForDoubleClick: any;
+  enableDoubleClick: boolean;
+  maxDoubleClickMS: number;
+  dragThreshold: number;
+
   constructor(opts) {
     super(opts);
 
@@ -110,7 +124,10 @@ export default class InputView extends View {
    * devkit input
    */
 
-  onInputStart(evt, pt) {
+  onInputStart(
+    evt: any,
+    pt: { x: number; y: number; lastX: number; lastY: number },
+  ) {
     pt.lastX = pt.x;
     pt.lastY = pt.y;
     this.startEvents.push(evt);
@@ -128,7 +145,10 @@ export default class InputView extends View {
     }
   }
 
-  onInputMove(evt, pt) {
+  onInputMove(
+    evt: any,
+    pt: { x: number; y: number; lastX: number; lastY: number },
+  ) {
     var startEvents = this.startEvents;
     var startPoints = this.startPoints;
     var activeCount = startEvents.length;
@@ -174,7 +194,10 @@ export default class InputView extends View {
     startPt.lastY = y;
   }
 
-  onInputSelect(evt, pt) {
+  onInputSelect(
+    evt: any,
+    pt: { x: number; y: number; lastX: number; lastY: number },
+  ) {
     var startEvents = this.startEvents;
     var startPoints = this.startPoints;
     for (var i = startEvents.length - 1; i >= 0; i--) {
@@ -190,7 +213,7 @@ export default class InputView extends View {
     }
   }
 
-  onDragStop(dragEvt, stopEvt) {
+  onDragStop(dragEvt: any, stopEvt: any) {
     var startEvents = this.startEvents;
     var startPoints = this.startPoints;
     var dx = 0;
@@ -215,7 +238,7 @@ export default class InputView extends View {
    * significant input events
    */
 
-  handleDrag(dx, dy) {
+  handleDrag(dx: number, dy: number) {
     for (var i = 0; i < this.handlersForDrag.length; i++) {
       this.handlersForDrag[i](dx, dy);
     }
@@ -226,19 +249,19 @@ export default class InputView extends View {
     }
   }
 
-  handleDragFinish(dx, dy) {
+  handleDragFinish(dx: number, dy: number) {
     for (var i = 0; i < this.handlersForDragFinish.length; i++) {
       this.handlersForDragFinish[i](dx, dy);
     }
   }
 
-  handleTouch(x, y) {
+  handleTouch(x: number, y: number) {
     for (var i = 0; i < this.handlersForTouch.length; i++) {
       this.handlersForTouch[i](x, y);
     }
   }
 
-  handleClick(x, y) {
+  handleClick(x: number, y: number) {
     for (var i = 0; i < this.handlersForClick.length; i++) {
       this.handlersForClick[i](x, y);
     }
@@ -246,7 +269,7 @@ export default class InputView extends View {
     this.lastStartID = INVALID;
   }
 
-  handleDoubleClick(x, y) {
+  handleDoubleClick(x: number, y: number) {
     for (var i = 0; i < this.handlersForDoubleClick.length; i++) {
       this.handlersForDoubleClick[i](x, y);
     }

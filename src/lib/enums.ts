@@ -1,3 +1,6 @@
+// todo: convert these to tuples (?)
+// import { tuple, Tuple } from 'src/lib/types';
+
 export const GameStates = {
   Play: 'Play',
   Pause: 'Pause',

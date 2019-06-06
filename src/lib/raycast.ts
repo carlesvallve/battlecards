@@ -1,12 +1,16 @@
 import View from 'ui/View';
 import { mapWidth, mapHeight, tileSize, getTile } from 'src/conf/levels/index';
-import { point, debugLine } from './types';
+import { point, debugLine, raycastResult } from './types';
 
 // ======================== global point to tile point
 
 // Find out if the given pixel is traversable.
 // X and Y are the scene pixel coordinates
-export const isPointTraversable = (x: number, y: number, offset: point) => {
+export const isPointTraversable = (
+  x: number,
+  y: number,
+  offset: point,
+): boolean => {
   x -= offset.x;
   y -= offset.y;
 
@@ -56,8 +60,8 @@ export const bresenhamLine = (
   y0: number,
   x1: number,
   y1: number,
-) => {
-  const result = []; // array of points
+): point[] => {
+  const result: point[] = []; // array of points
 
   const steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
   if (steep) {
@@ -76,7 +80,7 @@ export const bresenhamLine = (
 
   let y = y0;
   let error = 0;
-  let ystep;
+  let ystep: number;
   if (y0 < y1) {
     ystep = increment;
   } else {
@@ -102,7 +106,7 @@ export const bresenhamLine = (
 
 // ======================== Raycast algorithm
 
-export const normalize = (point: point, scale: number = 1) => {
+export const normalize = (point: point, scale: number = 1): point => {
   const norm = Math.sqrt(point.x * point.x + point.y * point.y);
   if (norm != 0) {
     // as3 return 0,0 for a point of zero length
@@ -123,9 +127,9 @@ export const rayCast = (
     debugView: null,
     duration: 100,
   },
-) => {
+): raycastResult => {
   // set result defaults
-  const result = {
+  const result: raycastResult = {
     doCollide: false,
     position: null,
     distance: null,

@@ -1,13 +1,24 @@
-import ImageView from 'ui/ImageView';
-import { debugPoint } from 'src/lib/utils';
 import View from 'ui/View';
+import ImageView from 'ui/ImageView';
+import Image from 'ui/resource/Image';
+import { debugPoint } from 'src/lib/utils';
+import { tileData } from 'src/lib/types';
+import World from './World';
 
 export default class Tile extends ImageView {
   parent: View;
-  data: any; // todo
   solidityMap: number[];
+  data: tileData;
 
-  constructor(opts) {
+  constructor(opts: {
+    parent: View;
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    image: Image;
+    data: tileData;
+  }) {
     super(opts);
 
     this.parent = opts.parent;
@@ -31,7 +42,7 @@ export default class Tile extends ImageView {
     return solidityMap;
   }
 
-  buildSolidityMap2(imageData: ImageData) {
+  buildSolidityMap2(imageData: ImageData): number[] {
     // console.log('>>>', imageData);
 
     const solidityMap = []; // new bool[bitmap.Width, bitmap.Height];

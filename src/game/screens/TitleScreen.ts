@@ -4,9 +4,10 @@ import InputView from 'src/lib/ui/InputView';
 
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
+import { screen } from 'src/lib/types';
 
 export default class TitleScreen extends View {
-  screen: { width: number; height: number };
+  screen: screen;
   inputView: InputView;
 
   constructor() {
@@ -68,7 +69,6 @@ export default class TitleScreen extends View {
       color: '#eee',
       x: 0,
       y: 200 - offsetY + this.screen.height / 2,
-      // y: 172 - offsetY + this.screen.height / 2,
       width: 320,
       height: 32,
       fontWeight: 'bold',

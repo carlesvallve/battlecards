@@ -3,7 +3,7 @@ import Tile from 'src/game/components/Tile';
 import settings from 'src/conf/settings';
 import level1 from 'src/conf/levels/01';
 import level2 from 'src/conf/levels/02';
-import { point } from 'src/lib/types';
+import { tileData } from 'src/lib/types';
 
 const levels = [null, level1, level2];
 const level = levels[settings.currentMapLevel];
@@ -35,15 +35,7 @@ export const getTileType = (x: number, y: number): number => {
   return level.mapData[y][x] || null;
 };
 
-export const getTileData = (
-  x: number,
-  y: number,
-): {
-  type: number;
-  image: Image;
-  offset: point;
-  walkable: boolean;
-} => {
+export const getTileData = (x: number, y: number): tileData => {
   const type = getTileType(x, y);
 
   switch (type) {

@@ -1,16 +1,17 @@
-import animate from 'animate';
 import View from 'ui/View';
-import settings from 'src/conf/settings';
-import { getScreenDimensions, getRandomInt, debugPoint } from 'src/lib/utils';
+import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { GameStates } from 'src/lib/enums';
-import level from 'src/conf/levels/index';
+import { screen } from 'src/lib/types';
+import Ninja from './Ninja';
+import GameScreen from '../screens/GameScreen';
 
 export default class World extends View {
-  screen: { width: number; height: number };
-  game: View;
+  screen: screen;
+  game: GameScreen;
+  ninja: Ninja;
   elasticity: number;
-  
-  constructor(opts) {
+
+  constructor(opts: { parent: GameScreen }) {
     super(opts);
     this.screen = getScreenDimensions();
     this.game = opts.parent;
@@ -23,7 +24,7 @@ export default class World extends View {
     this.centerAt(this.game.ninja);
   }
 
-  centerAt(ninja) {
+  centerAt(ninja: Ninja) {
     const targetX = -ninja.style.x + this.screen.width / 2;
     const targetY = -ninja.style.y + this.screen.height / 2;
     this.updateOpts({
@@ -32,7 +33,7 @@ export default class World extends View {
     });
   }
 
-  interpolate(ninja) {
+  interpolate(ninja: Ninja) {
     const targetX = -ninja.style.x + this.screen.width / 2;
     const targetY = -ninja.style.y + this.screen.height / 2;
     const dx = (targetX - this.style.x) * this.elasticity;
@@ -50,9 +51,7 @@ export default class World extends View {
     }
 
     const ninja = this.game.ninja;
-    if (!this.game.ninja) {
-      return;
-    }
+    if (!ninja) return;
 
     this.interpolate(ninja);
   }

@@ -1,17 +1,19 @@
 import View from 'ui/View';
-import { getScreenDimensions, debugPoint } from 'src/lib/utils';
+import World from 'src/game/components/World';
 import Tile from 'src/game/components/Tile';
-
+import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import level, { getTileData } from 'src/conf/levels/index';
-import { point } from 'src/lib/types';
+import { point, screen } from 'src/lib/types';
+import GameScreen from '../screens/GameScreen';
+
 
 export default class Terrain extends View {
-  screen: { width: number; height: number };
-  game: View;
+  screen: screen;
+  game: GameScreen;
   offset: point;
   center: point;
   
-  constructor(opts: { parent: View }) {
+  constructor(opts: { parent: World }) {
     super(opts);
     this.screen = getScreenDimensions();
     this.game = opts.parent.game;

@@ -24,9 +24,11 @@ import {
 } from 'src/lib/utils';
 import { onSwipe } from 'src/lib/swipe';
 import level, { mapWidth } from 'src/conf/levels';
+import { screen } from 'src/lib/types';
+import Entity from '../components/Entity';
 
 export default class GameScreen extends InputView {
-  screen: { width: number; height: number };
+  screen: screen;
   bg: ImageScaleView;
   world: World;
   terrain: Terrain;
@@ -55,11 +57,7 @@ export default class GameScreen extends InputView {
     });
 
     // create world
-    this.world = new World({
-      parent: this,
-      width: screen.width,
-      height: screen.height,
-    });
+    this.world = new World({ parent: this });
 
     // create terrain
     this.terrain = new Terrain({ parent: this.world });
@@ -160,25 +158,25 @@ export default class GameScreen extends InputView {
     this.slimes.push(slime);
   }
 
-  explosion({ slime }) {
-    // escape if no slime exist
-    if (!slime) {
-      return;
-    }
+  explosion(opts: { entity: Entity }) {
+    const { entity } = opts;
+
+    // escape if no entity exist
+    if (!entity) return;
 
     // create explosion particles
     new Explosion({
       parent: this.world,
       sc: settings.worldScale * 0.9,
       max: getRandomInt(16, 32),
-      startX: slime.style.x,
-      startY: slime.style.y + 4 * settings.worldScale,
-      color: slime.color,
+      startX: entity.style.x,
+      startY: entity.style.y + 4 * settings.worldScale,
+      color: entity.color,
     });
 
-    if (slime === this.ninja) {
-      return;
-    }
+    if (entity === this.ninja) return;
+
+    const slime = <Slime>entity;
 
     // add score
     this.hud.emit('hud:updateScore', { points: slime.scorePoints });
@@ -186,7 +184,6 @@ export default class GameScreen extends InputView {
     // remove slime
     slime.removeFromSuperview();
     this.removeSlimeFromArray(slime);
-    slime = null;
   }
 
   removeSlimeFromArray(slime) {
@@ -198,9 +195,11 @@ export default class GameScreen extends InputView {
     }
   }
 
-  spawnChest({ slime }) {
+  spawnChest(opts: { entity: Entity }) {
+    const { entity } = opts;
+
     // escape if no slime exist
-    if (!slime) {
+    if (!entity) {
       return;
     }
 
@@ -208,23 +207,25 @@ export default class GameScreen extends InputView {
     new Chest({
       parent: this.world,
       sc: settings.worldScale,
-      startX: slime.style.x,
-      startY: slime.style.y + 4 * settings.worldScale,
-      color: slime.color,
+      startX: entity.style.x,
+      startY: entity.style.y + 4 * settings.worldScale,
+      color: entity.color,
     });
   }
 
-  spawnStars({ chest }) {
+  spawnStars(opts: { entity: Entity }) {
+    const { entity } = opts;
+
     // escape if no chest exist
-    if (!chest) {
+    if (!entity) {
       return;
     }
 
     new Stars({
       parent: this.world,
       max: getRandomInt(1, 3),
-      startX: chest.style.x,
-      startY: chest.style.y + 4 * settings.worldScale,
+      startX: entity.style.x,
+      startY: entity.style.y + 4 * settings.worldScale,
     });
   }
 
@@ -237,10 +238,8 @@ export default class GameScreen extends InputView {
       width: this.screen.width,
       height: this.screen.height,
       dragThreshold: 0,
-      // backgroundColor: 'rgba(1, 0, 0, 0.5)',
     });
 
-    // this.inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
     onSwipe(this, 32, (v: Vector) => this.onSwipe(v));
 
     // set input handlers
@@ -250,26 +249,24 @@ export default class GameScreen extends InputView {
     // this.inputView.registerHandlerForDragFinish((dx, dy) => this.onDragFinish(dx, dy));
   }
 
-  onTap(x, y) {
-    // console.log('onTap', x, y);
-
-    // clicking anywhere while paused will resume the game
-    if (this.gameState === GameStates.Pause) {
-      this.hud.onResume();
-      // return;
-    }
-
+  onTap(x: number, y: number) {
     // if we are in 'continue' screen
     if (this.gameState === GameStates.GameOver) {
       // actually, if we click here means we want to continue.
       // so respawn the ninja and refill one life!
       if (this.hud.gameOver.time <= 8) {
         this.gameState = GameStates.Play;
+        // this.world.init();
         this.ninja.emit('ninja:start');
         this.hud.emit('hud:continue');
         sounds.playSong('dubesque');
       }
       return;
+    }
+
+    // clicking anywhere while paused will resume the game
+    if (this.gameState === GameStates.Pause) {
+      this.hud.onResume();
     }
 
     // interact with the ninja
@@ -284,7 +281,7 @@ export default class GameScreen extends InputView {
     const d = 32;
     vec.multiplyScalar(d).limit(128);
 
-    console.log(vec);
+    // console.log(vec);
     const pos = {
       x: this.ninja.style.x + vec.x,
       y: this.ninja.style.y + vec.y,

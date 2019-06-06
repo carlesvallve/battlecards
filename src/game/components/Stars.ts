@@ -12,10 +12,13 @@ import sounds from 'src/lib/sounds';
 import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 import Ninja from './Ninja';
+import { screen } from 'src/lib/types';
+import World from './World';
+import GameScreen from '../screens/GameScreen';
 
 export default class Stars extends View {
-  screen: { width: number; height: number };
-  game: View;
+  screen: screen;
+  game: GameScreen;
   ninja: Ninja;
   gravity: number;
   impulse: number;
@@ -25,7 +28,7 @@ export default class Stars extends View {
   sprites: any; // todo: View[]; but splice fails...
 
   constructor(opts: {
-    parent: View;
+    parent: World;
     startX: number;
     startY: number;
     max: number;

@@ -3,7 +3,7 @@ import TextView from 'ui/TextView';
 
 class SingleTextBuffer {
   _canvas: Canvas;
-  _ctx: any;
+  _ctx: CanvasRenderingContext2D;
   _width: number;
   _height: number;
 

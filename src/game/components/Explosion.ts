@@ -4,6 +4,8 @@ import { getRandomInt, getRandomFloat } from 'src/lib/utils';
 import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 import GameScreen from '../screens/GameScreen';
+import { screen } from 'src/lib/types';
+import World from './World';
 
 const pool = new QuickViewPool({
   ctor: View,
@@ -16,7 +18,7 @@ const pool = new QuickViewPool({
 // todo: we should turn this into an abstract class since we are not the parent anymore
 
 export default class Explosion extends View {
-  screen: { width: number; height: number };
+  screen: screen;
   game: GameScreen;
   sprites: View[];
   gravity: number;
@@ -25,7 +27,7 @@ export default class Explosion extends View {
   vy: number;
 
   constructor(opts: {
-    parent: View;
+    parent: World;
     sc: number;
     max: number;
     startX: number;

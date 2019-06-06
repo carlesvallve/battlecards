@@ -8,9 +8,10 @@ import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';
 import { GameStates } from 'src/lib/enums';
+import { screen } from 'src/lib/types';
 
 export default class Hud extends View {
-  screen: { width: number; height: number };
+  screen: screen;
   game: View;
   highscore: number;
   score: number;
