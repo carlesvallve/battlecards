@@ -1,4 +1,3 @@
-
 import startApplication from 'startApplication';
 import platform from 'platform';
 import device from 'device';
@@ -9,6 +8,7 @@ import TitleScreen from 'src/game/screens/TitleScreen';
 import GameScreen from 'src/game/screens/GameScreen';
 import sounds from 'src/lib/sounds';
 import { waitForIt } from 'src/lib/utils';
+import StateObserver from './redux/StateObserver';
 
 export default class Application extends View {
   constructor(opts) {
@@ -16,6 +16,8 @@ export default class Application extends View {
 
     this.loadAssets()
       .then(() => platform.startGameAsync())
+      .then(() => platform.sendEntryFinalAnalytics({}, {}, {}))
+      .then(() => this.initializeStateObserver())
       .then(() => {
         waitForIt(() => {
           this.startGame();
@@ -65,6 +67,15 @@ export default class Application extends View {
         // });
       });
     });
+  }
+
+  async initializeStateObserver() {
+    return StateObserver.init({
+      playerId: platform.playerID,
+      signature: platform.playerSignature,
+      // errorHandler: () => console.error('There was an error'), // this.onReplicantError,
+      // networkErrorHandler: () => console.error('There was a network error'), // this.onNetworkError,
+    }).catch((e) => console.error(e));
   }
 
   startGame() {
