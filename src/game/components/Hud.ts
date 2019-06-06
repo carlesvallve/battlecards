@@ -9,6 +9,8 @@ import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';
 import { GameStates } from 'src/lib/enums';
 import { screen } from 'src/lib/types';
+import StateObserver from 'src/redux/StateObserver';
+import { setPlaying } from 'src/redux/state/reducers/user';
 
 export default class Hud extends View {
   screen: screen;
@@ -18,11 +20,11 @@ export default class Hud extends View {
   stars: number;
   hearts: ImageView[];
   gameOver: GameOver;
-  starLabel:FixedTextView;
-  scoreLabel:FixedTextView;
-  pauseLabel:FixedTextView;
-  pauseButton: ButtonView
-  
+  starLabel: FixedTextView;
+  scoreLabel: FixedTextView;
+  pauseLabel: FixedTextView;
+  pauseButton: ButtonView;
+
   constructor(opts: { parent: View }) {
     super(opts);
 
@@ -54,6 +56,29 @@ export default class Hud extends View {
     this.on('hud:updateStars', this.onUpdateStars.bind(this));
     this.on('hud:removeHeart', this.onRemoveHeart.bind(this));
     this.on('hud:gameover', this.onGameOver.bind(this));
+
+    StateObserver.createSelector((state) => state.user.isPlaying).addListener(
+      (isPlaying) => {
+        console.log('state:', isPlaying);
+        if (isPlaying) {
+          this.onResume();
+        } else {
+          this.onPause();
+        }
+      },
+    );
+
+    StateObserver.createSelector((state) => state.user.score).addListener(
+      (score) => {
+        console.log('score:', score);
+      },
+    );
+
+    StateObserver.createSelector((state) => state.user.stars).addListener(
+      (stars) => {
+        console.log('stars:', stars);
+      },
+    );
   }
 
   init() {
@@ -270,22 +295,32 @@ export default class Hud extends View {
       y: this.screen.height - 72,
       scale: 1.0,
       onClick: () => {
-        if (this.game.gameState === GameStates.Play) {
-          this.onPause();
+        if (StateObserver.getState().user.isPlaying) {
+          StateObserver.dispatch(setPlaying(false));
         } else {
-          this.onResume();
+          StateObserver.dispatch(setPlaying(true));
         }
+
+        // if (this.game.gameState === GameStates.Play) {
+        //   this.onPause();
+        // } else {
+        //   this.onResume();
+        // }
       },
     });
   }
 
   onPause() {
+    // StateObserver.dispatch(setPlaying(false));
+
     this.game.gameState = GameStates.Pause;
     this.game.inputView.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     this.pauseLabel.show();
   }
 
   onResume() {
+    // StateObserver.dispatch(setPlaying(true));
+
     this.game.gameState = GameStates.Play;
     this.game.inputView.style.backgroundColor = null;
     this.pauseLabel.hide();

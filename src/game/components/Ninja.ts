@@ -8,6 +8,7 @@ import { debugPoint, waitForIt } from 'src/lib/utils';
 import { point } from 'src/lib/types';
 import level, { getTileTypeAtPixel } from 'src/conf/levels';
 import World from './World';
+import StateObserver from 'src/redux/StateObserver';
 
 export default class Ninja extends Entity {
   sprite: SpriteView;
@@ -47,6 +48,12 @@ export default class Ninja extends Entity {
         this.idle();
       }
     });
+
+    // StateObserver.createSelector(
+    //   (state) => state.user.isPlaying === true,
+    // ).addListener((active) => {
+    //   console.log('playing...');
+    // });
   }
 
   createSprite() {
@@ -181,7 +188,7 @@ export default class Ninja extends Entity {
         this.game.emit('game:explosion', { entity: this });
         this.hide();
       })
-      .wait(500)  
+      .wait(500)
       .then(() => {
         this.game.hud.onResume();
         // if no more hearts, gameover!

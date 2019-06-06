@@ -9,25 +9,22 @@ export type PopupOpts = {
 
 const slice = createSlice({
   initialState: {
-    loading: false,
-    scene: 'mapUpgrade' as SceneID,
+    isLoading: false,
+    scene: 'title' as SceneID,
     togglePopup: { id: '', enabled: false, opts: {} as any },
-    autoSpin: false,
-    animating: false,
   },
   reducers: {
     selectScene: (state, { payload }: PayloadAction<SceneID>) => {
-      if (state.animating) return;
       state.scene = payload;
     },
     togglePopup: (state, { payload }: PayloadAction<PopupOpts>) => {
       state.togglePopup = payload;
     },
     showLoading: (state) => {
-      state.loading = true;
+      state.isLoading = true;
     },
     hideLoading: (state) => {
-      state.loading = false;
+      state.isLoading = false;
     },
   },
 });
