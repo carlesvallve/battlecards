@@ -125,9 +125,9 @@ export default class Slime extends Entity {
     this.style.flipX = dir === -1;
   }
 
-  // jump () {
-  //   this.impulse = 26;
-  // }
+  checkOutOfMapBounds() {
+    // kill the slime if it drops out of map height
+  }
 
   checkNinjaDistance() {
     // escape if the slime is dying or already attacking

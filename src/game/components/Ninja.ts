@@ -268,12 +268,14 @@ export default class Ninja extends Entity {
     // if (this.vy < 0) return;
     // if (this.action === Actions.Jump) return;
 
+    sounds.playSound('woosh');
+
     this.vy = -16;
     const duration = 300;
     this.goal = null;
 
     this.action = Actions.Jump;
-    this.sprite.setFramerate(16);
+    this.sprite.setFramerate(12);
     this.sprite.startAnimation('roll', { loop: true });
     this.setDirection(x >= this.style.x ? 1 : -1);
 

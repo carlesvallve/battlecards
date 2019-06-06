@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-
 import View from 'ui/View';
 import { mapWidth, mapHeight, tileSize, getTile } from 'src/conf/levels/index';
 import { point, debugLine } from './types';

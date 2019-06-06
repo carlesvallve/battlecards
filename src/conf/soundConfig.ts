@@ -35,5 +35,9 @@ export default {
     explode: { volume: 1, background: false, sources: ['explode.mp3'] },
     destroy: { volume: 1, background: false, sources: ['destroy.mp3'] },
     warning: { volume: 1, background: false, sources: ['warning.mp3'] },
+
+    woosh: { volume: 1, background: false, sources: ['woosh.mp3'] },
+    huh: { volume: 1, background: false, sources: ['huh.mp3'] },
+    flesh: { volume: 1, background: false, sources: ['flesh.mp3'] },
   },
 };

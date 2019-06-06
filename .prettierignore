@@ -10,3 +10,6 @@ fbapp-config.json
 tsconfig.json
 timestep-workspace.config.json
 
+#maps
+src/conf/levels/*
+
