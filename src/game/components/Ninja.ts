@@ -4,9 +4,9 @@ import SpriteView from 'ui/SpriteView';
 import Entity from 'src/game/components/Entity';
 import { GameStates, Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
-import { debugPoint } from 'src/lib/utils';
+import { debugPoint, waitForIt } from 'src/lib/utils';
 import { point } from 'src/lib/types';
-import { getTileAtPixel } from 'src/conf/levels';
+import level, { getTileAtPixel, getTileTypeAtPixel } from 'src/conf/levels';
 
 export default class Ninja extends Entity {
   constructor(opts: { parent: View; x: number; y: number; scale: number }) {
@@ -200,6 +200,8 @@ export default class Ninja extends Entity {
 
   respawn() {
     sounds.playSound('destroy');
+    this.goal = null;
+    // this.updateOpts({ y: -2 });
     this.respawning = true;
     this.style.opacity = 0.6;
     this.show();
@@ -234,9 +236,7 @@ export default class Ninja extends Entity {
     // if (this.action === Actions.Attack) {
     //   return;
     // }
-    if (this.action === Actions.Die && !this.style.visible) {
-      return;
-    }
+    if (this.action === Actions.Die) return;
     this.setDirection(x >= this.style.x ? 1 : -1);
 
     const speed = 10; // bigger is slower
@@ -286,20 +286,27 @@ export default class Ninja extends Entity {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
+    if (this.game.gameState === GameStates.Pause) return;
 
     super.tick(dt);
 
-    // console.log(this.game)
+    this.checkForLava();
+  }
 
-    // const tile = getTileAtPixel(
-    //   this.style.x + this.game.terrain.mapbox.style.x,
-    //   this.style.y + this.game.terrain.mapbox.style.y - 16,
-    // );
-    // if (tile) {
-    //   console.log(tile.data.type);
-    // }
+  checkForLava() {
+    if (this.isDeadOrSpawning()) return;
+    const { x, y } = this.style;
+    const tileType = getTileTypeAtPixel(x, y - level.tileSize);
+    if (tileType === 2) {
+      waitForIt(() => {
+        if (this.isDeadOrSpawning()) return;
+        console.log('Lava death!');
+        this.die();
+      }, 250);
+    }
+  }
+
+  isDeadOrSpawning() {
+    return this.action === Actions.Die || this.respawning;
   }
 }

@@ -16,8 +16,16 @@ export const tileSize = level.tileSize;
 export const getTileAtPixel = (px: number, py: number): Tile => {
   const x = Math.round(px / tileSize);
   const y = Math.round(py / tileSize);
-  return level.map[y][x] || null;
+  if (x < 0 || y < 0 || x >= mapWidth || y >= mapHeight) {
+    return null;
+  }
+  return getTile(x, y);
 };
+export const getTileTypeAtPixel = (px: number, py: number): number => {
+  const tile = getTileAtPixel(px, py);
+  if (tile) { return tile.data.type; }
+  return null;
+}
 
 export const getTile = (x: number, y: number): Tile => {
   return level.map[y][x] || null;
