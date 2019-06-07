@@ -123,6 +123,7 @@ class StateObserver {
   private store = configureStore<ReturnType<typeof reducer>, AnyAction>({
     reducer,
     middleware: middleware(),
+    devTools: true,
   });
 
   private listeners: Array<Listener>;

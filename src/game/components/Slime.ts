@@ -9,7 +9,9 @@ import { point } from 'src/lib/types';
 import Entity from 'src/game/components/Entity';
 import Ninja from './Ninja';
 
-import { GameStates, Actions } from 'src/lib/enums';
+// import { GameStates, Actions } from 'src/lib/enums';
+import { Actions } from 'src/lib/enums';
+
 import {
   getRandomFloat,
   getRandomInt,
@@ -19,6 +21,9 @@ import {
   getScreenDimensions,
 } from 'src/lib/utils';
 import World from './World';
+import StateObserver from 'src/redux/StateObserver';
+import { setEntityState, setTarget } from 'src/redux/state/reducers/ninja';
+import { isGameActive, isNinjaAttacking, isNinjaDead, isNinjaRespawning } from 'src/redux/state/states';
 
 export default class Slime extends Entity {
   sprite: SpriteView;
@@ -113,14 +118,8 @@ export default class Slime extends Entity {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
-
-    if (this.action === Actions.Attack) {
-      return;
-    }
-
+    if (!isGameActive()) return;
+    
     const me = this.style;
     me.x += this.speed * this.dir;
 
@@ -153,9 +152,7 @@ export default class Slime extends Entity {
     }
 
     // escape if ninja is alredy dying
-    if (this.ninja.action === Actions.Die) {
-      return;
-    }
+    if (isNinjaDead()) return;
 
     // if the slime gets near enough to the ninja...
     const dist = getDistanceBetweenViews(this, this.ninja);
@@ -166,7 +163,9 @@ export default class Slime extends Entity {
         // -> if the slime is looking in the ninja direction
         if (
           dir !== this.ninja.dir ||
-          (!settings.player.autoAttack && this.ninja.action === Actions.Idle)
+          // (!settings.player.autoAttack && this.ninja.action === Actions.Idle)
+          (!settings.player.autoAttack &&
+            StateObserver.getState().ninja.entityState === 'Idle')
         ) {
           this.attack();
           return;
@@ -179,6 +178,7 @@ export default class Slime extends Entity {
 
       // make ninja attack us
       this.ninja.emit('ninja:attack', { target: this });
+      // StateObserver.dispatch(setTarget(this)); // non-serializable
 
       // wait and explode
       animate(this)
@@ -191,9 +191,7 @@ export default class Slime extends Entity {
   }
 
   attack() {
-    if (this.ninja.respawning) {
-      return;
-    }
+    if (isNinjaRespawning()) return;
 
     this.action = Actions.Attack;
     this.ninja.emit('ninja:die');

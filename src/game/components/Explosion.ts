@@ -1,11 +1,12 @@
 import View from 'ui/View';
 import QuickViewPool from 'ui/ViewPool2';
 import { getRandomInt, getRandomFloat } from 'src/lib/utils';
-import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 import GameScreen from '../screens/GameScreen';
 import { screen } from 'src/lib/types';
 import World from './World';
+import StateObserver from 'src/redux/StateObserver';
+import { isGameActive } from 'src/redux/state/states';
 
 const pool = new QuickViewPool({
   ctor: View,
@@ -74,9 +75,7 @@ export default class Explosion extends View {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
+    if (!isGameActive()) return;
 
     // remove explosion when there are no sprites left alive
     if (this.sprites.length === 0) {

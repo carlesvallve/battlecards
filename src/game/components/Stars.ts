@@ -9,7 +9,7 @@ import {
   getDistanceBetweenViews,
 } from 'src/lib/utils';
 import sounds from 'src/lib/sounds';
-import { GameStates } from 'src/lib/enums';
+// import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 import Ninja from './Ninja';
 import { screen } from 'src/lib/types';
@@ -17,6 +17,7 @@ import World from './World';
 import GameScreen from '../screens/GameScreen';
 import StateObserver from 'src/redux/StateObserver';
 import { addStars } from 'src/redux/state/reducers/user';
+import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/state/states';
 
 export default class Stars extends View {
   screen: screen;
@@ -94,17 +95,15 @@ export default class Stars extends View {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
+    if (!isGameActive()) return;
 
     // update particles
     for (let i = 0; i < this.sprites.length; i++) {
       const sprite = this.sprites[i];
       const me = sprite.style;
 
-      // kill particle if already gameover
-      if (this.game.state === GameStates.GameOver) {
+      // kill star particle if already gameover
+      if (isGameOver()) {
         this.die(sprite);
         continue;
       }
@@ -138,9 +137,7 @@ export default class Stars extends View {
   }
 
   checkNinjaDistance(sprite: View) {
-    if (this.ninja.action === Actions.Die) {
-      return;
-    }
+    if (isNinjaDead()) return;
 
     const dist = getDistanceBetweenViews(sprite, this.ninja);
     if (dist <= 16) {
@@ -152,7 +149,6 @@ export default class Stars extends View {
   collect(sprite: View) {
     this.removeSprite(sprite);
     sounds.playSound('combo_x' + getRandomInt(2, 6), 0.4);
-    // this.game.hud.emit('hud:updateStars', { ammount: 1 });
     StateObserver.dispatch(addStars(1));
   }
 

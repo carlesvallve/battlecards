@@ -1,8 +1,7 @@
 import animate from 'animate';
-import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
 import Entity from 'src/game/components/Entity';
-import { GameStates, Actions } from 'src/lib/enums';
+import { Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 import { debugPoint, waitForIt } from 'src/lib/utils';
 import { point } from 'src/lib/types';
@@ -10,51 +9,63 @@ import level, { getTileTypeAtPixel } from 'src/conf/levels';
 import World from './World';
 import StateObserver from 'src/redux/StateObserver';
 import { addHearts } from 'src/redux/state/reducers/user';
+import { setGameState } from 'src/redux/state/reducers/game';
+import {
+  setEntityState,
+  setGoal,
+  setRespawning,
+} from 'src/redux/state/reducers/ninja';
+import {
+  isGameActive,
+  isNinjaRunning,
+  isNinjaIdle,
+  isNinjaDead,
+  isNinjaJumping,
+  getNinjaGoal,
+  isNinjaAttacking,
+  isNinjaRespawning,
+  isGamePaused,
+  getHearts,
+} from 'src/redux/state/states';
 
 export default class Ninja extends Entity {
   sprite: SpriteView;
-  respawning: boolean;
-  goal: point;
 
   constructor(opts: { parent: World; x: number; y: number; scale: number }) {
     super(opts);
 
     this.gravity = 0.25;
     this.impulse = 10;
-    this.goal = null;
+
+    StateObserver.dispatch(setGoal(null));
 
     this.createSprite();
 
     this.on('ninja:start', this.init.bind(this, { x: opts.x, y: opts.y }));
-    this.on('ninja:idle', this.idle.bind(this));
-    this.on('ninja:run', this.run.bind(this));
-    this.on('ninja:jump', this.jump.bind(this));
     this.on('ninja:attack', this.attack.bind(this));
     this.on('ninja:die', this.die.bind(this));
-    this.on('ninja:moveTo', this.moveTo.bind(this));
-    this.on('ninja:jumpTo', this.jumpTo.bind(this));
 
     this.on('collision:ground', () => {
       // console.log('collision:ground');
-      if (this.action === Actions.Jump) {
-        animate(this).clear();
+      if (isNinjaJumping()) {
         this.idle();
       }
     });
     this.on('collision:wall', () => {
       // console.log('collision:wall');
       // stop interpolating and animating character
-      if (this.action === Actions.Run) {
+      if (!isNinjaRunning()) {
         animate(this).clear();
         this.idle();
       }
     });
 
-    // StateObserver.createSelector(
-    //   (state) => state.user.isPlaying === true,
-    // ).addListener((active) => {
-    //   console.log('playing...');
-    // });
+    // entityState check
+    StateObserver.createSelector(
+      (state) => state.ninja.entityState,
+    ).addListener((entityState) => {
+      console.log('ninjaState:', entityState);
+    });
   }
 
   createSprite() {
@@ -77,8 +88,9 @@ export default class Ninja extends Entity {
   }
 
   init(pos: point) {
-    this.action = Actions.Idle;
-    this.respawning = false;
+    StateObserver.dispatch(setEntityState('Idle'));
+    StateObserver.dispatch(setRespawning(false));
+
     this.dir = 1;
     this.speed = 0.1;
     this.color = 'black';
@@ -103,32 +115,29 @@ export default class Ninja extends Entity {
   }
 
   idle() {
-    if (this.action === Actions.Idle) {
-      return;
-    }
-    this.action = Actions.Idle;
+    if (isNinjaAttacking() || isNinjaIdle()) return;
+    StateObserver.dispatch(setEntityState('Idle'));
+
     this.sprite.setFramerate(6);
     this.sprite.startAnimation('idle', { loop: true });
     animate(this).clear();
   }
 
   run() {
-    if (this.action === Actions.Die) return;
-    if (this.action === Actions.Run) return;
+    if (isNinjaDead() || isNinjaRunning()) return;
+    StateObserver.dispatch(setEntityState('Run'));
 
-    this.action = Actions.Run;
     this.sprite.setFramerate(10);
     this.sprite.startAnimation('run', { loop: true });
     this.setDirection(1);
   }
 
   jump() {
-    if (this.action === Actions.Die) return;
-    if (this.action === Actions.Jump) return;
+    if (isNinjaDead() || isNinjaJumping()) return;
+    StateObserver.dispatch(setEntityState('Jump'));
 
-    this.action = Actions.Jump;
     this.setDirection(1);
-    this.sprite.setFramerate(16); //12);
+    this.sprite.setFramerate(16); // 12
     this.sprite.startAnimation('roll', {
       loop: false,
       callback: () => {
@@ -138,19 +147,16 @@ export default class Ninja extends Entity {
   }
 
   attack(opts: { target: Entity }) {
-    if (this.action === Actions.Die || opts.target.action === Actions.Attack) {
-      return;
-    }
+    if (opts.target.action === Actions.Attack) return; // todo: slime states
+    if (isNinjaDead()) return;
+    StateObserver.dispatch(setEntityState('Attack'));
 
-    this.action = Actions.Attack;
     this.sprite.setFramerate(12);
     this.sprite.startAnimation('attack', {
       loop: false,
       callback: () => {
         this.idle();
-        if (this.goal) {
-          this.moveTo({ x: this.goal.x, y: this.goal.y });
-        }
+        this.moveTo(getNinjaGoal());
       },
     });
 
@@ -168,14 +174,10 @@ export default class Ninja extends Entity {
   }
 
   die() {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
-    if (this.action === Actions.Die || this.respawning) {
-      return;
-    }
-    this.idle();
-    this.action = Actions.Die;
+    if (isGamePaused() || isNinjaDead() || isNinjaRespawning()) return;
+
+    // this.idle();
+    StateObserver.dispatch(setEntityState('Die'));
 
     // remove heart
     StateObserver.dispatch(addHearts(-1));
@@ -185,18 +187,16 @@ export default class Ninja extends Entity {
       .clear()
       .wait(100)
       .then(() => {
-        this.game.hud.onResume();
         sounds.playSound('explode');
         this.game.emit('game:explosion', { entity: this });
         this.hide();
       })
       .wait(500)
       .then(() => {
-        this.game.hud.onResume();
         // if no more hearts, gameover!
-        if (this.game.hud.hearts.length === 0) {
+        if (getHearts() === 0) {
           anim.clear();
-          this.game.emit('game:gameover');
+          StateObserver.dispatch(setGameState('GameOver'));
         }
       })
       .wait(500)
@@ -207,10 +207,10 @@ export default class Ninja extends Entity {
   }
 
   respawn() {
+    StateObserver.dispatch(setGoal(null));
+    StateObserver.dispatch(setRespawning(true));
+
     sounds.playSound('destroy');
-    this.goal = null;
-    // this.updateOpts({ y: -2 });
-    this.respawning = true;
     this.style.opacity = 0.6;
     this.show();
     this.idle();
@@ -236,42 +236,38 @@ export default class Ninja extends Entity {
       .wait(t)
       .then(() => {
         this.style.opacity = 1;
-        this.respawning = false;
+        StateObserver.dispatch(setRespawning(false));
       });
   }
 
   moveTo(pos: point) {
-    if (this.action === Actions.Die) return;
+    if (isNinjaDead() || !pos) return;
+    StateObserver.dispatch(setEntityState('Run'));
 
-    const { x, y } = pos;
-    this.setDirection(x >= this.style.x ? 1 : -1);
+    this.setDirection(pos.x >= this.style.x ? 1 : -1);
 
     const speed = 10; // bigger is slower
-    const d = Math.abs(x - this.style.x);
+    const d = Math.abs(pos.x - this.style.x);
     const duration = d * speed;
 
-    this.action = Actions.Run;
     this.sprite.setFramerate(12);
     this.sprite.startAnimation('run', { loop: true });
 
-    this.goal = { x, y };
+    StateObserver.dispatch(setGoal(pos));
 
     animate(this)
       .clear()
-      .now({ x: this.style.x }, 0, animate.linear)
-      .then({ x: x }, duration, animate.linear)
+      .then({ x: pos.x }, duration, animate.linear)
       .then(() => {
         this.idle();
-        this.goal = null;
+        // StateObserver.dispatch(setGoal(null));
       });
   }
 
   jumpTo(pos: point) {
-    if (this.action === Actions.Die) {
-      return;
-    }
-
-    const { x, y } = pos;
+    if (isNinjaDead()) return;
+    StateObserver.dispatch(setEntityState('Jump'));
+    StateObserver.dispatch(setGoal(null));
 
     // if (!this.isGrounded()) return;
     // if (this.vy < 0) return;
@@ -279,11 +275,10 @@ export default class Ninja extends Entity {
 
     sounds.playSound('woosh');
 
+    const { x, y } = pos;
     this.vy = -16;
     const duration = 300;
-    this.goal = null;
 
-    this.action = Actions.Jump;
     this.sprite.setFramerate(12);
     this.sprite.startAnimation('roll', { loop: true });
     this.setDirection(x >= this.style.x ? 1 : -1);
@@ -295,7 +290,7 @@ export default class Ninja extends Entity {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) return;
+    if (!isGameActive()) return;
 
     super.tick(dt);
 
@@ -303,7 +298,7 @@ export default class Ninja extends Entity {
   }
 
   checkForLava() {
-    if (this.isDeadOrSpawning()) return false;
+    if (isNinjaDead() || isNinjaRespawning()) return false;
     const { x, y } = this.style;
     const tileType = getTileTypeAtPixel(x, y - level.tileSize);
     if (tileType === 2) {
@@ -315,15 +310,11 @@ export default class Ninja extends Entity {
   checkDeathByLava() {
     if (this.checkForLava()) {
       waitForIt(() => {
-        if (this.isDeadOrSpawning()) return;
+        if (isNinjaDead() || isNinjaRespawning()) return;
         if (!this.checkForLava()) return;
         console.log('Lava death!');
         this.die();
       }, 0);
     }
-  }
-
-  isDeadOrSpawning() {
-    return this.action === Actions.Die || this.respawning;
   }
 }

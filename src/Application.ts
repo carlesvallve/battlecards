@@ -1,4 +1,5 @@
 import startApplication from 'startApplication';
+import animate from 'animate';
 import platform from 'platform';
 import device from 'device';
 import View from 'ui/View';
@@ -6,11 +7,14 @@ import StackView from 'ui/StackView';
 import loadingGroups from 'src/loadingGroups';
 import TitleScreen from 'src/game/screens/TitleScreen';
 import GameScreen from 'src/game/screens/GameScreen';
-import sounds from 'src/lib/sounds';
 import { waitForIt } from 'src/lib/utils';
 import StateObserver from './redux/StateObserver';
+import { SceneID } from './redux/state/reducers/ui';
 
 export default class Application extends View {
+  private rootView: StackView;
+  public scenes: { [K in SceneID]: View };
+
   constructor(opts) {
     super(opts);
 
@@ -54,17 +58,13 @@ export default class Application extends View {
 
       // load initial assets
       initialAssets.load(() => {
-        // i18n.loadLocale('en')
-        // .then(() => {
         setLoadingProgress(100);
         clearInterval(progressUpdateHandle);
-        // entryStepComplete('initialAssetsLoaded');
         resolve();
 
         loadingGroups.soundAssets.load(() => {
           console.log('sounds were preloaded!');
         });
-        // });
       });
     });
   }
@@ -79,12 +79,9 @@ export default class Application extends View {
   }
 
   startGame() {
-    // console.log('START GAME!');
-    // this.style.backgroundColor = '#444';
-
-    var rootView = new StackView({
+    this.rootView = new StackView({
       parent: this,
-      backgroundColor: '#444',
+      backgroundColor: '#010101',
       x: 0,
       y: 0,
       width: device.screen.width,
@@ -93,22 +90,67 @@ export default class Application extends View {
       scale: device.width / 320,
     });
 
-    const titleScreen = new TitleScreen();
-    const gameScreen = new GameScreen();
+    this.scenes = {
+      title: new TitleScreen(),
+      game: new GameScreen(),
+    };
 
-    rootView.push(titleScreen);
-    sounds.playSong('win');
+    // check for scene navigation
+    StateObserver.createSelector((state) => state.ui.scene).addListener(
+      (scene) => {
+        console.log('scene:', scene);
+        this.gotoScene(scene);
+      },
+    );
+  }
 
-    titleScreen.on('titlescreen:start', () => {
-      // sounds.playSong('dubesque');
-      rootView.push(gameScreen, true);
-      gameScreen.emit('game:start');
+  // gotoScene(scene: SceneID) {
+  //   this.rootView.pop(true);
+  //   this.rootView.push(this.scenes[scene], true);
+  //   this.scenes[scene].init();
+  // }
+
+  gotoScene(name: SceneID) {
+    const scene = this.scenes[name];
+    const fromScene = this.rootView.stack[this.rootView.stack.length - 1];
+    // console.log(fromScene, '->', scene);
+
+    const duration = 300;
+
+    if (!fromScene) {
+      this.rootView.pop(true);
+      this.rootView.push(scene, true);
+      scene.init();
+      this.fadeIn(scene, duration);
+      return;
+    }
+
+    this.fadeOut(fromScene, duration, () => {
+      this.rootView.pop(true);
+      this.rootView.push(scene, true);
+      scene.init();
+      this.fadeIn(scene, duration, () => {});
     });
+  }
 
-    gameScreen.on('game:end', () => {
-      rootView.pop(true);
-      sounds.playSong('win');
-    });
+  fadeIn(scene: View, duration: number = 500, cb?: () => void) {
+    scene.updateOpts({ opacity: 0, y: 128 });
+    scene.show();
+
+    animate(scene)
+      .clear()
+      .then({ opacity: 1, y: 0 }, duration, animate.easeOut)
+      .then(() => cb && cb());
+  }
+
+  fadeOut(scene: View, duration: number = 500, cb?: () => void) {
+    animate(scene)
+      .clear()
+      .then({ opacity: 0, y: -64 }, duration, animate.easeOut)
+      .then(() => {
+        scene.hide();
+        cb();
+      });
   }
 }
 

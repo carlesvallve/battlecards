@@ -7,7 +7,7 @@ import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';
-import { GameStates } from 'src/lib/enums';
+// import { GameStates } from 'src/lib/enums';
 import { screen } from 'src/lib/types';
 
 import StateObserver from 'src/redux/StateObserver';
@@ -16,8 +16,9 @@ import {
   setScore,
   setStars,
   setHearts,
-  setPause,
 } from 'src/redux/state/reducers/user';
+import { setGameState } from 'src/redux/state/reducers/game';
+import { isGamePaused } from 'src/redux/state/states';
 
 export default class Hud extends View {
   screen: screen;
@@ -35,10 +36,6 @@ export default class Hud extends View {
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();
     this.game = opts.parent;
-
-    // this.highscore = 0;
-    // this.score = 0;
-    // this.stars = 0;
 
     this.updateOpts({
       x: 5,
@@ -58,22 +55,10 @@ export default class Hud extends View {
     this.on('hud:continue', this.continue.bind(this));
     this.on('hud:gameover', this.onGameOver.bind(this));
 
-    // pause
-    StateObserver.createSelector((state) => state.user.pause).addListener(
-      (pause) => {
-        console.log('pause:', pause);
-        if (pause) {
-          this.onPause();
-        } else {
-          this.onResume();
-        }
-      },
-    );
-
     // score
     StateObserver.createSelector((state) => state.user.score).addListener(
       (score) => {
-        console.log('score:', score);
+        // console.log('score:', score);
         this.onUpdateScore(score);
       },
     );
@@ -81,7 +66,7 @@ export default class Hud extends View {
     // stars
     StateObserver.createSelector((state) => state.user.stars).addListener(
       (stars) => {
-        console.log('stars:', stars);
+        // console.log('stars:', stars);
         this.onUpdateStars(stars);
       },
     );
@@ -89,8 +74,26 @@ export default class Hud extends View {
     // hearts
     StateObserver.createSelector((state) => state.user.hearts).addListener(
       (hearts) => {
-        console.log('hearts:', hearts);
+        // console.log('hearts:', hearts);
         this.onUpdateHearts(hearts);
+      },
+    );
+
+    // game states (play / pause/ gameover0)
+    StateObserver.createSelector((state) => state.game.gameState).addListener(
+      (gameState) => {
+        console.log('>>> gameState:', gameState);
+        switch (gameState) {
+          case 'Play':
+            this.onResume();
+            break;
+          case 'Pause':
+            this.onPause();
+            break;
+          case 'GameOver':
+            this.onGameOver();
+            break;
+        }
       },
     );
   }
@@ -148,6 +151,7 @@ export default class Hud extends View {
 
   onUpdateHearts(hearts: number) {
     if (!this.hearts) return;
+    if (this.hearts.length === 0) return;
     if (hearts >= this.hearts.length) return;
 
     // remove heart
@@ -305,28 +309,24 @@ export default class Hud extends View {
       y: this.screen.height - 72,
       scale: 1.0,
       onClick: () => {
-        if (StateObserver.getState().user.pause) {
-          StateObserver.dispatch(setPause(false));
+        if (isGamePaused()) {
+          StateObserver.dispatch(setGameState('Play'));
         } else {
-          StateObserver.dispatch(setPause(true));
+          StateObserver.dispatch(setGameState('Pause'));
         }
       },
     });
   }
 
   onPause() {
-    this.game.gameState = GameStates.Pause;
     this.game.inputView.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     this.pauseLabel.show();
   }
 
   onResume() {
-    this.game.gameState = GameStates.Play;
+    // todo: this happens more often than when it should...
     this.game.inputView.style.backgroundColor = null;
     this.pauseLabel.hide();
-
-    // continue spawning slimes
-    this.game.spawnSlimesSequence();
   }
 
   // =====================================================================

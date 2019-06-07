@@ -28,10 +28,8 @@ export type tileData = {
   walkable: boolean;
 };
 
-export const gameStates = tuple('Idle', 'Play', 'Pause', 'GameOver');
+export const gameStates = tuple('Title', 'Play', 'Pause', 'GameOver');
 export type gameState = typeof gameStates[number];
 
 export const entityStates = tuple('Idle', 'Run', 'Jump', 'Attack', 'Die');
 export type entityState = typeof entityStates[number];
-
-

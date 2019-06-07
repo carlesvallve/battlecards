@@ -15,12 +15,13 @@ import Hud from 'src/game/components/Hud';
 import sounds from 'src/lib/sounds';
 
 import Vector from 'src/lib/vector';
-import { GameStates, Actions } from 'src/lib/enums';
+// import { GameStates, Actions } from 'src/lib/enums';
 import {
   getScreenDimensions,
   getRandomFloat,
   getRandomInt,
   getRandomItemFromArray,
+  waitForIt,
 } from 'src/lib/utils';
 import { onSwipe } from 'src/lib/swipe';
 import level, { mapWidth } from 'src/conf/levels';
@@ -28,6 +29,14 @@ import { screen } from 'src/lib/types';
 import Entity from '../components/Entity';
 import StateObserver from 'src/redux/StateObserver';
 import { addScore } from 'src/redux/state/reducers/user';
+import { setGameState } from 'src/redux/state/reducers/game';
+import {
+  isGameActive,
+  isGameOver,
+  isGamePaused,
+  isNinjaDead,
+  isNinjaRespawning,
+} from 'src/redux/state/states';
 
 export default class GameScreen extends InputView {
   screen: screen;
@@ -38,7 +47,7 @@ export default class GameScreen extends InputView {
   slimes: any; // todo splice problem with Slime[];
   stars: Stars[];
   hud: Hud;
-  gameState: string; // todo setup type
+  // gameState: string; // todo setup type
   inputView: InputView;
 
   constructor() {
@@ -76,22 +85,22 @@ export default class GameScreen extends InputView {
     this.slimes = [];
     this.stars = [];
 
-    // setup game interaction
-    this.setInput();
-
     // setup hud overlay
     this.hud = new Hud({ parent: this });
 
+    // setup game interaction
+    this.setInput();
+
     // game events
-    this.on('game:start', this.init.bind(this));
+    // this.on('game:start', this.init.bind(this));
     this.on('game:explosion', this.explosion.bind(this));
     this.on('game:spawnchest', this.spawnChest.bind(this));
     this.on('game:spawnstars', this.spawnStars.bind(this));
-    this.on('game:gameover', this.gameOver.bind(this));
+    // this.on('game:gameover', this.gameOver.bind(this));
   }
 
   init() {
-    this.gameState = GameStates.Play;
+    StateObserver.dispatch(setGameState('Play'));
     sounds.playSong('dubesque');
 
     // reset slimes
@@ -119,33 +128,22 @@ export default class GameScreen extends InputView {
     this.spawnSlimesSequence();
   }
 
-  gameOver() {
-    this.gameState = GameStates.GameOver;
-    sounds.playSong('loose');
-    this.hud.emit('hud:gameover');
-  }
-
   spawnSlimesSequence() {
-    if (this.gameState === GameStates.Pause) {
-      return;
-    }
+    // console.log('spawning slimes...');
 
     // wait and create a new slime
     const interval = settings.slimes.spawnInterval;
     const delay = getRandomFloat(interval[0], interval[1]);
 
-    animate(this)
-      .clear()
-      .wait(delay)
-      .then(() => {
-        // create new slime
-        if (this.ninja.action !== Actions.Die) {
-          this.createSlime();
-        }
+    waitForIt(() => {
+      // create new slime
+      if (isGameActive() && !isNinjaDead()) {
+        this.createSlime();
+      }
 
-        // recursevely iterate
-        this.spawnSlimesSequence();
-      });
+      // recursevely iterate
+      this.spawnSlimesSequence();
+    }, delay);
   }
 
   createSlime() {
@@ -162,8 +160,6 @@ export default class GameScreen extends InputView {
 
   explosion(opts: { entity: Entity }) {
     const { entity } = opts;
-
-    // escape if no entity exist
     if (!entity) return;
 
     // create explosion particles
@@ -181,7 +177,6 @@ export default class GameScreen extends InputView {
     const slime = <Slime>entity;
 
     // add score
-    // this.hud.emit('hud:updateScore', { points: slime.scorePoints });
     StateObserver.dispatch(addScore(slime.scorePoints));
 
     // remove slime
@@ -253,12 +248,12 @@ export default class GameScreen extends InputView {
   }
 
   onTap(x: number, y: number) {
-    // if we are in 'continue' screen
-    if (this.gameState === GameStates.GameOver) {
-      // actually, if we click here means we want to continue.
-      // so respawn the ninja and refill one life!
+    // console.log('onTap', x, y);
+
+    // if we are in gameover mode, continue playing
+    if (isGameOver()) {
       if (this.hud.gameOver.time <= 8) {
-        this.gameState = GameStates.Play;
+        StateObserver.dispatch(setGameState('Play'));
         // this.world.init();
         this.ninja.emit('ninja:start');
         this.hud.emit('hud:continue');
@@ -268,15 +263,17 @@ export default class GameScreen extends InputView {
     }
 
     // clicking anywhere while paused will resume the game
-    if (this.gameState === GameStates.Pause) {
+    if (isGamePaused()) {
+      StateObserver.dispatch(setGameState('Play'));
       this.hud.onResume();
     }
 
     // interact with the ninja
     if (this.ninja) {
-      x = x - this.world.style.x;
-      y = y - this.world.style.y;
-      this.ninja.emit('ninja:moveTo', { x, y });
+      this.ninja.moveTo({
+        x: x - this.world.style.x,
+        y: y - this.world.style.y,
+      });
     }
   }
 

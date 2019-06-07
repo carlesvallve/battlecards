@@ -6,7 +6,6 @@ const slice = createSlice({
     highscore: 0,
     stars: 0,
     hearts: 0,
-    pause: false,
   },
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
@@ -35,11 +34,6 @@ const slice = createSlice({
     addHearts: (state, { payload }: PayloadAction<number>) => {
       state.hearts += payload;
     },
-
-    setPause: (state, { payload }: PayloadAction<boolean>) => {
-      console.log('setting pause to ', payload);
-      state.pause = payload;
-    },
   },
 });
 
@@ -51,6 +45,5 @@ export const {
   addStars,
   setHearts,
   addHearts,
-  setPause,
 } = slice.actions;
 export default slice.reducer;

@@ -1,11 +1,12 @@
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
-import { GameStates, Actions } from 'src/lib/enums';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 import GameScreen from '../screens/GameScreen';
 import Ninja from './Ninja';
 import { screen } from 'src/lib/types';
+import StateObserver from 'src/redux/StateObserver';
+import { isGameActive, isNinjaDead } from 'src/redux/state/states';
 
 export default class Chest extends View {
   sprite: ImageView;
@@ -61,9 +62,7 @@ export default class Chest extends View {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
+    if (!isGameActive()) return;
 
     // uopdate sprite
     const me = this.style;
@@ -103,9 +102,7 @@ export default class Chest extends View {
   }
 
   checkNinjaDistance() {
-    if (this.ninja.action === Actions.Die) {
-      return;
-    }
+    if (isNinjaDead()) return;
 
     const dist = Math.abs(this.style.x - this.ninja.style.x); // getDistanceBetweenViews(this, this.ninja);
     this.sprite.style.scale = this.sc;

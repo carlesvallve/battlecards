@@ -1,9 +1,10 @@
 import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
-import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 import GameScreen from '../screens/GameScreen';
 import { screen } from 'src/lib/types';
+import StateObserver from 'src/redux/StateObserver';
+import { isGameActive } from 'src/redux/state/states';
 
 export default class Entity extends View {
   screen: screen;
@@ -39,9 +40,7 @@ export default class Entity extends View {
   }
 
   tick(dt) {
-    if (this.game.gameState === GameStates.Pause) {
-      return;
-    }
+    if (!isGameActive()) return;;
 
     this.castRayDown(0);
     // this.castRayDown(1);
@@ -118,9 +117,6 @@ export default class Entity extends View {
         me.x = hit.position.x - d * this.dir;
 
         this.emit('collision:wall');
-        // // stop interpolating and animating character
-        // animate(this).clear();
-        // this.idle();
       }
     }
   }
