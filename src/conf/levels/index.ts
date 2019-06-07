@@ -3,7 +3,7 @@ import Tile from 'src/game/components/Tile';
 import settings from 'src/conf/settings';
 import level1 from 'src/conf/levels/01';
 import level2 from 'src/conf/levels/02';
-import { tileData } from 'src/lib/types';
+import { tileData } from 'src/lib/customTypes';
 
 const levels = [null, level1, level2];
 const level = levels[settings.currentMapLevel];

@@ -1,11 +1,9 @@
 import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
-// import { GameStates } from 'src/lib/enums';
-import { screen } from 'src/lib/types';
-import Ninja from './Ninja';
-import GameScreen from '../screens/GameScreen';
-import StateObserver from 'src/redux/StateObserver';
+import { screen } from 'src/lib/customTypes';
 import { isGameActive } from 'src/redux/state/states';
+import GameScreen from 'src/game/screens/GameScreen';
+import Ninja from 'src/game/components/Ninja';
 
 export default class World extends View {
   screen: screen;

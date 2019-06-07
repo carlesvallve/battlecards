@@ -3,9 +3,8 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
-import { screen } from 'src/lib/types';
+import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
-import { setGameState } from 'src/redux/state/reducers/game';
 import { selectScene } from 'src/redux/state/reducers/ui';
 
 export default class GameOver extends View {

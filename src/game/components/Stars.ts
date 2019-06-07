@@ -9,10 +9,9 @@ import {
   getDistanceBetweenViews,
 } from 'src/lib/utils';
 import sounds from 'src/lib/sounds';
-// import { GameStates } from 'src/lib/enums';
 import { rayCast } from 'src/lib/raycast';
 import Ninja from './Ninja';
-import { screen } from 'src/lib/types';
+import { screen } from 'src/lib/customTypes';
 import World from './World';
 import GameScreen from '../screens/GameScreen';
 import StateObserver from 'src/redux/StateObserver';

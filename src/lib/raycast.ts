@@ -1,6 +1,6 @@
 import View from 'ui/View';
 import { mapWidth, mapHeight, tileSize, getTile } from 'src/conf/levels/index';
-import { point, debugLine, raycastResult } from './types';
+import { point, debugLine, raycastResult } from './customTypes';
 
 // ======================== global point to tile point
 

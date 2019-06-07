@@ -110,10 +110,17 @@ export default class Application extends View {
   //   this.scenes[scene].init();
   // }
 
-  gotoScene(name: SceneID) {
+  gotoScene(name: SceneID, animated: boolean = false) {
     const scene = this.scenes[name];
     const fromScene = this.rootView.stack[this.rootView.stack.length - 1];
     // console.log(fromScene, '->', scene);
+
+    if (!animated) {
+      this.rootView.pop(true);
+      this.rootView.push(this.scenes[name], true);
+      this.scenes[name].init();
+      return;
+    }
 
     const duration = 300;
 

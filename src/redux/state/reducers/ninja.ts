@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-import { entityState, point } from 'src/lib/types';
+import { entityState, point } from 'src/lib/customTypes';
 import Entity from 'src/game/components/Entity';
 
 const slice = createSlice({

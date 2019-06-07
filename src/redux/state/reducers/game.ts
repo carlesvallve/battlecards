@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-import { gameState } from 'src/lib/types';
-
+import { gameState, tuple } from 'src/lib/customTypes';
 
 const slice = createSlice({
   initialState: {

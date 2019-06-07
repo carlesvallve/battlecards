@@ -4,8 +4,7 @@ import Image from 'ui/resource/Image';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 import GameScreen from '../screens/GameScreen';
 import Ninja from './Ninja';
-import { screen } from 'src/lib/types';
-import StateObserver from 'src/redux/StateObserver';
+import { screen } from 'src/lib/customTypes';
 import { isGameActive, isNinjaDead } from 'src/redux/state/states';
 
 export default class Chest extends View {

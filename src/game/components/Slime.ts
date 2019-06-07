@@ -1,15 +1,11 @@
 import animate from 'animate';
-import View from 'ui/View';
 import SpriteView from 'ui/SpriteView';
-
 import settings from 'src/conf/settings';
 import level from 'src/conf/levels';
-import { point } from 'src/lib/types';
-
+import { point } from 'src/lib/customTypes';
 import Entity from 'src/game/components/Entity';
 import Ninja from './Ninja';
 
-// import { GameStates, Actions } from 'src/lib/enums';
 import { Actions } from 'src/lib/enums';
 
 import {

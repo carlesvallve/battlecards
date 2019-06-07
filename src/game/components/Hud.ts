@@ -6,9 +6,8 @@ import Image from 'ui/resource/Image';
 import FixedTextView from 'src/lib/ui/FixedTextView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
+import { screen } from 'src/lib/customTypes';
 import GameOver from 'src/game/components/GameOver';
-// import { GameStates } from 'src/lib/enums';
-import { screen } from 'src/lib/types';
 
 import StateObserver from 'src/redux/StateObserver';
 import {

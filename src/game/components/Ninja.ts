@@ -4,7 +4,7 @@ import Entity from 'src/game/components/Entity';
 import { Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 import { debugPoint, waitForIt } from 'src/lib/utils';
-import { point } from 'src/lib/types';
+import { point } from 'src/lib/customTypes';
 import level, { getTileTypeAtPixel } from 'src/conf/levels';
 import World from './World';
 import StateObserver from 'src/redux/StateObserver';
@@ -48,6 +48,7 @@ export default class Ninja extends Entity {
     this.on('collision:ground', () => {
       // console.log('collision:ground');
       if (isNinjaJumping()) {
+        animate(this).clear();
         this.idle();
       }
     });

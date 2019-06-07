@@ -1,4 +1,4 @@
-import animate from 'animate';
+import sounds from 'src/lib/sounds';
 import ImageScaleView from 'ui/ImageScaleView';
 import InputView from 'src/lib/ui/InputView';
 
@@ -12,10 +12,8 @@ import Chest from 'src/game/components/Chest';
 import Stars from 'src/game/components/Stars';
 import Explosion from 'src/game/components/Explosion';
 import Hud from 'src/game/components/Hud';
-import sounds from 'src/lib/sounds';
-
 import Vector from 'src/lib/vector';
-// import { GameStates, Actions } from 'src/lib/enums';
+
 import {
   getScreenDimensions,
   getRandomFloat,
@@ -25,7 +23,7 @@ import {
 } from 'src/lib/utils';
 import { onSwipe } from 'src/lib/swipe';
 import level, { mapWidth } from 'src/conf/levels';
-import { screen } from 'src/lib/types';
+import { screen } from 'src/lib/customTypes';
 import Entity from '../components/Entity';
 import StateObserver from 'src/redux/StateObserver';
 import { addScore } from 'src/redux/state/reducers/user';
@@ -35,7 +33,6 @@ import {
   isGameOver,
   isGamePaused,
   isNinjaDead,
-  isNinjaRespawning,
 } from 'src/redux/state/states';
 
 export default class GameScreen extends InputView {
@@ -96,7 +93,6 @@ export default class GameScreen extends InputView {
     this.on('game:explosion', this.explosion.bind(this));
     this.on('game:spawnchest', this.spawnChest.bind(this));
     this.on('game:spawnstars', this.spawnStars.bind(this));
-    // this.on('game:gameover', this.gameOver.bind(this));
   }
 
   init() {

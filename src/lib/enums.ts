@@ -1,14 +1,5 @@
-// import { tuple } from "./types";
-
-// // todo: convert these to tuples (?)
-// // import { tuple, Tuple } from 'src/lib/types';
-
-// export const GameStates = {
-//   Idle: 'Idle',
-//   Play: 'Play',
-//   Pause: 'Pause',
-//   GameOver: 'GameOver',
-// };
+// todo: we are still using these for multiple entities
+// (slimes, stars)
 
 export const Actions = {
   Idle: 'Idle',
@@ -17,5 +8,3 @@ export const Actions = {
   Attack: 'Attack',
   Die: 'Die',
 };
-
-

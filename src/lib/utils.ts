@@ -1,7 +1,7 @@
 import device from 'device';
 import animate from 'animate';
 import View from 'ui/View';
-import { point } from './types';
+import { point } from './customTypes';
 
 export const waitForIt = (cb: any, duration: number = 300, it?: View) => {
   animate(it || {})
