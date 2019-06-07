@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
@@ -112,7 +114,7 @@ export default class Chest extends View {
   }
 
   die() {
-    this.game.emit('game:spawnStars', { chest: this });
+    pubsub.publish('game:spawnStars', { chest: this });
     this.removeFromSuperview();
   }
 }

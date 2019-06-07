@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { screen } from 'src/lib/customTypes';
@@ -17,6 +19,8 @@ export default class World extends View {
     this.game = opts.parent;
     this.elasticity = 0.25;
 
+    pubsub.subscribe('world:start', this.init.bind(this));
+
     debugPoint(this);
   }
 
@@ -34,6 +38,8 @@ export default class World extends View {
   }
 
   interpolate(ninja: Ninja) {
+    if (!ninja) return;
+
     const targetX = -ninja.style.x + this.screen.width / 2;
     const targetY = -ninja.style.y + this.screen.height / 2;
     const dx = (targetX - this.style.x) * this.elasticity;
@@ -49,8 +55,6 @@ export default class World extends View {
     if (!isGameActive()) return;
 
     const ninja = this.game.ninja;
-    if (!ninja) return;
-
     this.interpolate(ninja);
   }
 }

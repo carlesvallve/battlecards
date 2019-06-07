@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import startApplication from 'startApplication';
 import animate from 'animate';
 import platform from 'platform';
@@ -104,13 +106,7 @@ export default class Application extends View {
     );
   }
 
-  // gotoScene(scene: SceneID) {
-  //   this.rootView.pop(true);
-  //   this.rootView.push(this.scenes[scene], true);
-  //   this.scenes[scene].init();
-  // }
-
-  gotoScene(name: SceneID, animated: boolean = false) {
+  gotoScene(name: SceneID, animated: boolean = true) {
     const scene = this.scenes[name];
     const fromScene = this.rootView.stack[this.rootView.stack.length - 1];
     // console.log(fromScene, '->', scene);
@@ -118,7 +114,8 @@ export default class Application extends View {
     if (!animated) {
       this.rootView.pop(true);
       this.rootView.push(this.scenes[name], true);
-      this.scenes[name].init();
+      pubsub.publish(`${name}:start`);
+      // this.scenes[name].init();
       return;
     }
 
@@ -127,7 +124,7 @@ export default class Application extends View {
     if (!fromScene) {
       this.rootView.pop(true);
       this.rootView.push(scene, true);
-      scene.init();
+      pubsub.publish(`${name}:start`);
       this.fadeIn(scene, duration);
       return;
     }
@@ -135,7 +132,7 @@ export default class Application extends View {
     this.fadeOut(fromScene, duration, () => {
       this.rootView.pop(true);
       this.rootView.push(scene, true);
-      scene.init();
+      pubsub.publish(`${name}:start`);
       this.fadeIn(scene, duration, () => {});
     });
   }

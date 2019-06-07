@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import sounds from 'src/lib/sounds';
 import ImageScaleView from 'ui/ImageScaleView';
 import InputView from 'src/lib/ui/InputView';
@@ -89,10 +91,12 @@ export default class GameScreen extends InputView {
     this.setInput();
 
     // game events
+    pubsub.subscribe('game:start', this.init.bind(this));
+    pubsub.subscribe('game:explosion', this.explosion.bind(this));
+    pubsub.subscribe('game:spawnchest', this.spawnChest.bind(this));
+    pubsub.subscribe('game:spawnstars', this.spawnStars.bind(this));
+
     // this.on('game:start', this.init.bind(this));
-    this.on('game:explosion', this.explosion.bind(this));
-    this.on('game:spawnchest', this.spawnChest.bind(this));
-    this.on('game:spawnstars', this.spawnStars.bind(this));
   }
 
   init() {
@@ -112,13 +116,13 @@ export default class GameScreen extends InputView {
     this.stars = [];
 
     // reset ninja
-    this.ninja.emit('ninja:start');
+    pubsub.publish('ninja:start');
 
     // reset hud
-    this.hud.emit('hud:start');
+    pubsub.publish('hud:start');
 
     // init world animation
-    this.world.init();
+    pubsub.publish('world:start');
 
     // start spawning slimes
     this.spawnSlimesSequence();
@@ -154,7 +158,7 @@ export default class GameScreen extends InputView {
     this.slimes.push(slime);
   }
 
-  explosion(opts: { entity: Entity }) {
+  explosion(evt: string, opts: { entity: Entity }) {
     const { entity } = opts;
     if (!entity) return;
 
@@ -189,13 +193,9 @@ export default class GameScreen extends InputView {
     }
   }
 
-  spawnChest(opts: { entity: Entity }) {
+  spawnChest(evt: string, opts: { entity: Entity }) {
     const { entity } = opts;
-
-    // escape if no slime exist
-    if (!entity) {
-      return;
-    }
+    if (!entity) return;
 
     // create chest
     new Chest({
@@ -207,13 +207,9 @@ export default class GameScreen extends InputView {
     });
   }
 
-  spawnStars(opts: { entity: Entity }) {
+  spawnStars(evt: string, opts: { entity: Entity }) {
     const { entity } = opts;
-
-    // escape if no chest exist
-    if (!entity) {
-      return;
-    }
+    if (!entity) return;
 
     new Stars({
       parent: this.world,
@@ -251,8 +247,8 @@ export default class GameScreen extends InputView {
       if (this.hud.gameOver.time <= 8) {
         StateObserver.dispatch(setGameState('Play'));
         // this.world.init();
-        this.ninja.emit('ninja:start');
-        this.hud.emit('hud:continue');
+        pubsub.publish('ninja:start');
+        pubsub.publish('hud:continue');
         sounds.playSong('dubesque');
       }
       return;

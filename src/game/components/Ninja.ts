@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import animate from 'animate';
 import SpriteView from 'ui/SpriteView';
 import Entity from 'src/game/components/Entity';
@@ -41,10 +43,13 @@ export default class Ninja extends Entity {
 
     this.createSprite();
 
-    this.on('ninja:start', this.init.bind(this, { x: opts.x, y: opts.y }));
-    this.on('ninja:attack', this.attack.bind(this));
-    this.on('ninja:die', this.die.bind(this));
+    const startPos = { x: opts.x, y: opts.y };
+    pubsub.subscribe('ninja:start', this.init.bind(this, startPos));
+    pubsub.subscribe('ninja:attack', this.attack.bind(this));
+    pubsub.subscribe('ninja:die', this.die.bind(this));
 
+    // collisions are emitted from superclass,
+    // so no need to use pubsub
     this.on('collision:ground', () => {
       // console.log('collision:ground');
       if (isNinjaJumping()) {
@@ -147,8 +152,10 @@ export default class Ninja extends Entity {
     });
   }
 
-  attack(opts: { target: Entity }) {
-    if (opts.target.action === Actions.Attack) return; // todo: slime states
+  attack(target: Entity) {
+    console.log('>>>', target);
+
+    if (target.action === Actions.Attack) return; // todo: slime states
     if (isNinjaDead()) return;
     StateObserver.dispatch(setEntityState('Attack'));
 
@@ -189,7 +196,7 @@ export default class Ninja extends Entity {
       .wait(100)
       .then(() => {
         sounds.playSound('explode');
-        this.game.emit('game:explosion', { entity: this });
+        pubsub.publish('game:explosion', { entity: this });
         this.hide();
       })
       .wait(500)

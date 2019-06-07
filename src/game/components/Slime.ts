@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import animate from 'animate';
 import SpriteView from 'ui/SpriteView';
 import settings from 'src/conf/settings';
@@ -18,8 +20,11 @@ import {
 } from 'src/lib/utils';
 import World from './World';
 import StateObserver from 'src/redux/StateObserver';
-import { setEntityState, setTarget } from 'src/redux/state/reducers/ninja';
-import { isGameActive, isNinjaAttacking, isNinjaDead, isNinjaRespawning } from 'src/redux/state/states';
+import {
+  isGameActive,
+  isNinjaDead,
+  isNinjaRespawning,
+} from 'src/redux/state/states';
 
 export default class Slime extends Entity {
   sprite: SpriteView;
@@ -115,7 +120,7 @@ export default class Slime extends Entity {
 
   tick(dt) {
     if (!isGameActive()) return;
-    
+
     const me = this.style;
     me.x += this.speed * this.dir;
 
@@ -173,7 +178,7 @@ export default class Slime extends Entity {
       this.setDirection(0);
 
       // make ninja attack us
-      this.ninja.emit('ninja:attack', { target: this });
+      pubsub.publish('ninja:attack', { target: this });
       // StateObserver.dispatch(setTarget(this)); // non-serializable
 
       // wait and explode
@@ -190,7 +195,7 @@ export default class Slime extends Entity {
     if (isNinjaRespawning()) return;
 
     this.action = Actions.Attack;
-    this.ninja.emit('ninja:die');
+    pubsub.publish('ninja:die');
 
     animate(this)
       .clear()
@@ -206,11 +211,11 @@ export default class Slime extends Entity {
   }
 
   die() {
-    this.game.emit('game:explosion', { entity: this });
+    pubsub.publish('game:explosion', { entity: this });
 
     const r = getRandomInt(1, 100);
     if (r <= this.starProbability) {
-      this.game.emit('game:spawnstars', { entity: this });
+      pubsub.publish('game:spawnstars', { entity: this });
     }
   }
 }

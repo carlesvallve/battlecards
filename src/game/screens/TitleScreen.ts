@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import FixedTextView from 'src/lib/ui/FixedTextView';
@@ -17,6 +19,27 @@ export default class TitleScreen extends View {
     this.screen = getScreenDimensions();
     console.log('dimensions:', this.screen.width, this.screen.height);
 
+    this.createElements();
+
+    this.inputView = new InputView({
+      parent: this,
+      width: this.screen.width,
+      height: this.screen.height,
+      dragThreshold: 0,
+    });
+
+    this.inputView.registerHandlerForTouch((x: number, y: number) => {
+      StateObserver.dispatch(selectScene('game'));
+    });
+
+    pubsub.subscribe('title:start', this.init.bind(this));
+  }
+
+  init() {
+    sounds.playSong('win');
+  }
+
+  createElements() {
     new View({
       parent: this,
       width: this.screen.width,
@@ -84,20 +107,5 @@ export default class TitleScreen extends View {
 
     startLabel.hide();
     blink(startLabel, 350);
-
-    this.inputView = new InputView({
-      parent: this,
-      width: this.screen.width,
-      height: this.screen.height,
-      dragThreshold: 0,
-    });
-
-    this.inputView.registerHandlerForTouch((x, y) => {
-      StateObserver.dispatch(selectScene('game'));
-    });
-  }
-
-  init() {
-    sounds.playSong('win');
   }
 }

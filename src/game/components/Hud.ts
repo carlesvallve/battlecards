@@ -1,3 +1,6 @@
+
+import pubsub from 'pubsub-js'
+
 import animate from 'animate';
 import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
@@ -50,9 +53,13 @@ export default class Hud extends View {
 
     this.gameOver = new GameOver({ parent: this });
 
-    this.on('hud:start', this.init.bind(this));
-    this.on('hud:continue', this.continue.bind(this));
-    this.on('hud:gameover', this.onGameOver.bind(this));
+    pubsub.subscribe('hud:start', this.init.bind(this));
+    pubsub.subscribe('hud:continue', this.continue.bind(this));
+    pubsub.subscribe('hud:gameover', this.onGameOver.bind(this));
+
+    // this.on('hud:start', this.init.bind(this));
+    // this.on('hud:continue', this.continue.bind(this));
+    // this.on('hud:gameover', this.onGameOver.bind(this));
 
     // score
     StateObserver.createSelector((state) => state.user.score).addListener(
