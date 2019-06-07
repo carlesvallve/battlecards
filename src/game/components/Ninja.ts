@@ -9,6 +9,7 @@ import { point } from 'src/lib/types';
 import level, { getTileTypeAtPixel } from 'src/conf/levels';
 import World from './World';
 import StateObserver from 'src/redux/StateObserver';
+import { addHearts } from 'src/redux/state/reducers/user';
 
 export default class Ninja extends Entity {
   sprite: SpriteView;
@@ -176,7 +177,8 @@ export default class Ninja extends Entity {
     this.idle();
     this.action = Actions.Die;
 
-    this.game.hud.emit('hud:removeHeart');
+    // remove heart
+    StateObserver.dispatch(addHearts(-1));
 
     // wait and die
     const anim = animate(this)

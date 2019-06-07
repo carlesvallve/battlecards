@@ -9,15 +9,19 @@ import { blink } from 'src/lib/animations';
 import GameOver from 'src/game/components/GameOver';
 import { GameStates } from 'src/lib/enums';
 import { screen } from 'src/lib/types';
+
 import StateObserver from 'src/redux/StateObserver';
-import { setPlaying } from 'src/redux/state/reducers/user';
+import {
+  setHighscore,
+  setScore,
+  setStars,
+  setHearts,
+  setPause,
+} from 'src/redux/state/reducers/user';
 
 export default class Hud extends View {
   screen: screen;
   game: View;
-  highscore: number;
-  score: number;
-  stars: number;
   hearts: ImageView[];
   gameOver: GameOver;
   starLabel: FixedTextView;
@@ -32,9 +36,9 @@ export default class Hud extends View {
     this.screen = getScreenDimensions();
     this.game = opts.parent;
 
-    this.highscore = 0;
-    this.score = 0;
-    this.stars = 0;
+    // this.highscore = 0;
+    // this.score = 0;
+    // this.stars = 0;
 
     this.updateOpts({
       x: 5,
@@ -52,45 +56,52 @@ export default class Hud extends View {
 
     this.on('hud:start', this.init.bind(this));
     this.on('hud:continue', this.continue.bind(this));
-    this.on('hud:updateScore', this.onUpdateScore.bind(this));
-    this.on('hud:updateStars', this.onUpdateStars.bind(this));
-    this.on('hud:removeHeart', this.onRemoveHeart.bind(this));
     this.on('hud:gameover', this.onGameOver.bind(this));
 
-    StateObserver.createSelector((state) => state.user.isPlaying).addListener(
-      (isPlaying) => {
-        console.log('isPlaying:', isPlaying);
-        if (isPlaying) {
-          this.onResume();
-        } else {
+    // pause
+    StateObserver.createSelector((state) => state.user.pause).addListener(
+      (pause) => {
+        console.log('pause:', pause);
+        if (pause) {
           this.onPause();
+        } else {
+          this.onResume();
         }
       },
     );
 
+    // score
     StateObserver.createSelector((state) => state.user.score).addListener(
       (score) => {
         console.log('score:', score);
+        this.onUpdateScore(score);
       },
     );
 
+    // stars
     StateObserver.createSelector((state) => state.user.stars).addListener(
       (stars) => {
         console.log('stars:', stars);
+        this.onUpdateStars(stars);
+      },
+    );
+
+    // hearts
+    StateObserver.createSelector((state) => state.user.hearts).addListener(
+      (hearts) => {
+        console.log('hearts:', hearts);
+        this.onUpdateHearts(hearts);
       },
     );
   }
 
   init() {
     const gameData = this.loadGameData();
-    // console.log('gameData:', gameData);
+    console.log('gameData:', gameData);
+    StateObserver.dispatch(setScore(0));
+    StateObserver.dispatch(setHighscore(gameData.highscore || 0));
+    StateObserver.dispatch(setStars(gameData.stars || 0));
 
-    this.stars = gameData.stars;
-    this.highscore = gameData.highscore;
-
-    this.score = 0;
-    this.scoreLabel.setText(this.score.toString());
-    this.starLabel.setText(this.stars.toString());
     this.createHearts(3);
 
     this.gameOver.hide();
@@ -107,7 +118,7 @@ export default class Hud extends View {
   // Hud Events (score, stars, hearts, gameOver)
   // =====================================================================
 
-  onUpdateScore({ points }) {
+  onUpdateScore(score: number) {
     const t = 100;
     const easing = animate.easeOut;
 
@@ -116,13 +127,12 @@ export default class Hud extends View {
       .then({ scale: 1.6 }, t, easing)
       .then({ scale: 1.6 }, t, easing)
       .then(() => {
-        this.score += points;
-        this.scoreLabel.setText(this.score.toString());
+        this.scoreLabel.setText(score.toString());
       })
       .then({ scale: 1 }, t, easing);
   }
 
-  onUpdateStars({ ammount }) {
+  onUpdateStars(stars: number) {
     const t = 100;
     const easing = animate.easeOut;
 
@@ -131,18 +141,17 @@ export default class Hud extends View {
       .then({ scale: 1.3 }, t, easing)
       .then({ scale: 1.3 }, t, easing)
       .then(() => {
-        this.stars += ammount;
-        this.starLabel.setText(this.stars.toString());
+        this.starLabel.setText(stars.toString());
       })
       .then({ scale: 1 }, t, easing);
   }
 
-  onRemoveHeart() {
-    const heart = this.hearts[this.hearts.length - 1];
-    if (!heart) {
-      return;
-    }
+  onUpdateHearts(hearts: number) {
+    if (!this.hearts) return;
+    if (hearts >= this.hearts.length) return;
 
+    // remove heart
+    const heart = this.hearts[this.hearts.length - 1];
     blink(heart, 50);
     animate(this)
       .wait(300)
@@ -181,7 +190,6 @@ export default class Hud extends View {
       color: '#fff',
       x: 26,
       y: 10,
-      // width: 40,
       height: 12,
       fontFamily: 'Verdana',
       fontWeight: 'bold',
@@ -240,9 +248,11 @@ export default class Hud extends View {
     });
   }
 
-  createHearts(max) {
+  createHearts(amount: number) {
+    StateObserver.dispatch(setHearts(amount));
+
     this.hearts = [];
-    for (let i = 0; i < max; i++) {
+    for (let i = 0; i < amount; i++) {
       const heart = new ImageView({
         parent: this,
         width: 16,
@@ -295,32 +305,22 @@ export default class Hud extends View {
       y: this.screen.height - 72,
       scale: 1.0,
       onClick: () => {
-        if (StateObserver.getState().user.isPlaying) {
-          StateObserver.dispatch(setPlaying(false));
+        if (StateObserver.getState().user.pause) {
+          StateObserver.dispatch(setPause(false));
         } else {
-          StateObserver.dispatch(setPlaying(true));
+          StateObserver.dispatch(setPause(true));
         }
-
-        // if (this.game.gameState === GameStates.Play) {
-        //   this.onPause();
-        // } else {
-        //   this.onResume();
-        // }
       },
     });
   }
 
   onPause() {
-    // StateObserver.dispatch(setPlaying(false));
-
     this.game.gameState = GameStates.Pause;
     this.game.inputView.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     this.pauseLabel.show();
   }
 
   onResume() {
-    // StateObserver.dispatch(setPlaying(true));
-
     this.game.gameState = GameStates.Play;
     this.game.inputView.style.backgroundColor = null;
     this.pauseLabel.hide();
@@ -335,11 +335,13 @@ export default class Hud extends View {
 
   saveGameData() {
     // save highscore and current stars to localstorage
+    const { score, highscore, stars } = StateObserver.getState().user;
+
     localStorage.setItem(
       'gameData',
       JSON.stringify({
-        stars: this.stars,
-        highscore: this.score > this.highscore ? this.score : this.highscore,
+        stars,
+        highscore: score > highscore ? score : highscore,
       }),
     );
   }

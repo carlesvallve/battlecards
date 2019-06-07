@@ -27,7 +27,7 @@ import level, { mapWidth } from 'src/conf/levels';
 import { screen } from 'src/lib/types';
 import Entity from '../components/Entity';
 import StateObserver from 'src/redux/StateObserver';
-import { setPlaying } from 'src/redux/state/reducers/user';
+import { addScore } from 'src/redux/state/reducers/user';
 
 export default class GameScreen extends InputView {
   screen: screen;
@@ -91,7 +91,6 @@ export default class GameScreen extends InputView {
   }
 
   init() {
-    StateObserver.dispatch(setPlaying(true));
     this.gameState = GameStates.Play;
     sounds.playSong('dubesque');
 
@@ -182,7 +181,8 @@ export default class GameScreen extends InputView {
     const slime = <Slime>entity;
 
     // add score
-    this.hud.emit('hud:updateScore', { points: slime.scorePoints });
+    // this.hud.emit('hud:updateScore', { points: slime.scorePoints });
+    StateObserver.dispatch(addScore(slime.scorePoints));
 
     // remove slime
     slime.removeFromSuperview();

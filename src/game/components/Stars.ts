@@ -15,6 +15,8 @@ import Ninja from './Ninja';
 import { screen } from 'src/lib/types';
 import World from './World';
 import GameScreen from '../screens/GameScreen';
+import StateObserver from 'src/redux/StateObserver';
+import { addStars } from 'src/redux/state/reducers/user';
 
 export default class Stars extends View {
   screen: screen;
@@ -150,7 +152,8 @@ export default class Stars extends View {
   collect(sprite: View) {
     this.removeSprite(sprite);
     sounds.playSound('combo_x' + getRandomInt(2, 6), 0.4);
-    this.game.hud.emit('hud:updateStars', { ammount: 1 });
+    // this.game.hud.emit('hud:updateStars', { ammount: 1 });
+    StateObserver.dispatch(addStars(1));
   }
 
   die(sprite: View) {
