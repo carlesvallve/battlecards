@@ -1,3 +1,5 @@
+import pubsub from 'pubsub-js';
+
 import animate from 'animate';
 import sounds from 'src/lib/sounds';
 import View from 'ui/View';
@@ -6,7 +8,6 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions, waitForIt, clearWait } from 'src/lib/utils';
 import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
-import { selectScene } from 'src/redux/state/reducers/ui';
 import { setCountdown } from 'src/redux/state/reducers/user';
 import { getCountdown } from 'src/redux/state/states';
 import i18n from 'src/lib/i18n/i18n';
@@ -120,7 +121,8 @@ export default class GameOver extends View {
         // end countdown
         if (current === 0) {
           clearWait(this);
-          StateObserver.dispatch(selectScene('title'));
+          // end game
+          pubsub.publish('game:end');
           return;
         }
 

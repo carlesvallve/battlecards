@@ -21,6 +21,7 @@ import {
   getRandomInt,
   getRandomItemFromArray,
   waitForIt,
+  clearWait,
 } from 'src/lib/utils';
 import { onSwipe } from 'src/lib/swipe';
 import level, { mapWidth } from 'src/conf/levels';
@@ -30,12 +31,12 @@ import StateObserver from 'src/redux/StateObserver';
 import { addScore } from 'src/redux/state/reducers/user';
 import { setGameState } from 'src/redux/state/reducers/game';
 import {
-  isGameActive,
   isGameOver,
   isGamePaused,
   isNinjaDead,
   getCountdown,
 } from 'src/redux/state/states';
+import { selectScene } from 'src/redux/state/reducers/ui';
 
 export default class GameScreen extends InputView {
   screen: screen;
@@ -43,6 +44,7 @@ export default class GameScreen extends InputView {
   ninja: Ninja;
   slimes: any; // todo splice problem with Slime[];
   stars: Stars[];
+  waitInterval: object;
 
   constructor() {
     super({});
@@ -87,8 +89,14 @@ export default class GameScreen extends InputView {
 
     // game events
     pubsub.subscribe('game:start', this.init.bind(this));
+    pubsub.subscribe('game:end', this.endGame.bind(this));
     pubsub.subscribe('game:explosion', this.explosion.bind(this));
     pubsub.subscribe('game:spawnstars', this.spawnStars.bind(this));
+  }
+
+  endGame() {
+    clearWait(this.waitInterval);
+    StateObserver.dispatch(selectScene('title'));
   }
 
   init() {
@@ -124,18 +132,23 @@ export default class GameScreen extends InputView {
     // console.log('spawning slimes...');
 
     // wait and create a new slime
-    const interval = settings.slimes.spawnInterval;
-    const delay = getRandomFloat(interval[0], interval[1]);
+    this.waitInterval = {};
+    const range = settings.slimes.spawnInterval;
+    const delay = getRandomFloat(range[0], range[1]);
 
-    waitForIt(() => {
-      // create new slime
-      if (isGameActive() && !isNinjaDead()) {
-        this.createSlime();
-      }
+    waitForIt(
+      () => {
+        // create new slime
+        if (!isGamePaused() && !isNinjaDead()) {
+          this.createSlime();
+        }
 
-      // recursevely iterate
-      this.spawnSlimesSequence();
-    }, delay);
+        // recursevely iterate
+        this.spawnSlimesSequence();
+      },
+      delay,
+      this.interval,
+    );
   }
 
   createSlime() {
