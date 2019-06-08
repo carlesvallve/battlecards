@@ -80,7 +80,6 @@ export default class Hud extends View {
     // game states (play / pause/ gameover)
     StateObserver.createSelector((state) => state.game.gameState).addListener(
       (gameState) => {
-        console.log('>>> gameState:', gameState);
         switch (gameState) {
           case 'Play':
             this.onResume();

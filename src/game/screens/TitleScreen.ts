@@ -9,6 +9,7 @@ import { blink } from 'src/lib/animations';
 import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
 import { selectScene } from 'src/redux/state/reducers/ui';
+import { setGameState } from 'src/redux/state/reducers/game';
 
 export default class TitleScreen extends View {
   screen: screen;
@@ -35,6 +36,7 @@ export default class TitleScreen extends View {
   }
 
   init() {
+    StateObserver.dispatch(setGameState('Title'));
     sounds.playSong('win');
   }
 

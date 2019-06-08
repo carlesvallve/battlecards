@@ -67,11 +67,11 @@ export default class Ninja extends Entity {
     });
 
     // entityState check
-    StateObserver.createSelector(
-      (state) => state.ninja.entityState,
-    ).addListener((entityState) => {
-      console.log('ninjaState:', entityState);
-    });
+    // StateObserver.createSelector(
+    //   (state) => state.ninja.entityState,
+    // ).addListener((entityState) => {
+    //   console.log('ninjaState:', entityState);
+    // });
   }
 
   createSprite() {
@@ -152,11 +152,10 @@ export default class Ninja extends Entity {
     });
   }
 
-  attack(target: Entity) {
-    console.log('>>>', target);
-
-    if (target.action === Actions.Attack) return; // todo: slime states
+  attack(evt: string, opts: { target: Entity }) {
     if (isNinjaDead()) return;
+    if (opts.target.action === Actions.Attack) return; // todo: slime states
+
     StateObserver.dispatch(setEntityState('Attack'));
 
     this.sprite.setFramerate(12);
@@ -268,19 +267,15 @@ export default class Ninja extends Entity {
       .then({ x: pos.x }, duration, animate.linear)
       .then(() => {
         this.idle();
-        // StateObserver.dispatch(setGoal(null));
+        StateObserver.dispatch(setGoal(null));
       });
   }
 
   jumpTo(pos: point) {
     if (isNinjaDead()) return;
+
     StateObserver.dispatch(setEntityState('Jump'));
     StateObserver.dispatch(setGoal(null));
-
-    // if (!this.isGrounded()) return;
-    // if (this.vy < 0) return;
-    // if (this.action === Actions.Jump) return;
-
     sounds.playSound('woosh');
 
     const { x, y } = pos;
@@ -294,14 +289,11 @@ export default class Ninja extends Entity {
     animate(this)
       .clear()
       .then({ x: x, y: y }, duration, animate.linear);
-    // .then(() => this.idle());
   }
 
   tick(dt) {
     if (!isGameActive()) return;
-
     super.tick(dt);
-
     this.checkDeathByLava();
   }
 

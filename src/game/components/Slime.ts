@@ -1,14 +1,13 @@
 import pubsub from 'pubsub-js';
+import { Actions } from 'src/lib/enums';
 
 import animate from 'animate';
 import SpriteView from 'ui/SpriteView';
 import settings from 'src/conf/settings';
-import level from 'src/conf/levels';
+import level, { mapHeight } from 'src/conf/levels';
 import { point } from 'src/lib/customTypes';
 import Entity from 'src/game/components/Entity';
 import Ninja from './Ninja';
-
-import { Actions } from 'src/lib/enums';
 
 import {
   getRandomFloat,
@@ -43,7 +42,7 @@ export default class Slime extends Entity {
     this.ninja = opts.ninja;
 
     this.dir = -1;
-    this.speed = getRandomFloat(0.5, 1.5); // bigger is faster // 0.5, 3.0
+    this.speed = getRandomFloat(0.5, 1.5); // bigger is faster
     this.color = opts.color || 'black';
     this.scorePoints =
       this.color === 'black' ? getRandomInt(10, 20) : getRandomInt(30, 50);
@@ -133,6 +132,9 @@ export default class Slime extends Entity {
 
   checkOutOfMapBounds() {
     // kill the slime if it drops out of map height
+    if (this.style.y > mapHeight) {
+      this.die();
+    }
   }
 
   checkNinjaDistance() {

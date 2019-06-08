@@ -3,11 +3,12 @@ import { gameState, tuple } from 'src/lib/customTypes';
 
 const slice = createSlice({
   initialState: {
-    gameState: 'Idle',
+    gameState: 'Title',
   },
   reducers: {
     setGameState: (state, { payload }: PayloadAction<gameState>) => {
       state.gameState = payload;
+      console.log('>>> gameState:', state.gameState);
     },
   },
 });

@@ -23,7 +23,6 @@ export default class World extends View {
   }
 
   init(evt: string, opts: { target: Entity }) {
-    console.log('>>>', opts.target);
     this.setTarget(opts.target);
     this.centerAtTarget();
   }
