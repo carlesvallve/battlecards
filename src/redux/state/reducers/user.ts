@@ -5,7 +5,7 @@ const slice = createSlice({
     score: 0,
     highscore: 0,
     stars: 0,
-    hearts: 0,
+    hearts: 3,
     countdown: 10,
   },
   reducers: {
@@ -35,6 +35,7 @@ const slice = createSlice({
     addHearts: (state, { payload }: PayloadAction<number>) => {
       state.hearts += payload;
     },
+
     setCountdown: (state, { payload }: PayloadAction<number>) => {
       state.countdown = payload;
     },
