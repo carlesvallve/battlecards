@@ -55,7 +55,7 @@ export default class TitleScreen extends View {
       backgroundColor: '#010101',
     });
 
-    const fontName = 'Title';
+    const fontName = 'Body';
     const dy = 110;
 
     const titleTop = new BitmapFontTextView({
