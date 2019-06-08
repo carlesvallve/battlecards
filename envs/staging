@@ -1,0 +1,15 @@
+PLATFORM=fb
+NODE_ENV='production'
+
+OUTPUTDIR='build/release/browser-mobile-staging'
+
+FB_INSTANT_USE_MOCK_DATA=false
+
+FB_APP_ID='2313545695532143'
+FB_PIXEL_ID='113377609289513'
+
+FLATLINE_APP_ID='slimesmash-dev'
+
+IMAGE_CACHE_LOCATION='imageCache-release'
+
+STAGE=dev
