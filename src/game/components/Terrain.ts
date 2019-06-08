@@ -4,18 +4,14 @@ import Tile from 'src/game/components/Tile';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import level, { getTileData } from 'src/conf/levels/index';
 import { point, screen } from 'src/lib/customTypes';
-import GameScreen from '../screens/GameScreen';
-
 
 export default class Terrain extends View {
   screen: screen;
-  game: GameScreen;
   center: point;
-  
+
   constructor(opts: { parent: World }) {
     super(opts);
     this.screen = getScreenDimensions();
-    this.game = opts.parent.game;
 
     this.updateOpts({
       zIndex: 997,

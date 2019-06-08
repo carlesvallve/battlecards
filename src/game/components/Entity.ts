@@ -1,15 +1,14 @@
 import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { rayCast } from 'src/lib/raycast';
-import GameScreen from '../screens/GameScreen';
 import { screen } from 'src/lib/customTypes';
 import { isGameActive } from 'src/redux/state/states';
 
 export default class Entity extends View {
   screen: screen;
+  parent: View;
   scale: number;
-  parent: any;
-  game: GameScreen;
+
   gravity: number;
   impulse: number;
   vx: number;
@@ -24,9 +23,8 @@ export default class Entity extends View {
   constructor(opts: { parent: any; scale: number }) {
     super(opts);
     this.screen = getScreenDimensions();
-    this.scale = opts.scale;
-    this.game = opts.parent.game;
     this.parent = opts.parent;
+    this.scale = opts.scale;
 
     // initialize gravity and velocity
     this.gravity = 0.25;

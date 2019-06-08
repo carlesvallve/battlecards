@@ -11,7 +11,7 @@ import { getCountdown } from 'src/redux/state/states';
 
 export default class GameOver extends View {
   screen: screen;
-  gameoverLabel: FixedTextView;
+  titleLabel: FixedTextView;
   continueLabel: FixedTextView;
   continueNumber: FixedTextView;
   interval: any; // todo: NodeJS.Timeout;
@@ -21,11 +21,11 @@ export default class GameOver extends View {
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();
 
-    this.createGameOverLabels();
+    this.createElements();
   }
 
-  createGameOverLabels() {
-    this.gameoverLabel = new FixedTextView({
+  createElements() {
+    this.titleLabel = new FixedTextView({
       parent: this,
       centerOnOrigin: true,
       centerAnchor: true,
@@ -92,10 +92,10 @@ export default class GameOver extends View {
   init() {
     sounds.playSong('loose');
 
-    this.gameoverLabel.style.opacity = 0;
+    this.titleLabel.style.opacity = 0;
     this.continueLabel.style.opacity = 0;
     this.continueNumber.style.opacity = 0;
-    this.gameoverLabel.show();
+    this.titleLabel.show();
     this.continueLabel.show();
     this.continueNumber.show();
 
@@ -104,7 +104,7 @@ export default class GameOver extends View {
 
     // gameover label
     let y = 35 - 24 + this.screen.height * 0.225;
-    animate(this.gameoverLabel)
+    animate(this.titleLabel)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
       .then({ y: y + 0, opacity: 1 }, t, easing);
@@ -140,7 +140,7 @@ export default class GameOver extends View {
   }
 
   hide() {
-    this.gameoverLabel.hide();
+    this.titleLabel.hide();
     this.continueLabel.hide();
     this.continueNumber.hide();
     if (this.interval) {
