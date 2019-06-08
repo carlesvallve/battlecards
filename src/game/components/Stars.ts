@@ -12,15 +12,13 @@ import sounds from 'src/lib/sounds';
 import { rayCast } from 'src/lib/raycast';
 import Ninja from './Ninja';
 import { screen } from 'src/lib/customTypes';
-import World from './World';
-import GameScreen from '../screens/GameScreen';
 import StateObserver from 'src/redux/StateObserver';
 import { addStars } from 'src/redux/state/reducers/user';
 import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/state/states';
 
 export default class Stars extends View {
   screen: screen;
-  game: GameScreen;
+  parent: View;
   ninja: Ninja;
   gravity: number;
   impulse: number;
@@ -30,16 +28,16 @@ export default class Stars extends View {
   sprites: any; // todo: View[]; but splice fails...
 
   constructor(opts: {
-    parent: World;
+    parent: View;
+    ninja: Ninja;
     startX: number;
     startY: number;
     max: number;
   }) {
     super(opts);
     this.screen = getScreenDimensions();
-    // this.sc = opts.sc;
-    this.game = opts.parent.game;
-    this.ninja = this.game.ninja;
+    this.parent = opts.parent;
+    this.ninja = opts.ninja;
 
     // initialize gravity and velocity
     this.gravity = 0.5;
@@ -64,14 +62,12 @@ export default class Stars extends View {
       y: startY,
       width: size,
       height: size,
-      // centerOnOrigin: true,
       centerAnchor: true,
-      scale: 1, // this.sc,
+      scale: 1,
       image: new Image({ url: 'resources/images/8bit-ninja/star-yellow.png' }),
+      offsetX: -size / 2,
+      offsetY: -size,
     });
-
-    sprite.style.offsetX = -size / 2;
-    sprite.style.offsetY = -size;
 
     sprite.vx = getRandomInt(-15, 15) * 0.5;
     sprite.vy = getRandomInt(-16, -4) * 0.75;
@@ -109,7 +105,7 @@ export default class Stars extends View {
 
       // attract particle to ninja
       if (sprite.action === Actions.Die) {
-        const vel = 0.15;
+        const vel = 0.25;
         const targetX = this.ninja.targetX || this.ninja.style.x;
         const dx = (targetX - me.x) * vel;
         const dy = (-7 + this.ninja.style.y - me.y) * vel;
@@ -127,7 +123,7 @@ export default class Stars extends View {
       this.castRayDown(sprite, 0);
       this.castRayForward(sprite, 0);
 
-      sprite.style.r += sprite.vx * 0.1; //  * 0.01;
+      sprite.style.r += sprite.vx * 0.1;
 
       if (sprite.action === Actions.Idle) {
         this.checkNinjaDistance(sprite);
@@ -190,7 +186,7 @@ export default class Stars extends View {
     if (hit && hit.distance <= up) {
       // set y to hit point and reset gravity vector
       me.y = hit.position.y;
-      sprite.vy = -sprite.vy * 0.75; // 0.4;
+      sprite.vy = -sprite.vy * 0.75;
       sprite.grounded = true;
     } else {
       // add gravity to velocity on y axis
@@ -215,7 +211,7 @@ export default class Stars extends View {
     );
 
     if (hit && hit.distance <= d) {
-      sprite.vx = -sprite.vx * 0.9; // 0.75;
+      sprite.vx = -sprite.vx * 0.9;
     }
   }
 }

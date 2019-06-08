@@ -2,10 +2,8 @@ import View from 'ui/View';
 import QuickViewPool from 'ui/ViewPool2';
 import { getRandomInt, getRandomFloat } from 'src/lib/utils';
 import { rayCast } from 'src/lib/raycast';
-import GameScreen from '../screens/GameScreen';
 import { screen } from 'src/lib/customTypes';
 import { isGameActive } from 'src/redux/state/states';
-import World from 'src/game/components/World';
 
 const pool = new QuickViewPool({
   ctor: View,
@@ -19,7 +17,7 @@ const pool = new QuickViewPool({
 
 export default class Explosion extends View {
   screen: screen;
-  game: GameScreen;
+  parent: View;
   sprites: View[];
   gravity: number;
   impulse: number;
@@ -27,7 +25,7 @@ export default class Explosion extends View {
   vy: number;
 
   constructor(opts: {
-    parent: World;
+    parent: View;
     sc: number;
     max: number;
     startX: number;
@@ -35,8 +33,7 @@ export default class Explosion extends View {
     color: string;
   }) {
     super(opts);
-
-    this.game = opts.parent.game;
+    this.parent = opts.parent;
 
     // initialize gravity and velocity
     this.gravity = 0.5;
@@ -57,7 +54,7 @@ export default class Explosion extends View {
     // using timestep's ViewPool2
     // sprite pooling system to increase performance
     const sprite = pool.obtainView();
-    this.game.world.addSubview(sprite);
+    this.parent.addSubview(sprite);
     sprite.style.backgroundColor = color;
     sprite.style.scale = sc;
     sprite.style.x = startX;

@@ -10,7 +10,6 @@ import World from 'src/game/components/World';
 import Terrain from 'src/game/components/Terrain';
 import Ninja from 'src/game/components/Ninja';
 import Slime from 'src/game/components/Slime';
-import Chest from 'src/game/components/Chest';
 import Stars from 'src/game/components/Stars';
 import Explosion from 'src/game/components/Explosion';
 import Hud from 'src/game/components/Hud';
@@ -89,7 +88,6 @@ export default class GameScreen extends InputView {
     // game events
     pubsub.subscribe('game:start', this.init.bind(this));
     pubsub.subscribe('game:explosion', this.explosion.bind(this));
-    pubsub.subscribe('game:spawnchest', this.spawnChest.bind(this));
     pubsub.subscribe('game:spawnstars', this.spawnStars.bind(this));
   }
 
@@ -116,7 +114,7 @@ export default class GameScreen extends InputView {
     pubsub.publish('hud:start');
 
     // init world animation
-    pubsub.publish('world:start');
+    pubsub.publish('world:start', { target: this.ninja });
 
     // start spawning slimes
     this.spawnSlimesSequence();
@@ -144,8 +142,7 @@ export default class GameScreen extends InputView {
     const color = getRandomItemFromArray(['black', 'black', 'black', 'red']);
     const slime = new Slime({
       parent: this.world,
-      x: 0,
-      y: 0,
+      ninja: this.ninja,
       scale: settings.worldScale,
       color,
     });
@@ -187,26 +184,13 @@ export default class GameScreen extends InputView {
     }
   }
 
-  spawnChest(evt: string, opts: { entity: Entity }) {
-    const { entity } = opts;
-    if (!entity) return;
-
-    // create chest
-    new Chest({
-      parent: this.world,
-      sc: settings.worldScale,
-      startX: entity.style.x,
-      startY: entity.style.y + 4 * settings.worldScale,
-      color: entity.color,
-    });
-  }
-
   spawnStars(evt: string, opts: { entity: Entity }) {
     const { entity } = opts;
     if (!entity) return;
 
     new Stars({
       parent: this.world,
+      ninja: this.ninja,
       max: getRandomInt(1, 3),
       startX: entity.style.x,
       startY: entity.style.y + 4 * settings.worldScale,

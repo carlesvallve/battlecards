@@ -18,13 +18,13 @@ import {
   getRandomItemFromArray,
   getScreenDimensions,
 } from 'src/lib/utils';
-import World from './World';
-import StateObserver from 'src/redux/StateObserver';
 import {
   isGameActive,
   isNinjaDead,
   isNinjaRespawning,
+  isNinjaIdle,
 } from 'src/redux/state/states';
+import View from 'ui/View';
 
 export default class Slime extends Entity {
   sprite: SpriteView;
@@ -33,15 +33,14 @@ export default class Slime extends Entity {
   starProbability: number;
 
   constructor(opts: {
-    parent: World;
-    x: number;
-    y: number;
+    parent: View;
+    ninja: Ninja;
     scale: number;
     color: string;
   }) {
     super(opts);
-    this.ninja = this.game.ninja;
     this.screen = getScreenDimensions();
+    this.ninja = opts.ninja;
 
     this.dir = -1;
     this.speed = getRandomFloat(0.5, 1.5); // bigger is faster // 0.5, 3.0
@@ -73,15 +72,14 @@ export default class Slime extends Entity {
 
   getSpawnPosition(): point {
     const { mapData, tileSize } = level;
-    const ninja = this.ninja;
 
-    const y = ninja.style.y + getRandomInt(0, -100);
+    const y = this.ninja.style.y + getRandomInt(0, -100);
 
     const min = settings.slimes.spawnDistance[0];
     const max = settings.slimes.spawnDistance[1];
 
-    let left = ninja.style.x - getRandomInt(min, max);
-    let right = ninja.style.x + getRandomInt(min, max);
+    let left = this.ninja.style.x - getRandomInt(min, max);
+    let right = this.ninja.style.x + getRandomInt(min, max);
 
     // always between map limits
     if (left < tileSize) {
@@ -164,9 +162,7 @@ export default class Slime extends Entity {
         // -> if the slime is looking in the ninja direction
         if (
           dir !== this.ninja.dir ||
-          // (!settings.player.autoAttack && this.ninja.action === Actions.Idle)
-          (!settings.player.autoAttack &&
-            StateObserver.getState().ninja.entityState === 'Idle')
+          (!settings.player.autoAttack && isNinjaIdle())
         ) {
           this.attack();
           return;

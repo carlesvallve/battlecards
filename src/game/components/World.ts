@@ -5,18 +5,16 @@ import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { screen } from 'src/lib/customTypes';
 import { isGameActive } from 'src/redux/state/states';
 import GameScreen from 'src/game/screens/GameScreen';
-import Ninja from 'src/game/components/Ninja';
+import Entity from './Entity';
 
 export default class World extends View {
   screen: screen;
-  game: GameScreen;
-  ninja: Ninja;
+  target: Entity;
   elasticity: number;
 
   constructor(opts: { parent: GameScreen }) {
     super(opts);
     this.screen = getScreenDimensions();
-    this.game = opts.parent;
     this.elasticity = 0.25;
 
     pubsub.subscribe('world:start', this.init.bind(this));
@@ -24,28 +22,45 @@ export default class World extends View {
     debugPoint(this);
   }
 
-  init() {
-    this.centerAt(this.game.ninja);
+  init(evt: string, opts: { target: Entity }) {
+    console.log('>>>', opts.target);
+    this.setTarget(opts.target);
+    this.centerAtTarget();
   }
 
-  centerAt(ninja: Ninja) {
-    const targetX = -ninja.style.x + this.screen.width / 2;
-    const targetY = -ninja.style.y + this.screen.height / 2;
+  setTarget(target: Entity) {
+    this.target = target;
+  }
+
+  isTarget() {
+    if (!this.target) {
+      console.error('No camera target has been set!');
+      return false;
+    }
+
+    return true;
+  }
+
+  centerAtTarget() {
+    if (!this.isTarget()) return;
+
+    const targetX = -this.target.style.x + this.screen.width / 2;
+    const targetY = -this.target.style.y + this.screen.height / 2;
     this.updateOpts({
       x: targetX,
       y: targetY,
     });
   }
 
-  interpolate(ninja: Ninja) {
-    if (!ninja) return;
+  interpolateToTarget() {
+    if (!this.isTarget()) return;
 
-    const targetX = -ninja.style.x + this.screen.width / 2;
-    const targetY = -ninja.style.y + this.screen.height / 2;
+    const targetX = -this.target.style.x + this.screen.width / 2;
+    const targetY = -this.target.style.y + this.screen.height / 2;
     const dx = (targetX - this.style.x) * this.elasticity;
     this.style.x += dx;
 
-    if (ninja.isGrounded()) {
+    if (this.target.isGrounded()) {
       const dy = (targetY - this.style.y) * this.elasticity;
       this.style.y += dy;
     }
@@ -53,8 +68,6 @@ export default class World extends View {
 
   tick(dt) {
     if (!isGameActive()) return;
-
-    const ninja = this.game.ninja;
-    this.interpolate(ninja);
+    this.interpolateToTarget();
   }
 }
