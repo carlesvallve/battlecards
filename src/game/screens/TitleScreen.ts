@@ -12,6 +12,7 @@ import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
 import { selectScene } from 'src/redux/state/reducers/ui';
 import { setGameState } from 'src/redux/state/reducers/game';
+import i18n from 'src/lib/i18n/i18n';
 
 export default class TitleScreen extends View {
   screen: screen;
@@ -59,7 +60,7 @@ export default class TitleScreen extends View {
 
     const titleTop = new BitmapFontTextView({
       superview: this,
-      text: 'SLIME',
+      text: i18n('title.slime'),
       x: this.screen.width / 2,
       y: -dy + this.screen.height / 2,
       align: 'center',
@@ -73,7 +74,7 @@ export default class TitleScreen extends View {
 
     const titleBottom = new BitmapFontTextView({
       superview: this,
-      text: 'SMASH',
+      text: i18n('title.smash'),
       x: this.screen.width / 2,
       y: -dy + 68 + this.screen.height / 2,
       align: 'center',
@@ -86,6 +87,7 @@ export default class TitleScreen extends View {
 
     this.startLabel = new BitmapFontTextView({
       superview: this,
+      text: i18n('title.start'),
       x: this.screen.width / 2,
       y: 200 - dy + this.screen.height / 2,
       align: 'center',
@@ -94,7 +96,6 @@ export default class TitleScreen extends View {
       color: '#eee',
       wordWrap: false,
       font: bitmapFonts(fontName),
-      text: 'START',
       visible: false,
     });
   }

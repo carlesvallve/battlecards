@@ -9,6 +9,7 @@ import StateObserver from 'src/redux/StateObserver';
 import { selectScene } from 'src/redux/state/reducers/ui';
 import { setCountdown } from 'src/redux/state/reducers/user';
 import { getCountdown } from 'src/redux/state/states';
+import i18n from 'src/lib/i18n/i18n';
 
 export default class GameOver extends View {
   screen: screen;
@@ -30,7 +31,7 @@ export default class GameOver extends View {
 
     this.titleLabel = new BitmapFontTextView({
       superview: this,
-      text: 'GAME OVER',
+      text: i18n('hud.gameover'),
       x: this.screen.width / 2,
       align: 'center',
       verticalAlign: 'center',
@@ -44,7 +45,7 @@ export default class GameOver extends View {
 
     this.continueLabel = new BitmapFontTextView({
       superview: this,
-      text: 'CONTINUE',
+      text: i18n('hud.continue'),
       x: this.screen.width / 2,
       align: 'center',
       verticalAlign: 'center',

@@ -1,24 +1,20 @@
 {
-  "value": "{0}",
+  "title": {
+    "slime": "SLIME",
+    "smash": "SMASH",
+    "start": "JUGAR"
+  },
 
-  "menu": {
-    "title": "Menu",
-    "items": {
-      "play": "JUGAR",
-      "territory": "TERRITORIO",
-      "buy": "TIENDA",
-      "upgrade": "CONSTRUIR",
-      "news": "NOTICIAS",
-      "gifts": "REGALOS",
-      "leaderboard": "RANKING",
-      "invite": "INVITAR AMIGOS",
-      "settings": "OPCIONES",
-      "cheats": "TRUCOS"
-    }
+  "hud": {
+    "score": "SCORE",
+    "highscore": "HIGHSCORE",
+    "pause": "PAUSA",
+    "gameover": "GAME OVER",
+    "continue": "CONTINUAR"
   },
 
   "settings": {
-    "title": "Opciones",
+    "title": "OPCIONES",
     "on": "ON",
     "off": "OFF",
     "music": "MUSICA",

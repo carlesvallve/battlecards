@@ -20,8 +20,9 @@ import {
   setHearts,
 } from 'src/redux/state/reducers/user';
 import { setGameState } from 'src/redux/state/reducers/game';
-import { isGamePaused } from 'src/redux/state/states';
+import { isGamePaused, getStars } from 'src/redux/state/states';
 import settings from 'src/conf/settings';
+import i18n from 'src/lib/i18n/i18n';
 
 export default class Hud extends View {
   screen: screen;
@@ -104,7 +105,8 @@ export default class Hud extends View {
     StateObserver.dispatch(setHighscore(gameData.highscore || 0));
     StateObserver.dispatch(setStars(gameData.stars || 0));
 
-    this.scoreLabel.text = '0';
+    this.scoreLabel.text = 0;
+    this.starLabel.text = getStars();
     this.createHearts(settings.user.maxHearts, 35);
 
     this.gameOver.hide();
@@ -225,7 +227,7 @@ export default class Hud extends View {
     const scoreTitle = new BitmapFontTextView({
       // backgroundColor: 'pink',
       superview: this,
-      text: 'SCORE',
+      text: i18n('hud.score'),
       x: 2 + this.screen.width / 2,
       y: dy + 17,
       height: 12,
@@ -284,7 +286,7 @@ export default class Hud extends View {
 
     this.pauseLabel = new BitmapFontTextView({
       superview: this,
-      text: 'PAUSE',
+      text: i18n('hud.pause'),
       x: this.screen.width / 2,
       y: 5 + this.screen.height / 4,
       align: 'center',
