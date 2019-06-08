@@ -111,19 +111,21 @@ export default class Application extends View {
     const fromScene = this.rootView.stack[this.rootView.stack.length - 1];
     // console.log(fromScene, '->', scene);
 
-    if (!animated) {
+    const changeScene = () => {
       this.rootView.pop(true);
       this.rootView.push(this.scenes[name], true);
+    };
+
+    if (!animated) {
+      changeScene();
       pubsub.publish(`${name}:start`);
-      // this.scenes[name].init();
       return;
     }
 
     const duration = 300;
 
     if (!fromScene) {
-      this.rootView.pop(true);
-      this.rootView.push(scene, true);
+      changeScene();
       pubsub.publish(`${name}:start`);
       this.fadeIn(scene, duration);
       return;

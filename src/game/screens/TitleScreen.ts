@@ -12,7 +12,6 @@ import { selectScene } from 'src/redux/state/reducers/ui';
 
 export default class TitleScreen extends View {
   screen: screen;
-  inputView: InputView;
 
   constructor() {
     super({});
@@ -21,14 +20,14 @@ export default class TitleScreen extends View {
 
     this.createElements();
 
-    this.inputView = new InputView({
+    const inputView = new InputView({
       parent: this,
       width: this.screen.width,
       height: this.screen.height,
       dragThreshold: 0,
     });
 
-    this.inputView.registerHandlerForTouch((x: number, y: number) => {
+    inputView.registerHandlerForTouch((x: number, y: number) => {
       StateObserver.dispatch(selectScene('game'));
     });
 
@@ -40,7 +39,7 @@ export default class TitleScreen extends View {
   }
 
   createElements() {
-    new View({
+    const bg = new View({
       parent: this,
       width: this.screen.width,
       height: this.screen.height,
@@ -49,8 +48,7 @@ export default class TitleScreen extends View {
 
     const offsetY = 110;
 
-    // title
-    new FixedTextView({
+    const titleTop = new FixedTextView({
       parent: this,
       text: 'SLIME',
       color: '#CC0000',
@@ -69,7 +67,7 @@ export default class TitleScreen extends View {
       autoSize: false,
     });
 
-    new FixedTextView({
+    const titleBottom = new FixedTextView({
       parent: this,
       text: 'SMASH',
       color: '#ddd',
@@ -103,9 +101,9 @@ export default class TitleScreen extends View {
       size: 11,
       autoFontSize: false,
       autoSize: false,
+      visible: false,
     });
 
-    startLabel.hide();
     blink(startLabel, 350);
   }
 }
