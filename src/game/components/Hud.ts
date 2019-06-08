@@ -302,8 +302,8 @@ export default class Hud extends View {
 
     this.pauseButton = new ButtonView({
       parent: this,
-      image: new Image({ url: 'resources/images/hud/icon-pause.png' }),
-      width: 24,
+      image: new Image({ url: 'resources/images/ui/icon-pause.png' }),
+      width: 28,
       height: 24,
       x: this.screen.width - 40,
       y: this.screen.height - 72 + 30,
