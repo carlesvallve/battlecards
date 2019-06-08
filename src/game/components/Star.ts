@@ -16,6 +16,8 @@ import StateObserver from 'src/redux/StateObserver';
 import { addStars } from 'src/redux/state/reducers/user';
 import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/state/states';
 
+// todo, this is actually a star container for an explosion of multiple stars... refactor!
+
 export default class Star extends View {
   screen: screen;
   parent: View;
@@ -150,7 +152,7 @@ export default class Star extends View {
   die(sprite: View) {
     animate(sprite)
       .clear()
-      .now({ scale: sprite.style.scale }, 0, animate.linear)
+      // .now({ scale: sprite.style.scale }, 0, animate.linear)
       .then({ scale: 0 }, 300, animate.linear)
       .then(() => {
         this.removeSprite(sprite);

@@ -116,7 +116,7 @@ export default class GameOver extends View {
 
         // render contdown
         const current = getCountdown();
-        this.continueNumber.text = current;
+        this.continueNumber.text = current === 0 ? '' : current;
 
         // end countdown
         if (current === 0) {
