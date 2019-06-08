@@ -13,5 +13,5 @@ FLATLINE_HOST='https://wintermute-151001.appspot.com'
 
 IMAGE_CACHE_LOCATION='imageCache-release'
 
-
-
+#does-not-work
+PROD_UPLOAD_TOKEN='EAAYsfZAxiFmMBAH3nOHyk2n9ZARZBrzcSdKwZBgDr84OCc1vSK1fudrQzaZA1iFUmFLfC6fs1flAcMAjuTS8Btq05Fk4D3Dx7mLVfF5KG7BqxHuzZBf2ISyXFbhjVfIIoSyHPNHsu6TJsYrlVjP0MgKi1XN25uQ8cZD'

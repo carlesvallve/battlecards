@@ -1,8 +1,9 @@
 {
   "name": "slimesmash",
   "shortName": "slimesmash",
-  "title": "Slime Smash",
+  "title": "Slimesmash",
   "version": "1.0.0",
+  "private": true,
   "manifest": {
     "maxTick": 50,
     "android": {
@@ -26,7 +27,10 @@
         "maxTextureMegabytes": 150
       }
     },
-    "appID": "2313545695532143",
+    "appID": {
+      "staging": "2313545695532143",
+      "production": "2313545695532143"
+    },
     "fbinstant": {
       "url": "https://connect.facebook.net/en_US/fbinstant.6.2.js"
     },
@@ -40,9 +44,10 @@
   },
   "scripts": {
     "start": "npm run serve",
+    "start:dev": "webpack-dev-server --env.buildType development --no-inline",
+    "start:fb": "webpack-dev-server --env.buildType developmentFacebook --no-inline",
     "build:dev": "webpack --env.buildType development",
     "build:prod": "webpack --env.buildType production",
-    "build:fb": "webpack-dev-server --env.buildType developmentFacebook --no-inline",
     "build:zip": "webpack -p --env.buildType production && npm run zip -- -prod",
     "zip": "bash scripts/zip.sh",
     "deploy:dev": "node scripts/upload-asset-bundle staging",
@@ -61,21 +66,23 @@
   "devDependencies": {
     "@blackstormlabs/gcn-client": "2.5.2",
     "@blackstormlabs/replicant": "0.0.71",
-    "@blackstormlabs/timestep-build": "9.5.0",
-    "@blackstormlabs/timestep-core": "6.2.0",
-    "@blackstormlabs/timestep-devtools": "3.2.0",
+    "@blackstormlabs/timestep-build": "9.5.1",
+    "@blackstormlabs/timestep-core": "7.1.0",
+    "@blackstormlabs/timestep-devtools": "4.0.0",
     "@blackstormlabs/timestep-instant": "8.2.0",
     "@blackstormlabs/timestep-workspace": "4.1.3",
     "@types/node": "11.13.2",
     "@typescript-eslint/eslint-plugin": "1.9.0",
     "@typescript-eslint/parser": "1.9.0",
-    "eslint": "^5.11.1",
+    "eslint": "^5.16.0",
     "prettier": "1.17.1",
     "pubsub-js": "^1.7.0",
     "redux": "4.0.1",
     "redux-devtools-extension": "^2.13.8",
     "redux-starter-kit": "0.4.3",
-    "typescript": "3.3.4000"
+    "request": "2.88.0",
+    "typescript": "3.3.4000",
+    "webpack-shell-plugin": "^0.5.0"
   },
   "dependencies": {}
 }

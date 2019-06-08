@@ -1,5 +1,5 @@
+/* global require */
 // Uploads the FB bundle to Facebook.
-
 // Usage: node upload-asset-bundle <staging | production>
 
 const fs = require('fs');
@@ -59,10 +59,16 @@ if (!env || (env !== 'staging' && env !== 'production')) {
 
 function getUploadAccessToken(env) {
   // Get asset upload access token
-  const assetUploadAccessToken =
+  let assetUploadAccessToken =
     env === 'staging'
       ? process.env.STAGING_UPLOAD_TOKEN
       : process.env.PROD_UPLOAD_TOKEN;
+
+  // todo: find a way to put this in env vars
+  if (!assetUploadAccessToken) {
+    assetUploadAccessToken =
+      'EAAYsfZAxiFmMBAH3nOHyk2n9ZARZBrzcSdKwZBgDr84OCc1vSK1fudrQzaZA1iFUmFLfC6fs1flAcMAjuTS8Btq05Fk4D3Dx7mLVfF5KG7BqxHuzZBf2ISyXFbhjVfIIoSyHPNHsu6TJsYrlVjP0MgKi1XN25uQ8cZD';
+  }
 
   if (!assetUploadAccessToken) {
     throw new Error(
