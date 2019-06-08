@@ -1,0 +1,30 @@
+{
+  "value": "{0}",
+
+  "menu": {
+    "title": "Menu",
+    "items": {
+      "play": "JUGAR",
+      "territory": "TERRITORIO",
+      "buy": "TIENDA",
+      "upgrade": "CONSTRUIR",
+      "news": "NOTICIAS",
+      "gifts": "REGALOS",
+      "leaderboard": "RANKING",
+      "invite": "INVITAR AMIGOS",
+      "settings": "OPCIONES",
+      "cheats": "TRUCOS"
+    }
+  },
+
+  "settings": {
+    "title": "Opciones",
+    "on": "ON",
+    "off": "OFF",
+    "music": "MUSICA",
+    "sound": "SFX",
+    "version": "Version: {version}"
+  },
+
+  "tutorial": {}
+}

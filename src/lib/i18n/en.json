@@ -1,0 +1,177 @@
+{
+  "value": "{0}",
+
+  "menu": {
+    "title": "Menu",
+    "items": {
+      "play": "PLAY",
+      "territory": "TERRITORY",
+      "buy": "BUY COINS/SPINS",
+      "upgrade": "UPGRADE",
+      "news": "NEWS",
+      "gifts": "GIFTS",
+      "leaderboard": "LEADERBOARD",
+      "invite": "INVITE FRIENDS",
+      "settings": "SETTINGS",
+      "cheats": "CHEATS"
+    }
+  },
+
+  "slotmachine": {
+    "spin": "SPIN",
+    "hold": "HOLD FOR AUTOSPIN",
+
+    "welcome": "WELCOME",
+    "spinsExtra": "{amount} SPINS",
+
+    "spinsTime": "{amount} spins in: {minutes}:{seconds}",
+    "spinsOver": "+ {amount} spins",
+    "spinsFull": "Full"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "playerId": "PLAYER ID",
+    "on": "ON",
+    "off": "OFF",
+    "music": "MUSIC",
+    "sound": "SOUND",
+    "version": "Version: {version}"
+  },
+
+  "basic": {
+    "error": "ERROR",
+    "close": "CLOSE",
+    "okay": "OKAY",
+    "attack": "ATTACK",
+    "raid": "RAID",
+    "revenge": "REVENGE",
+    "friends": "FRIENDS",
+    "brag": "BRAG",
+    "next": "NEXT",
+    "random": "RANDOM",
+
+    "bets": "Bet x{amount}"
+  },
+
+  "result": {
+    "title": "RESULTS",
+    "youstole": "You stole",
+    "attack": "You attacked\n[color=#ffe432]{name}[/color] and won",
+    "block": "You were blocked by\n[color=#ffe432]{name}[/color] and won"
+  },
+
+  "refill": {
+    "title": "Out of {type}",
+    "coins": "coins",
+    "spins": "spins",
+    "regen": "Or wait {minutes}:{seconds} min for {amount} spins"
+  },
+
+  "upgrade": {
+    "title": "UPGRADE",
+    "buy": "BUY",
+    "fix": "FIX"
+  },
+
+  "news": {
+    "title": "NEWS",
+    "nonews": "No news yet",
+    "attack": "ATTACKED YOUR TERRITORY",
+    "shield": "TRIED TO ATTACK YOUR TERRITORY",
+    "raid": "STOLE ${coin} FROM YOU",
+    "join": "CHOSE THE THUG LIFE",
+    "time": "{hours} AGO"
+  },
+
+  "gifts": {
+    "title": "GIFTS",
+    "invite": "INVITE",
+    "collect": "COLLECT",
+    "giftback": "GIFT BACK",
+    "giftsent": "FIGT SENT",
+    "send": "SEND"
+  },
+
+  "leaderboard": {
+    "title": "LEADERBOARD"
+  },
+
+  "invite": {
+    "title": "NEED MORE SPINS?",
+    "body": "Invite friends and Get\n[color=#ffe432]40 Free spins[/color] for each\nfriend that Joins!",
+    "button": "INVITE",
+    "disclaimer": "* You will get a reward after your friend connects through Facebook"
+  },
+
+  "shop": {
+    "title": "SHOP",
+    "spins": "SPINS",
+    "coins": "COINS",
+    "percent": "{percent}% MORE"
+  },
+
+  "complete": {
+    "title": "NEW TERRITORIES",
+    "comingsoon": "COMING SOON",
+    "all": "You have completed\nall Buildings in this\nterritory!"
+  },
+
+  "notifications": {
+    "join": {
+      "cta": "Play Now",
+      "body": "{playerName} chose the thug life!"
+    },
+    "poke": {
+      "playnow": {
+        "cta": "Play Now",
+        "body": "{playerName} is livin' the thug life!"
+      },
+      "raidnow": {
+        "cta": "Raid Now",
+        "body": "{playerName} has unspent coins!"
+      }
+    },
+    "invite": {
+      "cta": "Choose the thug life!",
+      "body": "Join now and build your criminal empire!"
+    },
+    "blocked": {
+      "cta": "Get Revenge",
+      "body": "{playerName} tried to attack you!"
+    },
+    "attacked": {
+      "cta": "Get Revenge",
+      "body": "{playerName} is destroying your territory!"
+    },
+    "raided": {
+      "cta": "Get Revenge",
+      "body": "{playerName} just stole ${amount} from you!"
+    }
+  },
+
+  "shareables": {
+    "invite": "Choose the thug life!",
+    "complete": "I completed my territory!",
+    "raid": "I'm in ur territory, stealin' ur coins",
+    "attack": "I'm in ur territory, wreckin' ur stuff"
+  },
+
+  "tutorial": {
+    "steps": {
+      "map-intro-1": "Tap the build\nbutton to start",
+      "map-intro-3": "Upgrade all your buildings\nin this area to advance\nto the next",
+      "map-intro-finish": "You are out of coins.\nClick here to earn more",
+      "spin-intro": "Use the slot machine to\nearn coins, attack and\nraid other players",
+      "first-attack": "Attack other players\nto earn coins",
+      "first-shield": "Shields will protect\nyour territory from attacks",
+      "first-raid": "Raid a territory\nand steal some coins",
+      "first-raid-2": "This is our target.\nLet's raid him!"
+    },
+    "complete": {
+      "title": "SUCCESS!",
+      "subtitle": "Your rewards:",
+      "rewards": "50 free spins!\n1M free coins!\nPlay with friends!\nSave your progress!"
+    }
+  }
+}

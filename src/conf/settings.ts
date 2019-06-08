@@ -11,4 +11,7 @@ export default {
     autoAttack: true,
     doubleJump: true,
   },
+  user: {
+    maxHearts: 1,
+  },
 };

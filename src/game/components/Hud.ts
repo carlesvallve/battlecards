@@ -5,7 +5,8 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
-import FixedTextView from 'src/lib/ui/FixedTextView';
+import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
+import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import { screen } from 'src/lib/customTypes';
@@ -20,14 +21,15 @@ import {
 } from 'src/redux/state/reducers/user';
 import { setGameState } from 'src/redux/state/reducers/game';
 import { isGamePaused } from 'src/redux/state/states';
+import settings from 'src/conf/settings';
 
 export default class Hud extends View {
   screen: screen;
   hearts: ImageView[];
   gameOver: GameOver;
-  starLabel: FixedTextView;
-  scoreLabel: FixedTextView;
-  pauseLabel: FixedTextView;
+  starLabel: BitmapFontTextView;
+  scoreLabel: BitmapFontTextView;
+  pauseLabel: BitmapFontTextView;
   pauseButton: ButtonView;
 
   constructor(opts: { parent: View }) {
@@ -102,7 +104,8 @@ export default class Hud extends View {
     StateObserver.dispatch(setHighscore(gameData.highscore || 0));
     StateObserver.dispatch(setStars(gameData.stars || 0));
 
-    this.createHearts(3, 35);
+    this.scoreLabel.text = '0';
+    this.createHearts(settings.user.maxHearts, 35);
 
     this.gameOver.hide();
     this.pauseButton.show();
@@ -138,7 +141,7 @@ export default class Hud extends View {
       .then({ scale: 1.6 }, t, easing)
       .then({ scale: 1.6 }, t, easing)
       .then(() => {
-        this.scoreLabel.setText(score.toString());
+        this.scoreLabel.text = score;
       })
       .then({ scale: 1 }, t, easing);
   }
@@ -152,7 +155,7 @@ export default class Hud extends View {
       .then({ scale: 1.3 }, t, easing)
       .then({ scale: 1.3 }, t, easing)
       .then(() => {
-        this.starLabel.setText(stars.toString());
+        this.starLabel.text = stars;
       })
       .then({ scale: 1 }, t, easing);
   }
@@ -184,6 +187,8 @@ export default class Hud extends View {
   // =====================================================================
 
   createStars(dy: number) {
+    const fontName = 'Body';
+
     const starIcon = new ImageView({
       parent: this,
       x: 11,
@@ -192,69 +197,59 @@ export default class Hud extends View {
       height: 8,
       centerOnOrigin: false,
       centerAnchor: false,
-      scale: 1, // this.sc,
+      scale: 1,
       image: new Image({ url: 'resources/images/8bit-ninja/star-yellow.png' }),
     });
 
-    this.starLabel = new FixedTextView({
-      parent: this,
-      text: '0',
-      color: '#fff',
+    this.starLabel = new BitmapFontTextView({
+      // backgroundColor: 'grey',
+      // width: 320,
+      superview: this,
       x: 26,
       y: dy + 10,
       height: 12,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
       horizontalAlign: 'left',
-      verticalAlign: 'middle',
-      strokeWidth: 0,
-      strokeColor: '#000',
+      verticalAlign: 'center',
       size: 10,
-      autoFontSize: false,
-      autoSize: false,
-      centerOnOrigin: false,
+      color: '#fff',
+      strokeColor: '#000',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
       centerAnchor: true,
     });
   }
 
   createScoreLabel(dy: number) {
-    const scoreTitle = new FixedTextView({
-      parent: this,
+    const fontName = 'Body';
+
+    const scoreTitle = new BitmapFontTextView({
+      // backgroundColor: 'pink',
+      superview: this,
       text: 'SCORE',
-      color: '#fff',
-      x: this.screen.width / 2,
-      y: dy + 10,
+      x: 2 + this.screen.width / 2,
+      y: dy + 17,
       height: 12,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 0,
-      strokeColor: '#000',
+      align: 'center',
+      verticalAlign: 'center',
       size: 10,
-      autoFontSize: false,
-      autoSize: false,
-      centerOnOrigin: false,
+      color: '#fff',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
+      centerOnOrigin: true,
       centerAnchor: true,
     });
 
-    this.scoreLabel = new FixedTextView({
-      parent: this,
-      text: '000',
-      color: '#fff',
+    this.scoreLabel = new BitmapFontTextView({
+      superview: this,
       x: this.screen.width / 2,
       y: dy + 40,
-      width: 320,
       height: 32,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 0,
-      strokeColor: '#000',
+      align: 'center',
+      verticalAlign: 'center',
       size: 20,
-      autoFontSize: false,
-      autoSize: false,
+      color: '#fff',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
       centerOnOrigin: true,
       centerAnchor: true,
     });
@@ -285,22 +280,20 @@ export default class Hud extends View {
   // =====================================================================
 
   createPauseButton() {
-    this.pauseLabel = new FixedTextView({
-      parent: this,
+    const fontName = 'Body';
+
+    this.pauseLabel = new BitmapFontTextView({
+      superview: this,
       text: 'PAUSE',
-      color: '#fff',
       x: this.screen.width / 2,
-      y: 35 + this.screen.height / 4,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 4,
-      strokeColor: '#000',
-      size: 48,
-      autoFontSize: false,
-      autoSize: false,
-      centerOnOrigin: false,
+      y: 5 + this.screen.height / 4,
+      align: 'center',
+      verticalAlign: 'center',
+      size: 44,
+      color: '#fff',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
+      centerOnOrigin: true,
       centerAnchor: true,
       visible: false,
     });

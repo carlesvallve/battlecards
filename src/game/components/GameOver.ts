@@ -1,7 +1,8 @@
 import animate from 'animate';
 import sounds from 'src/lib/sounds';
 import View from 'ui/View';
-import FixedTextView from 'src/lib/ui/FixedTextView';
+import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
+import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions, waitForIt, clearWait } from 'src/lib/utils';
 import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
@@ -11,9 +12,9 @@ import { getCountdown } from 'src/redux/state/states';
 
 export default class GameOver extends View {
   screen: screen;
-  titleLabel: FixedTextView;
-  continueLabel: FixedTextView;
-  continueNumber: FixedTextView;
+  titleLabel: BitmapFontTextView;
+  continueLabel: BitmapFontTextView;
+  continueNumber: BitmapFontTextView;
 
   constructor(opts: { parent: View }) {
     super(opts);
@@ -21,70 +22,51 @@ export default class GameOver extends View {
     this.screen = getScreenDimensions();
 
     this.createElements();
+    this.hide();
   }
 
   createElements() {
-    this.titleLabel = new FixedTextView({
-      parent: this,
-      centerOnOrigin: true,
-      centerAnchor: true,
+    const fontName = 'Body';
+
+    this.titleLabel = new BitmapFontTextView({
+      superview: this,
       text: 'GAME OVER',
+      x: this.screen.width / 2,
+      align: 'center',
+      verticalAlign: 'center',
+      size: 44,
       color: '#CC0000',
-      x: this.screen.width / 2,
-      y: 0,
-      width: 320,
-      height: 100,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 4,
-      strokeColor: '#ff0000',
-      size: 36,
-      autoFontSize: false,
-      autoSize: false,
-    });
-
-    this.continueLabel = new FixedTextView({
-      parent: this,
+      wordWrap: false,
+      font: bitmapFonts(fontName),
       centerOnOrigin: true,
       centerAnchor: true,
+    });
+
+    this.continueLabel = new BitmapFontTextView({
+      superview: this,
       text: 'CONTINUE',
-      color: '#ffffff',
       x: this.screen.width / 2,
-      y: 0,
-      width: 320,
-      height: 100,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 2,
-      strokeColor: '#000000',
+      align: 'center',
+      verticalAlign: 'center',
       size: 20,
-      autoFontSize: false,
-      autoSize: false,
-    });
-
-    this.continueNumber = new FixedTextView({
-      parent: this,
+      color: '#fff',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
       centerOnOrigin: true,
       centerAnchor: true,
-      text: '9',
-      color: '#ffffff',
+    });
+
+    this.continueNumber = new BitmapFontTextView({
+      superview: this,
       x: this.screen.width / 2,
-      y: 0,
-      width: 320,
-      height: 100,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 2,
-      strokeColor: '#000000',
-      size: 20,
-      autoFontSize: false,
-      autoSize: false,
+      align: 'center',
+      verticalAlign: 'center',
+      size: 32,
+      color: '#fff',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
+      centerOnOrigin: true,
+      centerAnchor: true,
     });
   }
 
@@ -96,7 +78,7 @@ export default class GameOver extends View {
 
     // gameover label
     this.titleLabel.updateOpts({ visible: true, opacity: 0 });
-    let y = 35 - 24 + this.screen.height * 0.225;
+    let y = -10 + this.screen.height * 0.225;
     animate(this.titleLabel)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
@@ -104,7 +86,7 @@ export default class GameOver extends View {
 
     // continue label
     this.continueLabel.updateOpts({ visible: true, opacity: 0 });
-    y = 35 + 28 + this.screen.height * 0.225;
+    y = 53 + this.screen.height * 0.225;
     animate(this.continueLabel)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
@@ -112,7 +94,7 @@ export default class GameOver extends View {
 
     // continue number
     this.continueNumber.updateOpts({ visible: true, opacity: 0 });
-    y = 30 + 72 + this.screen.height * 0.225;
+    y = 90 + this.screen.height * 0.225;
     animate(this.continueNumber)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
@@ -120,7 +102,7 @@ export default class GameOver extends View {
 
     // countdown
     StateObserver.dispatch(setCountdown(9));
-    this.continueNumber.setText(getCountdown().toString());
+    this.continueNumber.text = getCountdown();
     this.updateCountdown();
   }
 
@@ -132,7 +114,7 @@ export default class GameOver extends View {
 
         // render contdown
         const current = getCountdown();
-        this.continueNumber.setText(current);
+        this.continueNumber.text = current;
 
         // end countdown
         if (current === 0) {

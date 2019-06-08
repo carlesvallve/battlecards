@@ -6,10 +6,12 @@ import platform from 'platform';
 import device from 'device';
 import View from 'ui/View';
 import StackView from 'ui/StackView';
+import loader from 'ui/resource/loader';
+import { i18n } from 'src/lib/i18n/i18n';
 import loadingGroups from 'src/loadingGroups';
 import TitleScreen from 'src/game/screens/TitleScreen';
 import GameScreen from 'src/game/screens/GameScreen';
-import { waitForIt } from 'src/lib/utils';
+import { waitForIt, isDevEnv } from 'src/lib/utils';
 import StateObserver from './redux/StateObserver';
 import { SceneID } from './redux/state/reducers/ui';
 
@@ -33,7 +35,22 @@ export default class Application extends View {
     // device.screen.on('Resize', () => this.resize());
   }
 
+  selectLocale() {
+    let locale = platform.locale;
+
+    if (isDevEnv()) {
+      const testLang = 'en'; // localStorage.getItem('testLang');
+      if (testLang) locale = testLang;
+    }
+
+    loader.setMap(locale);
+    return locale;
+  }
+
   loadAssets() {
+    const locale = this.selectLocale();
+    console.log('locale:', locale);
+
     let loadingProgress = 0;
 
     const setLoadingProgress = (progress) => {
@@ -59,13 +76,19 @@ export default class Application extends View {
       }, 16);
 
       // load initial assets
-      initialAssets.load(() => {
-        setLoadingProgress(100);
-        clearInterval(progressUpdateHandle);
-        resolve();
+      initialAssets.load((res) => {
+        console.log('initial assets were preloaded', res);
 
-        loadingGroups.soundAssets.load(() => {
-          console.log('sounds were preloaded!');
+        i18n.loadLocale(locale).then(() => {
+          console.log('i18 locale was preloaded');
+
+          setLoadingProgress(100);
+          clearInterval(progressUpdateHandle);
+          resolve();
+
+          loadingGroups.soundAssets.load((res) => {
+            console.log('sounds were preloaded', res);
+          });
         });
       });
     });

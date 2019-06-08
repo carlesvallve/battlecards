@@ -1,10 +1,14 @@
 import AssetGroup from 'ui/resource/AssetGroup';
 
 // initial assets
-// var fontURLs = AssetGroup.constructURLs('resources/fonts/');
+var fontURLs = AssetGroup.constructURLs('resources/fonts/');
 var imageURLs = AssetGroup.constructURLs('resources/images/');
 
-const initialAssets = new AssetGroup(imageURLs, null, AssetGroup.PRIORITY_HIGH);
+const initialAssets = new AssetGroup(
+  imageURLs.concat(fontURLs),
+  null,
+  AssetGroup.PRIORITY_HIGH,
+);
 
 // exports.initialAssets = new AssetGroup(
 //   fontURLs.concat(imageURLs), null, AssetGroup.PRIORITY_HIGH

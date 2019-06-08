@@ -2,7 +2,7 @@ import pubsub from 'pubsub-js';
 
 import sounds from 'src/lib/sounds';
 import ImageScaleView from 'ui/ImageScaleView';
-import InputView from 'src/lib/ui/InputView';
+import InputView from 'src/game/ui/InputView';
 
 import settings from 'src/conf/settings';
 

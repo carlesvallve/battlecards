@@ -1,0 +1,154 @@
+<?xml version='1.0'?>
+   <font>
+       <info aa='1' size='50' smooth='1' stretchH='100' bold='0' padding='0,0,0,0' spacing='0,0' charset='' italic='0' unicode='0' face='Molot'/>
+       <common scaleW='512' packed='0' pages='1' lineHeight='71' scaleH='448' base='67'/>
+       <pages>
+            <page id='0' file='TitleStroke.png'/>
+       </pages>
+        <chars count='95'>
+            <char xadvance='30' x='58' chnl='0' yoffset='47' y='424' xoffset='0' id='32' page='0' height='0' width='0'/>
+            <char xadvance='20' x='446' chnl='0' yoffset='11' y='218' xoffset='2' id='33' page='0' height='52' width='28'/>
+            <char xadvance='30' x='410' chnl='0' yoffset='10' y='272' xoffset='1' id='34' page='0' height='28' width='38'/>
+            <char xadvance='42' x='2' chnl='0' yoffset='11' y='218' xoffset='1' id='35' page='0' height='52' width='52'/>
+            <char xadvance='31' x='58' chnl='0' yoffset='8' y='62' xoffset='1' id='36' page='0' height='58' width='40'/>
+            <char xadvance='40' x='2' chnl='0' yoffset='15' y='326' xoffset='2' id='37' page='0' height='52' width='48'/>
+            <char xadvance='35' x='102' chnl='0' yoffset='11' y='56' xoffset='2' id='38' page='0' height='52' width='44'/>
+            <char xadvance='18' x='396' chnl='0' yoffset='10' y='336' xoffset='1' id='39' page='0' height='28' width='26'/>
+            <char xadvance='18' x='304' chnl='0' yoffset='2' y='218' xoffset='2' id='40' page='0' height='70' width='26'/>
+            <char xadvance='18' x='276' chnl='0' yoffset='2' y='362' xoffset='0' id='41' page='0' height='70' width='26'/>
+            <char xadvance='28' x='374' chnl='0' yoffset='12' y='272' xoffset='2' id='42' page='0' height='34' width='34'/>
+            <char xadvance='32' x='404' chnl='0' yoffset='17' y='218' xoffset='1' id='43' page='0' height='40' width='40'/>
+            <char xadvance='19' x='304' chnl='0' yoffset='38' y='400' xoffset='2' id='44' page='0' height='28' width='26'/>
+            <char xadvance='32' x='396' chnl='0' yoffset='25' y='310' xoffset='1' id='45' page='0' height='24' width='40'/>
+            <char xadvance='19' x='476' chnl='0' yoffset='39' y='310' xoffset='2' id='46' page='0' height='24' width='26'/>
+            <char xadvance='32' x='148' chnl='0' yoffset='11' y='380' xoffset='0' id='47' page='0' height='52' width='42'/>
+            <char xadvance='34' x='360' chnl='0' yoffset='11' y='164' xoffset='2' id='48' page='0' height='52' width='40'/>
+            <char xadvance='20' x='332' chnl='0' yoffset='11' y='310' xoffset='2' id='49' page='0' height='52' width='26'/>
+            <char xadvance='32' x='318' chnl='0' yoffset='11' y='164' xoffset='1' id='50' page='0' height='52' width='40'/>
+            <char xadvance='33' x='276' chnl='0' yoffset='11' y='164' xoffset='1' id='51' page='0' height='52' width='40'/>
+            <char xadvance='35' x='148' chnl='0' yoffset='11' y='326' xoffset='1' id='52' page='0' height='52' width='42'/>
+            <char xadvance='34' x='234' chnl='0' yoffset='11' y='380' xoffset='2' id='53' page='0' height='52' width='40'/>
+            <char xadvance='34' x='234' chnl='0' yoffset='11' y='326' xoffset='2' id='54' page='0' height='52' width='40'/>
+            <char xadvance='28' x='442' chnl='0' yoffset='11' y='164' xoffset='1' id='55' page='0' height='52' width='38'/>
+            <char xadvance='34' x='234' chnl='0' yoffset='11' y='272' xoffset='2' id='56' page='0' height='52' width='40'/>
+            <char xadvance='34' x='234' chnl='0' yoffset='11' y='218' xoffset='2' id='57' page='0' height='52' width='40'/>
+            <char xadvance='19' x='476' chnl='0' yoffset='11' y='218' xoffset='2' id='58' page='0' height='52' width='26'/>
+            <char xadvance='19' x='304' chnl='0' yoffset='12' y='290' xoffset='2' id='59' page='0' height='54' width='26'/>
+            <char xadvance='26' x='360' chnl='0' yoffset='18' y='350' xoffset='1' id='60' page='0' height='38' width='34'/>
+            <char xadvance='34' x='332' chnl='0' yoffset='19' y='272' xoffset='2' id='61' page='0' height='36' width='40'/>
+            <char xadvance='26' x='360' chnl='0' yoffset='18' y='310' xoffset='2' id='62' page='0' height='38' width='34'/>
+            <char xadvance='32' x='234' chnl='0' yoffset='11' y='164' xoffset='1' id='63' page='0' height='52' width='40'/>
+            <char xadvance='41' x='2' chnl='0' yoffset='11' y='272' xoffset='2' id='64' page='0' height='52' width='48'/>
+            <char xadvance='35' x='424' chnl='0' yoffset='11' y='2' xoffset='1' id='65' page='0' height='52' width='44'/>
+            <char xadvance='35' x='148' chnl='0' yoffset='11' y='272' xoffset='2' id='66' page='0' height='52' width='42'/>
+            <char xadvance='32' x='192' chnl='0' yoffset='11' y='380' xoffset='2' id='67' page='0' height='52' width='40'/>
+            <char xadvance='36' x='148' chnl='0' yoffset='11' y='218' xoffset='2' id='68' page='0' height='52' width='42'/>
+            <char xadvance='32' x='192' chnl='0' yoffset='11' y='326' xoffset='2' id='69' page='0' height='52' width='40'/>
+            <char xadvance='31' x='192' chnl='0' yoffset='11' y='272' xoffset='2' id='70' page='0' height='52' width='40'/>
+            <char xadvance='36' x='148' chnl='0' yoffset='11' y='164' xoffset='2' id='71' page='0' height='52' width='42'/>
+            <char xadvance='36' x='148' chnl='0' yoffset='11' y='110' xoffset='2' id='72' page='0' height='52' width='42'/>
+            <char xadvance='20' x='304' chnl='0' yoffset='11' y='346' xoffset='2' id='73' page='0' height='52' width='26'/>
+            <char xadvance='25' x='368' chnl='0' yoffset='11' y='218' xoffset='1' id='74' page='0' height='52' width='34'/>
+            <char xadvance='35' x='456' chnl='0' yoffset='11' y='56' xoffset='2' id='75' page='0' height='52' width='42'/>
+            <char xadvance='30' x='402' chnl='0' yoffset='11' y='164' xoffset='2' id='76' page='0' height='52' width='38'/>
+            <char xadvance='45' x='2' chnl='0' yoffset='11' y='164' xoffset='1' id='77' page='0' height='52' width='54'/>
+            <char xadvance='36' x='412' chnl='0' yoffset='11' y='56' xoffset='2' id='78' page='0' height='52' width='42'/>
+            <char xadvance='36' x='368' chnl='0' yoffset='11' y='56' xoffset='2' id='79' page='0' height='52' width='42'/>
+            <char xadvance='35' x='324' chnl='0' yoffset='11' y='56' xoffset='2' id='80' page='0' height='52' width='42'/>
+            <char xadvance='36' x='58' chnl='0' yoffset='12' y='2' xoffset='2' id='81' page='0' height='58' width='42'/>
+            <char xadvance='35' x='280' chnl='0' yoffset='11' y='56' xoffset='2' id='82' page='0' height='52' width='42'/>
+            <char xadvance='31' x='192' chnl='0' yoffset='11' y='218' xoffset='1' id='83' page='0' height='52' width='40'/>
+            <char xadvance='31' x='192' chnl='0' yoffset='11' y='164' xoffset='1' id='84' page='0' height='52' width='40'/>
+            <char xadvance='36' x='236' chnl='0' yoffset='11' y='56' xoffset='2' id='85' page='0' height='52' width='42'/>
+            <char xadvance='34' x='378' chnl='0' yoffset='11' y='2' xoffset='1' id='86' page='0' height='52' width='44'/>
+            <char xadvance='45' x='2' chnl='0' yoffset='11' y='110' xoffset='1' id='87' page='0' height='52' width='54'/>
+            <char xadvance='34' x='332' chnl='0' yoffset='11' y='2' xoffset='1' id='88' page='0' height='52' width='44'/>
+            <char xadvance='34' x='286' chnl='0' yoffset='11' y='2' xoffset='1' id='89' page='0' height='52' width='44'/>
+            <char xadvance='32' x='444' chnl='0' yoffset='11' y='110' xoffset='1' id='90' page='0' height='52' width='40'/>
+            <char xadvance='18' x='276' chnl='0' yoffset='2' y='290' xoffset='2' id='91' page='0' height='70' width='26'/>
+            <char xadvance='32' x='192' chnl='0' yoffset='11' y='56' xoffset='0' id='92' page='0' height='52' width='42'/>
+            <char xadvance='18' x='276' chnl='0' yoffset='2' y='218' xoffset='0' id='93' page='0' height='70' width='26'/>
+            <char xadvance='27' x='360' chnl='0' yoffset='16' y='390' xoffset='3' id='94' page='0' height='30' width='32'/>
+            <char xadvance='30' x='450' chnl='0' yoffset='49' y='272' xoffset='0' id='95' page='0' height='24' width='40'/>
+            <char xadvance='21' x='360' chnl='0' yoffset='9' y='422' xoffset='1' id='96' page='0' height='22' width='30'/>
+            <char xadvance='35' x='240' chnl='0' yoffset='11' y='2' xoffset='1' id='97' page='0' height='52' width='44'/>
+            <char xadvance='35' x='148' chnl='0' yoffset='11' y='56' xoffset='2' id='98' page='0' height='52' width='42'/>
+            <char xadvance='32' x='402' chnl='0' yoffset='11' y='110' xoffset='2' id='99' page='0' height='52' width='40'/>
+            <char xadvance='36' x='102' chnl='0' yoffset='11' y='380' xoffset='2' id='100' page='0' height='52' width='42'/>
+            <char xadvance='32' x='360' chnl='0' yoffset='11' y='110' xoffset='2' id='101' page='0' height='52' width='40'/>
+            <char xadvance='31' x='318' chnl='0' yoffset='11' y='110' xoffset='2' id='102' page='0' height='52' width='40'/>
+            <char xadvance='36' x='102' chnl='0' yoffset='11' y='326' xoffset='2' id='103' page='0' height='52' width='42'/>
+            <char xadvance='36' x='102' chnl='0' yoffset='11' y='272' xoffset='2' id='104' page='0' height='52' width='42'/>
+            <char xadvance='20' x='482' chnl='0' yoffset='11' y='164' xoffset='2' id='105' page='0' height='52' width='26'/>
+            <char xadvance='25' x='332' chnl='0' yoffset='11' y='218' xoffset='1' id='106' page='0' height='52' width='34'/>
+            <char xadvance='35' x='102' chnl='0' yoffset='11' y='218' xoffset='2' id='107' page='0' height='52' width='42'/>
+            <char xadvance='30' x='470' chnl='0' yoffset='11' y='2' xoffset='2' id='108' page='0' height='52' width='38'/>
+            <char xadvance='45' x='2' chnl='0' yoffset='11' y='56' xoffset='1' id='109' page='0' height='52' width='54'/>
+            <char xadvance='36' x='102' chnl='0' yoffset='11' y='164' xoffset='2' id='110' page='0' height='52' width='42'/>
+            <char xadvance='36' x='102' chnl='0' yoffset='11' y='110' xoffset='2' id='111' page='0' height='52' width='42'/>
+            <char xadvance='35' x='58' chnl='0' yoffset='11' y='370' xoffset='2' id='112' page='0' height='52' width='42'/>
+            <char xadvance='36' x='2' chnl='0' yoffset='12' y='380' xoffset='2' id='113' page='0' height='58' width='42'/>
+            <char xadvance='35' x='58' chnl='0' yoffset='11' y='316' xoffset='2' id='114' page='0' height='52' width='42'/>
+            <char xadvance='31' x='276' chnl='0' yoffset='11' y='110' xoffset='1' id='115' page='0' height='52' width='40'/>
+            <char xadvance='31' x='234' chnl='0' yoffset='11' y='110' xoffset='1' id='116' page='0' height='52' width='40'/>
+            <char xadvance='36' x='58' chnl='0' yoffset='11' y='262' xoffset='2' id='117' page='0' height='52' width='42'/>
+            <char xadvance='34' x='194' chnl='0' yoffset='11' y='2' xoffset='1' id='118' page='0' height='52' width='44'/>
+            <char xadvance='45' x='2' chnl='0' yoffset='11' y='2' xoffset='1' id='119' page='0' height='52' width='54'/>
+            <char xadvance='34' x='148' chnl='0' yoffset='11' y='2' xoffset='1' id='120' page='0' height='52' width='44'/>
+            <char xadvance='34' x='102' chnl='0' yoffset='11' y='2' xoffset='1' id='121' page='0' height='52' width='44'/>
+            <char xadvance='32' x='192' chnl='0' yoffset='11' y='110' xoffset='1' id='122' page='0' height='52' width='40'/>
+            <char xadvance='28' x='58' chnl='0' yoffset='6' y='192' xoffset='3' id='123' page='0' height='68' width='34'/>
+            <char xadvance='21' x='332' chnl='0' yoffset='12' y='364' xoffset='5' id='124' page='0' height='58' width='22'/>
+            <char xadvance='28' x='58' chnl='0' yoffset='6' y='122' xoffset='2' id='125' page='0' height='68' width='34'/>
+            <char xadvance='30' x='438' chnl='0' yoffset='28' y='310' xoffset='2' id='126' page='0' height='24' width='36'/>
+       </chars>
+       <kernings count="47">
+            <kerning first="84" second="46" amount="-1"/>
+            <kerning first="121" second="106" amount="-1"/>
+            <kerning first="121" second="97" amount="-1"/>
+            <kerning first="112" second="46" amount="-2"/>
+            <kerning first="89" second="44" amount="-2"/>
+            <kerning first="116" second="44" amount="-1"/>
+            <kerning first="70" second="74" amount="-1"/>
+            <kerning first="52" second="55" amount="-1"/>
+            <kerning first="108" second="118" amount="-1"/>
+            <kerning first="84" second="65" amount="-1"/>
+            <kerning first="65" second="89" amount="-1"/>
+            <kerning first="89" second="46" amount="-2"/>
+            <kerning first="119" second="46" amount="-1"/>
+            <kerning first="84" second="74" amount="-1"/>
+            <kerning first="118" second="44" amount="-1"/>
+            <kerning first="76" second="84" amount="-1"/>
+            <kerning first="87" second="44" amount="-1"/>
+            <kerning first="102" second="44" amount="-2"/>
+            <kerning first="108" second="121" amount="-1"/>
+            <kerning first="89" second="65" amount="-1"/>
+            <kerning first="121" second="44" amount="-2"/>
+            <kerning first="116" second="46" amount="-1"/>
+            <kerning first="80" second="44" amount="-2"/>
+            <kerning first="89" second="74" amount="-1"/>
+            <kerning first="108" second="116" amount="-1"/>
+            <kerning first="86" second="44" amount="-1"/>
+            <kerning first="97" second="121" amount="-1"/>
+            <kerning first="76" second="86" amount="-1"/>
+            <kerning first="87" second="46" amount="-1"/>
+            <kerning first="80" second="46" amount="-2"/>
+            <kerning first="118" second="46" amount="-1"/>
+            <kerning first="112" second="106" amount="-1"/>
+            <kerning first="86" second="46" amount="-1"/>
+            <kerning first="116" second="97" amount="-1"/>
+            <kerning first="112" second="44" amount="-2"/>
+            <kerning first="102" second="46" amount="-2"/>
+            <kerning first="70" second="44" amount="-2"/>
+            <kerning first="116" second="106" amount="-1"/>
+            <kerning first="121" second="46" amount="-2"/>
+            <kerning first="102" second="106" amount="-1"/>
+            <kerning first="76" second="89" amount="-1"/>
+            <kerning first="118" second="106" amount="-1"/>
+            <kerning first="84" second="44" amount="-1"/>
+            <kerning first="80" second="74" amount="-1"/>
+            <kerning first="70" second="46" amount="-2"/>
+            <kerning first="119" second="44" amount="-1"/>
+            <kerning first="86" second="74" amount="-1"/>
+       </kernings>
+   </font>

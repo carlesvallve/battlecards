@@ -3,6 +3,10 @@ import animate from 'animate';
 import View from 'ui/View';
 import { point } from './customTypes';
 
+export const isDevEnv = () => {
+  return process.env.NODE_ENV === 'development' || process.env.STAGE === 'dev';
+};
+
 export const waitForIt = (cb: any, duration: number = 300, it?: View) => {
   animate(it || {})
     .clear()

@@ -1,9 +1,11 @@
 import pubsub from 'pubsub-js';
 
+import animate from 'animate';
 import sounds from 'src/lib/sounds';
 import View from 'ui/View';
-import FixedTextView from 'src/lib/ui/FixedTextView';
-import InputView from 'src/lib/ui/InputView';
+import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
+import bitmapFonts from 'src/lib/bitmapFonts';
+import InputView from 'src/game/ui/InputView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import { screen } from 'src/lib/customTypes';
@@ -13,6 +15,7 @@ import { setGameState } from 'src/redux/state/reducers/game';
 
 export default class TitleScreen extends View {
   screen: screen;
+  startLabel: BitmapFontTextView;
 
   constructor() {
     super({});
@@ -29,6 +32,8 @@ export default class TitleScreen extends View {
     });
 
     inputView.registerHandlerForTouch((x: number, y: number) => {
+      animate(this.startLabel).clear();
+      this.startLabel.hide();
       StateObserver.dispatch(selectScene('game'));
     });
 
@@ -38,6 +43,7 @@ export default class TitleScreen extends View {
   init() {
     StateObserver.dispatch(setGameState('Title'));
     sounds.playSong('win');
+    blink(this.startLabel, 350);
   }
 
   createElements() {
@@ -48,64 +54,48 @@ export default class TitleScreen extends View {
       backgroundColor: '#010101',
     });
 
-    const offsetY = 110;
+    const fontName = 'Title';
+    const dy = 110;
 
-    const titleTop = new FixedTextView({
-      parent: this,
+    const titleTop = new BitmapFontTextView({
+      superview: this,
       text: 'SLIME',
+      x: this.screen.width / 2,
+      y: -dy + this.screen.height / 2,
+      align: 'center',
+      verticalAlign: 'center',
+      size: 66,
       color: '#CC0000',
-      x: 0,
-      y: -offsetY + this.screen.height / 2,
-      width: 320,
-      height: 100,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 4,
       strokeColor: '#ff0000',
-      size: 64,
-      autoFontSize: false,
-      autoSize: false,
+      wordWrap: false,
+      font: bitmapFonts(fontName),
     });
 
-    const titleBottom = new FixedTextView({
-      parent: this,
+    const titleBottom = new BitmapFontTextView({
+      superview: this,
       text: 'SMASH',
-      color: '#ddd',
-      x: 0,
-      y: -0 + -offsetY + 68 + this.screen.height / 2,
-      width: 320,
-      height: 100,
-      fontFamily: 'Verdana',
-      fontWeight: 'bold',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      strokeWidth: 4,
-      strokeColor: '#fff',
+      x: this.screen.width / 2,
+      y: -dy + 68 + this.screen.height / 2,
+      align: 'center',
+      verticalAlign: 'center',
       size: 57,
-      autoFontSize: false,
-      autoSize: false,
+      color: '#ddd',
+      wordWrap: false,
+      font: bitmapFonts(fontName),
     });
 
-    const startLabel = new FixedTextView({
-      parent: this,
-      text: 'START',
+    this.startLabel = new BitmapFontTextView({
+      superview: this,
+      x: this.screen.width / 2,
+      y: 200 - dy + this.screen.height / 2,
+      align: 'center',
+      verticalAlign: 'center',
+      size: 12,
       color: '#eee',
-      x: 0,
-      y: 200 - offsetY + this.screen.height / 2,
-      width: 320,
-      height: 32,
-      fontWeight: 'bold',
-      fontFamily: 'Verdana',
-      horizontalAlign: 'center',
-      verticalAlign: 'middle',
-      size: 11,
-      autoFontSize: false,
-      autoSize: false,
+      wordWrap: false,
+      font: bitmapFonts(fontName),
+      text: 'START',
       visible: false,
     });
-
-    blink(startLabel, 350);
   }
 }
