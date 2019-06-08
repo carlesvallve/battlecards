@@ -35,27 +35,23 @@ import {
   isGameOver,
   isGamePaused,
   isNinjaDead,
+  getCountdown,
 } from 'src/redux/state/states';
 
 export default class GameScreen extends InputView {
   screen: screen;
-  bg: ImageScaleView;
   world: World;
-  terrain: Terrain;
   ninja: Ninja;
   slimes: any; // todo splice problem with Slime[];
   stars: Stars[];
-  hud: Hud;
-  // gameState: string; // todo setup type
-  inputView: InputView;
 
   constructor() {
     super({});
     this.screen = getScreenDimensions();
 
     // create bg
-    const w = Math.max(mapWidth * level.tileSize, this.screen.width * 2); // 3000
-    this.bg = new ImageScaleView({
+    const w = Math.max(mapWidth * level.tileSize, this.screen.width * 2);
+    const bg = new ImageScaleView({
       superview: this,
       x: 0,
       y: 0,
@@ -70,7 +66,7 @@ export default class GameScreen extends InputView {
     this.world = new World({ parent: this });
 
     // create terrain
-    this.terrain = new Terrain({ parent: this.world });
+    const terrain = new Terrain({ parent: this.world });
 
     // create ninja
     this.ninja = new Ninja({
@@ -85,7 +81,7 @@ export default class GameScreen extends InputView {
     this.stars = [];
 
     // setup hud overlay
-    this.hud = new Hud({ parent: this });
+    const hud = new Hud({ parent: this });
 
     // setup game interaction
     this.setInput();
@@ -95,8 +91,6 @@ export default class GameScreen extends InputView {
     pubsub.subscribe('game:explosion', this.explosion.bind(this));
     pubsub.subscribe('game:spawnchest', this.spawnChest.bind(this));
     pubsub.subscribe('game:spawnstars', this.spawnStars.bind(this));
-
-    // this.on('game:start', this.init.bind(this));
   }
 
   init() {
@@ -222,7 +216,7 @@ export default class GameScreen extends InputView {
   // ======================== game input =======================
 
   setInput() {
-    this.inputView = new InputView({
+    const inputView = new InputView({
       parent: this,
       zIndex: 998,
       width: this.screen.width,
@@ -233,10 +227,10 @@ export default class GameScreen extends InputView {
     onSwipe(this, 32, (v: Vector) => this.onSwipe(v));
 
     // set input handlers
-    this.inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
-    // this.inputView.registerHandlerForDoubleClick((x, y) => this.onDoubleClick(x, y));
-    // this.inputView.registerHandlerForDrag((x, y) => this.onDrag(x, y));
-    // this.inputView.registerHandlerForDragFinish((dx, dy) => this.onDragFinish(dx, dy));
+    inputView.registerHandlerForTouch((x, y) => this.onTap(x, y));
+    // inputView.registerHandlerForDoubleClick((x, y) => this.onDoubleClick(x, y));
+    // inputView.registerHandlerForDrag((x, y) => this.onDrag(x, y));
+    // inputView.registerHandlerForDragFinish((dx, dy) => this.onDragFinish(dx, dy));
   }
 
   onTap(x: number, y: number) {
@@ -244,9 +238,8 @@ export default class GameScreen extends InputView {
 
     // if we are in gameover mode, continue playing
     if (isGameOver()) {
-      if (this.hud.gameOver.time <= 8) {
+      if (getCountdown() <= 8) {
         StateObserver.dispatch(setGameState('Play'));
-        // this.world.init();
         pubsub.publish('ninja:start');
         pubsub.publish('hud:continue');
         sounds.playSong('dubesque');
@@ -257,7 +250,6 @@ export default class GameScreen extends InputView {
     // clicking anywhere while paused will resume the game
     if (isGamePaused()) {
       StateObserver.dispatch(setGameState('Play'));
-      this.hud.onResume();
     }
 
     // interact with the ninja

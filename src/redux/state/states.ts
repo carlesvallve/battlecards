@@ -31,6 +31,10 @@ export const isGameActive = () => {
   );
 };
 
+export const getCountdown = () => {
+  return StateObserver.getState().user.countdown;
+}
+
 // ninja
 
 export const getNinjaGoal = () => {

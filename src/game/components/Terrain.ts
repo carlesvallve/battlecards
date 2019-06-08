@@ -10,7 +10,6 @@ import GameScreen from '../screens/GameScreen';
 export default class Terrain extends View {
   screen: screen;
   game: GameScreen;
-  offset: point;
   center: point;
   
   constructor(opts: { parent: World }) {
@@ -31,11 +30,9 @@ export default class Terrain extends View {
     const mapWidth = mapData[0].length;
     const mapHeight = mapData.length;
 
-    this.offset = { x: 0, y: 0 };
-
     this.center = {
-      x: this.offset.x + (mapWidth * tileSize) / 2,
-      y: this.offset.y + (mapHeight * tileSize) / 2,
+      x: (mapWidth * tileSize) / 2,
+      y: (mapHeight * tileSize) / 2,
     };
 
     const mapbox = new View({
@@ -43,8 +40,6 @@ export default class Terrain extends View {
       // backgroundColor: 'rgba(0.5,0.5,0.5,0.5)',
       width: mapWidth * tileSize,
       height: mapHeight * tileSize,
-      x: this.offset.x,
-      y: this.offset.y,
     });
 
     const map = [];

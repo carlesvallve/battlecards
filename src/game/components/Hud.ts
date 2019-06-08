@@ -1,5 +1,4 @@
-
-import pubsub from 'pubsub-js'
+import pubsub from 'pubsub-js';
 
 import animate from 'animate';
 import View from 'ui/View';
@@ -24,7 +23,6 @@ import { isGamePaused } from 'src/redux/state/states';
 
 export default class Hud extends View {
   screen: screen;
-  game: View;
   hearts: ImageView[];
   gameOver: GameOver;
   starLabel: FixedTextView;
@@ -37,18 +35,16 @@ export default class Hud extends View {
 
     this.canHandleEvents(false, false);
     this.screen = getScreenDimensions();
-    this.game = opts.parent;
 
     this.updateOpts({
-      x: 5,
-      y: 5 + 30,
-      width: this.screen.width - 10,
-      height: this.screen.height - 10,
+      backgroundColor: 'rgba(255, 0, 0, 0.7)',
+      width: this.screen.width - 0,
+      height: this.screen.height - 0,
       zIndex: 999,
     });
 
-    this.createStars();
-    this.createScoreLabel();
+    this.createStars(35);
+    this.createScoreLabel(35);
     this.createPauseButton();
 
     this.gameOver = new GameOver({ parent: this });
@@ -81,7 +77,7 @@ export default class Hud extends View {
       },
     );
 
-    // game states (play / pause/ gameover0)
+    // game states (play / pause/ gameover)
     StateObserver.createSelector((state) => state.game.gameState).addListener(
       (gameState) => {
         console.log('>>> gameState:', gameState);
@@ -107,7 +103,7 @@ export default class Hud extends View {
     StateObserver.dispatch(setHighscore(gameData.highscore || 0));
     StateObserver.dispatch(setStars(gameData.stars || 0));
 
-    this.createHearts(3);
+    this.createHearts(3, 35);
 
     this.gameOver.hide();
     this.pauseButton.show();
@@ -120,8 +116,19 @@ export default class Hud extends View {
   }
 
   // =====================================================================
-  // Hud Events (score, stars, hearts, gameOver)
+  // Hud Events (pause, resume, score, stars, hearts, gameOver)
   // =====================================================================
+
+  onPause() {
+    this.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    this.pauseLabel.show();
+  }
+
+  onResume() {
+    // todo: this happens more often than when it should...
+    this.style.backgroundColor = null;
+    this.pauseLabel.hide();
+  }
 
   onUpdateScore(score: number) {
     const t = 100;
@@ -177,11 +184,11 @@ export default class Hud extends View {
   // Create hud header elements (stars, score, hearts)
   // =====================================================================
 
-  createStars() {
+  createStars(dy: number) {
     const starIcon = new ImageView({
       parent: this,
       x: 11,
-      y: 11,
+      y: dy + 11,
       width: 8,
       height: 8,
       centerOnOrigin: false,
@@ -195,7 +202,7 @@ export default class Hud extends View {
       text: '0',
       color: '#fff',
       x: 26,
-      y: 10,
+      y: dy + 10,
       height: 12,
       fontFamily: 'Verdana',
       fontWeight: 'bold',
@@ -211,13 +218,13 @@ export default class Hud extends View {
     });
   }
 
-  createScoreLabel() {
+  createScoreLabel(dy: number) {
     const scoreTitle = new FixedTextView({
       parent: this,
       text: 'SCORE',
       color: '#fff',
       x: this.screen.width / 2,
-      y: 10,
+      y: dy + 10,
       height: 12,
       fontFamily: 'Verdana',
       fontWeight: 'bold',
@@ -237,7 +244,7 @@ export default class Hud extends View {
       text: '000',
       color: '#fff',
       x: this.screen.width / 2,
-      y: 40,
+      y: dy + 40,
       width: 320,
       height: 32,
       fontFamily: 'Verdana',
@@ -254,7 +261,7 @@ export default class Hud extends View {
     });
   }
 
-  createHearts(amount: number) {
+  createHearts(amount: number, dy = 35) {
     StateObserver.dispatch(setHearts(amount));
 
     this.hearts = [];
@@ -264,14 +271,11 @@ export default class Hud extends View {
         width: 16,
         height: 16,
         x: this.screen.width - 36 - 14 * i,
-        y: -8,
+        y: dy - 8,
         scale: 1.75,
+        image: new Image({ url: 'resources/images/8bit-ninja/heart16.png' }),
+        visible: true,
       });
-
-      heart.setImage(
-        new Image({ url: 'resources/images/8bit-ninja/heart16.png' }),
-      );
-      heart.show();
 
       this.hearts.push(heart);
     }
@@ -287,7 +291,7 @@ export default class Hud extends View {
       text: 'PAUSE',
       color: '#fff',
       x: this.screen.width / 2,
-      y: this.screen.height / 4,
+      y: 35 + this.screen.height / 4,
       fontFamily: 'Verdana',
       fontWeight: 'bold',
       horizontalAlign: 'center',
@@ -308,7 +312,7 @@ export default class Hud extends View {
       width: 24,
       height: 24,
       x: this.screen.width - 40,
-      y: this.screen.height - 72,
+      y: this.screen.height - 72 + 30,
       scale: 1.0,
       onClick: () => {
         if (isGamePaused()) {
@@ -318,17 +322,6 @@ export default class Hud extends View {
         }
       },
     });
-  }
-
-  onPause() {
-    this.game.inputView.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    this.pauseLabel.show();
-  }
-
-  onResume() {
-    // todo: this happens more often than when it should...
-    this.game.inputView.style.backgroundColor = null;
-    this.pauseLabel.hide();
   }
 
   // =====================================================================

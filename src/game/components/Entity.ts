@@ -67,13 +67,12 @@ export default class Entity extends View {
     const me = this.style;
     const up = 8;
     const forward = this.dir * 4 * dx;
-    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x - forward, y: me.y - up }, // position,
       { x: 0, y: 1 }, // direction,
       128, // rayLength,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
@@ -96,13 +95,12 @@ export default class Entity extends View {
     const me = this.style;
     const d = 8;
     const up = 8;
-    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x, y: me.y - up },
       { x: this.dir, y: 0 },
       16,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
@@ -123,14 +121,13 @@ export default class Entity extends View {
   castRayClimb(dx: number, debug: boolean = false) {
     const me = this.style;
     const up = 24;
-    const offset = this.game.terrain.offset;
 
     // check if we can climb to next step forward
     const hit = rayCast(
       { x: me.x + this.dir * 8, y: me.y - up },
       { x: 0, y: 1 },
       32,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 

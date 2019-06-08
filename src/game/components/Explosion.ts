@@ -108,13 +108,12 @@ export default class Explosion extends View {
     const me = sprite.style;
     const up = 1;
     const forward = 0;
-    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x - forward, y: me.y - up },
       { x: 0, y: 1 },
       32,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
@@ -134,13 +133,12 @@ export default class Explosion extends View {
     const me = sprite.style;
     const d = 2;
     const up = 2;
-    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x, y: me.y - up },
       { x: this.vx > 0 ? 1 : -1, y: 0 },
       16,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 

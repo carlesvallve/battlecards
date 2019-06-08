@@ -178,13 +178,12 @@ export default class Stars extends View {
     const me = sprite.style;
     const up = 6;
     const forward = 0;
-    const offset = this.game.terrain.offset;
 
     const hit = rayCast(
       { x: me.x - forward, y: me.y - up },
       { x: 0, y: 1 },
       32,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 
@@ -204,7 +203,6 @@ export default class Stars extends View {
     const me = sprite.style;
     const d = 6;
     const up = 6;
-    const offset = this.game.terrain.offset;
 
     const dir = this.vx > 0 ? 1 : -1;
 
@@ -212,7 +210,7 @@ export default class Stars extends View {
       { x: me.x + dir * 3, y: me.y - up },
       { x: dir, y: 0 },
       32,
-      offset,
+      { x: 0, y: 0 },
       { enabled: debug, debugView: this.parent, duration: 100 },
     );
 

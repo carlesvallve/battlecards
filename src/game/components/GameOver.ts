@@ -6,6 +6,8 @@ import { getScreenDimensions } from 'src/lib/utils';
 import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
 import { selectScene } from 'src/redux/state/reducers/ui';
+import { setCountdown } from 'src/redux/state/reducers/user';
+import { getCountdown } from 'src/redux/state/states';
 
 export default class GameOver extends View {
   screen: screen;
@@ -13,7 +15,6 @@ export default class GameOver extends View {
   continueLabel: FixedTextView;
   continueNumber: FixedTextView;
   interval: any; // todo: NodeJS.Timeout;
-  time: number;
 
   constructor(opts: { parent: View }) {
     super(opts);
@@ -86,8 +87,6 @@ export default class GameOver extends View {
       autoFontSize: false,
       autoSize: false,
     });
-
-    this.hide();
   }
 
   init() {
@@ -104,34 +103,35 @@ export default class GameOver extends View {
     const easing = animate.easeInOut;
 
     // gameover label
-    let y = -24 + this.screen.height * 0.225;
+    let y = 35 - 24 + this.screen.height * 0.225;
     animate(this.gameoverLabel)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
       .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // continue label
-    y = 28 + this.screen.height * 0.225;
+    y = 35 + 28 + this.screen.height * 0.225;
     animate(this.continueLabel)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
       .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // continue number
-    y = 72 + this.screen.height * 0.225;
+    y = 30 + 72 + this.screen.height * 0.225;
     animate(this.continueNumber)
       .clear()
       .now({ y: y + 10, opacity: 0 }, 0, easing)
       .then({ y: y + 0, opacity: 1 }, t, easing);
 
     // countdown
-    this.time = 9;
-    this.continueNumber.setText(this.time.toString());
+    StateObserver.dispatch(setCountdown(9));
+    this.continueNumber.setText(getCountdown().toString());
+
     this.interval = setInterval(() => {
-      this.time -= 1;
-      this.continueNumber.setText(this.time.toString());
+      StateObserver.dispatch(setCountdown(getCountdown() - 1));
+      this.continueNumber.setText(getCountdown().toString());
       // back to game screen
-      if (this.time === 0) {
+      if (getCountdown() === 0) {
         clearInterval(this.interval);
         StateObserver.dispatch(selectScene('title'));
         return;
