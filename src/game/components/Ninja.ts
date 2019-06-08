@@ -183,7 +183,7 @@ export default class Ninja extends Entity {
   die() {
     if (isGamePaused() || isNinjaDead() || isNinjaRespawning()) return;
 
-    // this.idle();
+    this.idle();
     StateObserver.dispatch(setEntityState('Die'));
 
     // remove heart

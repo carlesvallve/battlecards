@@ -67,6 +67,6 @@ export default class World extends View {
 
   tick(dt) {
     if (!isGameActive()) return;
-    this.interpolateToTarget();
+    if (this.target) this.interpolateToTarget();
   }
 }
