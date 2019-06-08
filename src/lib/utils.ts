@@ -19,8 +19,8 @@ export const waitForItPromise = async (duration: number = 300) => {
 };
 
 export const clearWait = (it: View) => {
-  animate(it).clear();
-}
+  if (it) animate(it).clear();
+};
 
 export const getScreenDimensions = (): { width: number; height: number } => {
   const scale = device.width / 320;

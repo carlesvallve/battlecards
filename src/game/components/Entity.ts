@@ -33,11 +33,13 @@ export default class Entity extends View {
     this.vy = 0;
     this.grounded = false;
 
+    this.speed = 1;
+
     debugPoint(this);
   }
 
   tick(dt) {
-    if (!isGameActive()) return;;
+    if (!isGameActive()) return;
 
     this.castRayDown(0);
     // this.castRayDown(1);
@@ -47,7 +49,7 @@ export default class Entity extends View {
     if (this.grounded) {
       this.vy = 0;
     } else {
-      this.gravity = 0.5;
+      // this.gravity = 0.5;
       this.vy += this.gravity;
       this.style.y = this.style.y + this.vy;
     }

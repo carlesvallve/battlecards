@@ -111,7 +111,7 @@ export default class GameOver extends View {
   updateCountdown() {
     waitForIt(
       () => {
-        // decrease contdown
+        // decrease countdown
         StateObserver.dispatch(setCountdown(getCountdown() - 1));
 
         // render contdown

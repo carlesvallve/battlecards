@@ -11,9 +11,9 @@ export default class Slime extends Monster {
     scale: number;
     color: string;
   }) {
-    super({ ...opts, type: 'slime' });
+    super({ ...opts, type: 'bat' });
 
-    this.gravity = 0.25;
+    this.gravity = 0.01;
     this.speed = getRandomFloat(0.5, 1.5); // bigger is faster
 
     this.on('collision.ground', () => {});

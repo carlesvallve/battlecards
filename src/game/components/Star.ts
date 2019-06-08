@@ -16,7 +16,7 @@ import StateObserver from 'src/redux/StateObserver';
 import { addStars } from 'src/redux/state/reducers/user';
 import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/state/states';
 
-export default class Stars extends View {
+export default class Star extends View {
   screen: screen;
   parent: View;
   ninja: Ninja;
