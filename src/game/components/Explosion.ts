@@ -3,7 +3,7 @@ import QuickViewPool from 'ui/ViewPool2';
 import { getRandomInt, getRandomFloat } from 'src/lib/utils';
 import { rayCast } from 'src/lib/raycast';
 import { screen } from 'src/lib/customTypes';
-import { isGameActive } from 'src/redux/state/states';
+import { isGameActive } from 'src/redux/shortcuts';
 
 const pool = new QuickViewPool({
   ctor: View,

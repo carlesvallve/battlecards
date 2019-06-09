@@ -11,11 +11,11 @@ import { i18n } from 'src/lib/i18n/i18n';
 import loadingGroups from 'src/loadingGroups';
 import TitleScreen from 'src/game/screens/TitleScreen';
 import GameScreen from 'src/game/screens/GameScreen';
-import { waitForIt, isDevEnv } from 'src/lib/utils';
+import { waitForIt, isDevEnv, getScreenDimensions } from 'src/lib/utils';
 import StateObserver from './redux/StateObserver';
 import { SceneID, PopupID } from './redux/state/reducers/ui';
-import PopupBasic from './game/components/popups/PopupBasic';
-import PopupError from './game/components/popups/PopupError';
+import PopupPause from './game/components/popups/PopupPause';
+import PopupContinue from './game/components/popups/PopupContinue';
 
 export default class Application extends View {
   private rootView: StackView;
@@ -107,13 +107,14 @@ export default class Application extends View {
   }
 
   startGame() {
+    const screen = getScreenDimensions();
     this.rootView = new StackView({
       parent: this,
       backgroundColor: '#010101',
       x: 0,
       y: 0,
-      width: device.screen.width,
-      height: device.screen.height,
+      width: screen.width,
+      height: screen.height,
       clip: false,
       scale: device.width / 320,
     });
@@ -124,16 +125,15 @@ export default class Application extends View {
     };
 
     this.popups = {
-      basic: new PopupBasic({
-        id: 'popupBasic',
+      pause: new PopupPause({
+        id: 'pause',
         superview: this.rootView,
       }),
-      error: new PopupError({
-        id: 'popupError',
+      continue: new PopupContinue({
+        id: 'continue',
         superview: this.rootView,
       }),
-    }
-    
+    };
 
     // check for scene navigation
     StateObserver.createSelector((state) => state.ui.scene).addListener(

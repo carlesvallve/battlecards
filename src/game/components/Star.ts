@@ -14,7 +14,7 @@ import Ninja from './Ninja';
 import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
 import { addStars } from 'src/redux/state/reducers/user';
-import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/state/states';
+import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/shortcuts';
 
 // todo, this is actually a star container for an explosion of multiple stars... refactor!
 

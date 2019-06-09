@@ -10,19 +10,17 @@ import Entity from 'src/game/components/Entity';
 import Ninja from './Ninja';
 
 import {
-  getRandomFloat,
   getRandomInt,
   getDistanceBetweenViews,
   debugPoint,
   getRandomItemFromArray,
-  getScreenDimensions,
 } from 'src/lib/utils';
 import {
   isGameActive,
   isNinjaDead,
   isNinjaRespawning,
   isNinjaIdle,
-} from 'src/redux/state/states';
+} from 'src/redux/shortcuts';
 import View from 'ui/View';
 
 export default class Monster extends Entity {

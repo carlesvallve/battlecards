@@ -1,4 +1,25 @@
 import StateObserver from 'src/redux/StateObserver';
+import { PopupID, togglePopup } from './state/reducers/ui';
+
+// TODO: we might want to separate this into actions and states files
+
+// ==================================================================
+// Actions
+// ==================================================================
+
+// popups
+
+export const openPopup = (id: PopupID) => {
+  return StateObserver.dispatch(togglePopup({ id, enabled: true }));
+};
+
+export const closePopup = (id: PopupID) => {
+  return StateObserver.dispatch(togglePopup({ id, enabled: false }));
+};
+
+// ==================================================================
+// States
+// ==================================================================
 
 // user
 
@@ -33,7 +54,7 @@ export const isGameActive = () => {
 
 export const getCountdown = () => {
   return StateObserver.getState().user.countdown;
-}
+};
 
 // ninja
 

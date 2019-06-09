@@ -10,7 +10,6 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
 import { screen } from 'src/lib/customTypes';
-import GameOver from 'src/game/components/GameOver';
 
 import StateObserver from 'src/redux/StateObserver';
 import {
@@ -20,17 +19,21 @@ import {
   setHearts,
 } from 'src/redux/state/reducers/user';
 import { setGameState } from 'src/redux/state/reducers/game';
-import { isGamePaused, getStars } from 'src/redux/state/states';
+import {
+  isGamePaused,
+  getStars,
+  openPopup,
+  closePopup,
+  isNinjaDead,
+} from 'src/redux/shortcuts';
 import settings from 'src/conf/settings';
 import i18n from 'src/lib/i18n/i18n';
 
 export default class Hud extends View {
   screen: screen;
   hearts: ImageView[];
-  gameOver: GameOver;
   starLabel: BitmapFontTextView;
   scoreLabel: BitmapFontTextView;
-  pauseLabel: BitmapFontTextView;
   pauseButton: ButtonView;
 
   constructor(opts: { parent: View }) {
@@ -40,21 +43,19 @@ export default class Hud extends View {
     this.screen = getScreenDimensions();
 
     this.updateOpts({
-      backgroundColor: 'rgba(255, 0, 0, 0.7)',
-      width: this.screen.width - 0,
-      height: this.screen.height - 0,
-      zIndex: 999,
+      backgroundColor: null, // 'rgba(255, 0, 0, 0.7)',
+      width: this.screen.width,
+      height: this.screen.height,
+      zIndex: 100,
     });
 
     this.createStars(35);
     this.createScoreLabel(35);
     this.createPauseButton();
 
-    this.gameOver = new GameOver({ parent: this });
-
     pubsub.subscribe('hud:start', this.init.bind(this));
-    pubsub.subscribe('hud:continue', this.continue.bind(this));
     pubsub.subscribe('hud:gameover', this.onGameOver.bind(this));
+    pubsub.subscribe('hud:continue', this.onContinue.bind(this));
 
     // score
     StateObserver.createSelector((state) => state.user.score).addListener(
@@ -80,7 +81,7 @@ export default class Hud extends View {
       },
     );
 
-    // game states (play / pause/ gameover)
+    // game states (play / pause / gameover)
     StateObserver.createSelector((state) => state.game.gameState).addListener(
       (gameState) => {
         switch (gameState) {
@@ -99,40 +100,24 @@ export default class Hud extends View {
   }
 
   init() {
+    // load game data
     const gameData = this.loadGameData();
     console.log('gameData:', gameData);
+
+    // init score, highsore, stars, hearts
     StateObserver.dispatch(setScore(0));
     StateObserver.dispatch(setHighscore(gameData.highscore || 0));
     StateObserver.dispatch(setStars(gameData.stars || 0));
 
+    // refresh ui immediately
     this.scoreLabel.text = 0;
     this.starLabel.text = getStars();
     this.createHearts(settings.user.maxHearts, 35);
-
-    this.gameOver.hide();
-    this.pauseButton.show();
-  }
-
-  continue() {
-    this.createHearts(1);
-    this.gameOver.hide();
-    this.pauseButton.show();
   }
 
   // =====================================================================
-  // Hud Events (pause, resume, score, stars, hearts, gameOver)
+  // Hud Events (score, stars, hearts, pause, resume, gameOver, continue)
   // =====================================================================
-
-  onPause() {
-    this.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    this.pauseLabel.show();
-  }
-
-  onResume() {
-    // todo: this happens more often than when it should...
-    this.style.backgroundColor = null;
-    this.pauseLabel.hide();
-  }
 
   onUpdateScore(score: number) {
     const t = 100;
@@ -178,10 +163,23 @@ export default class Hud extends View {
       });
   }
 
+  onPause() {
+    openPopup('pause');
+  }
+
+  onResume() {
+    closePopup('pause');
+  }
+
   onGameOver() {
     this.saveGameData();
-    this.gameOver.init();
-    this.pauseButton.hide();
+    openPopup('continue');
+  }
+
+  onContinue() {
+    this.createHearts(1);
+    StateObserver.dispatch(setGameState('Play'));
+    pubsub.publish('ninja:start');
   }
 
   // =====================================================================
@@ -225,7 +223,6 @@ export default class Hud extends View {
     const fontName = 'Body';
 
     const scoreTitle = new BitmapFontTextView({
-      // backgroundColor: 'pink',
       superview: this,
       text: i18n('hud.score'),
       x: 1 + this.screen.width / 2,
@@ -277,29 +274,7 @@ export default class Hud extends View {
     }
   }
 
-  // =====================================================================
-  // Create hud footer elements (pause)
-  // =====================================================================
-
   createPauseButton() {
-    const fontName = 'Body';
-
-    this.pauseLabel = new BitmapFontTextView({
-      superview: this,
-      text: i18n('hud.pause'),
-      x: this.screen.width / 2,
-      y: 5 + this.screen.height / 4,
-      align: 'center',
-      verticalAlign: 'center',
-      size: 44,
-      color: '#fff',
-      wordWrap: false,
-      font: bitmapFonts(fontName),
-      centerOnOrigin: true,
-      centerAnchor: true,
-      visible: false,
-    });
-
     this.pauseButton = new ButtonView({
       parent: this,
       image: new Image({ url: 'resources/images/ui/icon-pause.png' }),
@@ -307,11 +282,8 @@ export default class Hud extends View {
       height: 24,
       x: this.screen.width - 40,
       y: this.screen.height - 72 + 30,
-      scale: 1.0,
       onClick: () => {
-        if (isGamePaused()) {
-          StateObserver.dispatch(setGameState('Play'));
-        } else {
+        if (!isGamePaused() && !isNinjaDead()) {
           StateObserver.dispatch(setGameState('Pause'));
         }
       },

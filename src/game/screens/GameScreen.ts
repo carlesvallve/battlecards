@@ -18,7 +18,7 @@ import level, { mapWidth } from 'src/conf/levels';
 import { screen } from 'src/lib/customTypes';
 import StateObserver from 'src/redux/StateObserver';
 import { setGameState } from 'src/redux/state/reducers/game';
-import { isGameOver, isGamePaused, getCountdown } from 'src/redux/state/states';
+import { isGameOver, isGamePaused, getCountdown } from 'src/redux/shortcuts';
 import { selectScene } from 'src/redux/state/reducers/ui';
 
 export default class GameScreen extends InputView {
@@ -102,7 +102,6 @@ export default class GameScreen extends InputView {
   setInput() {
     const inputView = new InputView({
       parent: this,
-      zIndex: 998,
       width: this.screen.width,
       height: this.screen.height,
       dragThreshold: 0,
@@ -118,25 +117,7 @@ export default class GameScreen extends InputView {
   }
 
   onTap(x: number, y: number) {
-    // console.log('onTap', x, y);
-
-    // if we are in gameover mode, continue playing
-    if (isGameOver()) {
-      if (getCountdown() <= 8) {
-        StateObserver.dispatch(setGameState('Play'));
-        pubsub.publish('ninja:start');
-        pubsub.publish('hud:continue');
-        sounds.playSong('dubesque');
-      }
-      return;
-    }
-
-    // clicking anywhere while paused will resume the game
-    if (isGamePaused()) {
-      StateObserver.dispatch(setGameState('Play'));
-    }
-
-    // interact with the ninja
+    // ninja move to tapped point
     if (this.ninja) {
       this.ninja.moveTo({
         x: x - this.world.style.x,
@@ -146,10 +127,9 @@ export default class GameScreen extends InputView {
   }
 
   onSwipe(vec: Vector) {
+    // ninja jump to swipe end point
     const d = 32;
     vec.multiplyScalar(d).limit(128);
-
-    // console.log(vec);
     const pos = {
       x: this.ninja.style.x + vec.x,
       y: this.ninja.style.y + vec.y,

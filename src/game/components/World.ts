@@ -3,7 +3,7 @@ import pubsub from 'pubsub-js';
 import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { screen } from 'src/lib/customTypes';
-import { isGameActive } from 'src/redux/state/states';
+import { isGameActive } from 'src/redux/shortcuts';
 import GameScreen from 'src/game/screens/GameScreen';
 import Entity from './Entity';
 

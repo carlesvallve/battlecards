@@ -1,3 +1,25 @@
+import animate from 'animate';
+import View from 'ui/View';
+
+export const animDuration: number = 250;
+
+export const animateDefault = (
+  view: View,
+  opts: { y: number; mode: 'in' | 'out' },
+) => {
+  const d = 16;
+  if (opts.mode === 'in') {
+    view.updateOpts({ y: opts.y + d, opacity: 0 });
+    animate(view)
+      .clear()
+      .then({ y: opts.y, opacity: 1 }, animDuration, animate.easeOut);
+  } else {
+    animate(view)
+      .clear()
+      .then({ y: opts.y + d, opacity: 0 }, animDuration, animate.easeOut);
+  }
+};
+
 export default {
   // hud
 

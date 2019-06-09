@@ -9,7 +9,7 @@ import {
   clearWait,
 } from 'src/lib/utils';
 import settings from 'src/conf/settings';
-import { isGamePaused, isNinjaDead } from 'src/redux/state/states';
+import { isGamePaused, isNinjaDead } from 'src/redux/shortcuts';
 import Bat from './Bat';
 import Slime from './Slime';
 import World from './World';
@@ -74,7 +74,7 @@ export default class EntityManager {
     const range = settings.slime.spawnInterval;
     const delay = getRandomFloat(range.min, range.max);
 
-    waitForIt(
+    this.slimesInterval = waitForIt(
       () => {
         // create new slime
         if (!isGamePaused() && !isNinjaDead()) {
@@ -84,8 +84,7 @@ export default class EntityManager {
         // recursevely iterate
         this.spawnSlimes();
       },
-      delay,
-      this.slimesInterval,
+      delay
     );
   }
 
@@ -116,7 +115,7 @@ export default class EntityManager {
     const range = settings.bat.spawnInterval;
     const delay = getRandomFloat(range.min, range.max);
 
-    waitForIt(
+    this.batsInterval = waitForIt(
       () => {
         // create new slime
         if (!isGamePaused() && !isNinjaDead()) {
@@ -126,8 +125,7 @@ export default class EntityManager {
         // recursevely iterate
         this.spawnBats();
       },
-      delay,
-      this.batsInterval,
+      delay
     );
   }
 

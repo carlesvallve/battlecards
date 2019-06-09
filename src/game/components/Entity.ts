@@ -2,7 +2,7 @@ import View from 'ui/View';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import { rayCast } from 'src/lib/raycast';
 import { screen } from 'src/lib/customTypes';
-import { isGameActive } from 'src/redux/state/states';
+import { isGameActive } from 'src/redux/shortcuts';
 
 export default class Entity extends View {
   screen: screen;

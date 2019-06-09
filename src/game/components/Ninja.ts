@@ -28,7 +28,7 @@ import {
   isNinjaRespawning,
   isGamePaused,
   getHearts,
-} from 'src/redux/state/states';
+} from 'src/redux/shortcuts';
 
 export default class Ninja extends Entity {
   sprite: SpriteView;
