@@ -4,7 +4,7 @@ import Monster from 'src/game/components/Monster';
 import Ninja from 'src/game/components/Ninja';
 import { getRandomFloat } from 'src/lib/utils';
 
-export default class Slime extends Monster {
+export default class Bat extends Monster {
   constructor(opts: {
     parent: View;
     ninja: Ninja;
@@ -22,5 +22,9 @@ export default class Slime extends Monster {
       animate(this).clear();
       this.setDirection(-this.dir);
     });
+  }
+
+  tick(dt) {
+    super.tick(dt);
   }
 }

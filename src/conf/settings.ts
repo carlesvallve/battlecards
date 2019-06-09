@@ -3,6 +3,7 @@ export default {
   currentMapLevel: 1,
 
   slime: {
+    maxSpawned: 0,
     turnOnScreenLimit: true,
     maxDistanceFromPlayer: 300,
     spawnDistance: { min: 60, max: 120 },
@@ -12,6 +13,7 @@ export default {
   },
 
   bat: {
+    maxSpawned: 1,
     turnOnScreenLimit: true,
     maxDistanceFromPlayer: 300,
     spawnDistance: { min: 60, max: 120 },

@@ -66,28 +66,27 @@ export default class EntityManager {
   }
 
   spawnSlimes() {
-    // console.log('spawning slimes...');
+    if (settings.slime.maxSpawned === 0) return;
 
     // wait and create a new slime
     this.slimesInterval = {};
     const range = settings.slime.spawnInterval;
     const delay = getRandomFloat(range.min, range.max);
 
-    this.slimesInterval = waitForIt(
-      () => {
-        // create new slime
-        if (!isGamePaused() && !isNinjaDead()) {
-          this.createSlime();
-        }
+    this.slimesInterval = waitForIt(() => {
+      // create new slime
+      if (!isGamePaused() && !isNinjaDead()) {
+        this.createSlime();
+      }
 
-        // recursevely iterate
-        this.spawnSlimes();
-      },
-      delay
-    );
+      // recursevely iterate
+      this.spawnSlimes();
+    }, delay);
   }
 
   createSlime() {
+    if (settings.slime.maxSpawned < this.slimes.length) return;
+
     const color = getRandomItemFromArray(['black', 'black', 'black', 'red']);
     const slime = new Slime({
       parent: this.world,
@@ -109,26 +108,27 @@ export default class EntityManager {
   }
 
   spawnBats() {
+    if (settings.bat.maxSpawned === 0) return;
+
     // wait and create a new bat
     this.batsInterval = {};
     const range = settings.bat.spawnInterval;
     const delay = getRandomFloat(range.min, range.max);
 
-    this.batsInterval = waitForIt(
-      () => {
-        // create new slime
-        if (!isGamePaused() && !isNinjaDead()) {
-          this.createBat();
-        }
+    this.batsInterval = waitForIt(() => {
+      // create new slime
+      if (!isGamePaused() && !isNinjaDead()) {
+        this.createBat();
+      }
 
-        // recursevely iterate
-        this.spawnBats();
-      },
-      delay
-    );
+      // recursevely iterate
+      this.spawnBats();
+    }, delay);
   }
 
   createBat() {
+    if (settings.bat.maxSpawned <= this.bats.length) return;
+
     const color = getRandomItemFromArray(['black', 'black', 'black', 'red']);
     const bat = new Bat({
       parent: this.world,
@@ -193,12 +193,12 @@ export default class EntityManager {
   }
 
   removeEntityFromArray(entity: Entity) {
-    const arr = this[entity.type];
+    const arr = this[`${entity.type}s`];
 
-    for (let i in arr) {
+    for (let i = 0; i < arr.length; i++) {
       if (arr[i] === entity) {
-        arr.splice(parseInt(i, 10), 1);
-        break;
+        arr.splice(i, 1);
+        return;
       }
     }
   }
