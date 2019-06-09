@@ -18,7 +18,7 @@ import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/shortcuts';
 
 // todo, this is actually a star container for an explosion of multiple stars... refactor!
 
-export default class Star extends View {
+export default class ExplosionStars extends View {
   screen: screen;
   parent: View;
   ninja: Ninja;

@@ -5,7 +5,6 @@ import ImageScaleView from 'ui/ImageScaleView';
 import InputView from 'src/game/ui/InputView';
 
 import settings from 'src/conf/settings';
-
 import World from 'src/game/components/World';
 import Terrain from 'src/game/components/Terrain';
 import Ninja from 'src/game/components/Ninja';

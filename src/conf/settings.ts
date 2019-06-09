@@ -26,6 +26,6 @@ export default {
   },
 
   user: {
-    maxHearts: 1,
+    maxHearts: 3,
   },
 };

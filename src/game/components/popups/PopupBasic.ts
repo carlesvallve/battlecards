@@ -11,7 +11,6 @@ import { animDuration } from 'src/lib/uiConfig';
 export default class PopupBasic extends View {
   screen: screen;
   id: PopupID;
-  // enabled: boolean;
   closeableWithBg: boolean;
   bg: View;
   box: View;
@@ -23,7 +22,6 @@ export default class PopupBasic extends View {
     this.screen = getScreenDimensions();
 
     this.id = opts.id;
-    // this.enabled = false;
     this.closeableWithBg = true;
 
     const { width, height } = opts.superview.style;

@@ -7,6 +7,9 @@ import { isGameActive } from 'src/redux/shortcuts';
 import GameScreen from 'src/game/screens/GameScreen';
 import Entity from './Entity';
 
+// World contains all game elements (terrain, entities, ninja)
+// and behaves like a Camera class, following the target.
+
 export default class World extends View {
   screen: screen;
   target: Entity;

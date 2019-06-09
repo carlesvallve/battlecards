@@ -1,13 +1,5 @@
 import pubsub from 'pubsub-js';
 
-import View from 'ui/View';
-import {
-  getRandomFloat,
-  waitForIt,
-  getRandomItemFromArray,
-  getRandomInt,
-  clearWait,
-} from 'src/lib/utils';
 import settings from 'src/conf/settings';
 import { isGamePaused, isNinjaDead } from 'src/redux/shortcuts';
 import Bat from './Bat';
@@ -17,8 +9,15 @@ import Ninja from './Ninja';
 import Entity from './Entity';
 import { addScore } from 'src/redux/state/reducers/user';
 import StateObserver from 'src/redux/StateObserver';
-import Star from './Star';
 import Explosion from './Explosion';
+import ExplosionStars from './ExplosionStars';
+import {
+  getRandomFloat,
+  waitForIt,
+  getRandomItemFromArray,
+  getRandomInt,
+  clearWait,
+} from 'src/lib/utils';
 
 export default class EntityManager {
   world: World;
@@ -30,7 +29,7 @@ export default class EntityManager {
   bats: Bat[];
   batsInterval: object;
 
-  stars: Star[];
+  stars: ExplosionStars[];
   starsInterval: object;
 
   constructor(opts: { world: World; ninja: Ninja }) {
@@ -154,7 +153,7 @@ export default class EntityManager {
     const { entity } = opts;
     if (!entity) return;
 
-    new Star({
+    new ExplosionStars({
       parent: this.world,
       ninja: this.ninja,
       max: getRandomInt(1, 3),

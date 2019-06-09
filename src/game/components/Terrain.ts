@@ -5,6 +5,8 @@ import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import level, { getTileData } from 'src/conf/levels/index';
 import { point, screen } from 'src/lib/customTypes';
 
+// Terrain builds the level tiles inside mapbox container
+
 export default class Terrain extends View {
   screen: screen;
   center: point;

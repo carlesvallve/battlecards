@@ -109,7 +109,7 @@ export default class Hud extends View {
     StateObserver.dispatch(setHighscore(gameData.highscore || 0));
     StateObserver.dispatch(setStars(gameData.stars || 0));
 
-    // refresh ui immediately
+    // refresh ui immediately so it doesn't animate
     this.scoreLabel.text = 0;
     this.starLabel.text = getStars();
     this.createHearts(settings.user.maxHearts, 35);
