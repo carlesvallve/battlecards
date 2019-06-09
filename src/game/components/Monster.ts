@@ -63,7 +63,19 @@ export default class Monster extends Entity {
 
     this.createSprite();
     this.setDirection(getRandomItemFromArray([-1, 1]));
+
+    // this.on('collision:ground', () => {
+    //   console.log('monster: collision:ground');
+    // });
+
+    // this.on('collision:wall', () => {
+    //   console.log('monster: collision:ground');
+    // });
   }
+
+  onCollisionGround() {}
+
+  onCollisionWall() {}
 
   getSpawnPosition(): point {
     const { mapData, tileSize } = level;

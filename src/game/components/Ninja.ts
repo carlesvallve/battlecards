@@ -48,30 +48,28 @@ export default class Ninja extends Entity {
     pubsub.subscribe('ninja:attack', this.attack.bind(this));
     pubsub.subscribe('ninja:die', this.die.bind(this));
 
-    // collisions are emitted from superclass,
-    // so no need to use pubsub
-    this.on('collision:ground', () => {
-      // console.log('collision:ground');
-      if (isNinjaJumping()) {
-        animate(this).clear();
-        this.idle();
-      }
-    });
-    this.on('collision:wall', () => {
-      // console.log('collision:wall');
-      // stop interpolating and animating character
-      if (!isNinjaRunning()) {
-        animate(this).clear();
-        this.idle();
-      }
-    });
-
     // entityState check
     // StateObserver.createSelector(
     //   (state) => state.ninja.entityState,
     // ).addListener((entityState) => {
     //   console.log('ninjaState:', entityState);
     // });
+  }
+
+  onCollisionGround() {
+    if (isNinjaJumping()) {
+      animate(this).clear();
+      this.idle();
+    }
+  }
+
+  onCollisionWall() {
+    // console.log('collision:wall');
+    // stop interpolating and animating character
+    if (!isNinjaRunning()) {
+      animate(this).clear();
+      this.idle();
+    }
   }
 
   createSprite() {

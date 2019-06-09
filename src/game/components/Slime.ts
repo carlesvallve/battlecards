@@ -15,12 +15,13 @@ export default class Slime extends Monster {
 
     this.gravity = 0.25;
     this.speed = getRandomFloat(0.5, 1.5); // bigger is faster
+  }
 
-    this.on('collision.ground', () => {});
-    this.on('collision:wall', () => {
-      // change direction
-      animate(this).clear();
-      this.setDirection(-this.dir);
-    });
+  onCollisionGround() {}
+
+  onCollisionWall() {
+    // change direction
+    animate(this).clear();
+    this.setDirection(-this.dir);
   }
 }

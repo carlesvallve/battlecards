@@ -38,6 +38,10 @@ export default class Entity extends View {
     debugPoint(this);
   }
 
+  onCollisionGround() {}
+
+  onCollisionWall() {}
+
   tick(dt) {
     if (!isGameActive()) return;
 
@@ -81,7 +85,7 @@ export default class Entity extends View {
       me.y = hit.position.y;
       // this.vy = 0;
       this.grounded = true;
-      this.emit('collision:ground');
+      this.onCollisionGround();
     } else {
       // add gravity to velocity on y axis
       // this.gravity = 0.5;
@@ -112,8 +116,7 @@ export default class Entity extends View {
       if (!hasClimbed) {
         // lock character x to hit point and apply bounce back
         me.x = hit.position.x - d * this.dir;
-
-        this.emit('collision:wall');
+        this.onCollisionWall();
       }
     }
   }
