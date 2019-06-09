@@ -13,11 +13,14 @@ import TitleScreen from 'src/game/screens/TitleScreen';
 import GameScreen from 'src/game/screens/GameScreen';
 import { waitForIt, isDevEnv } from 'src/lib/utils';
 import StateObserver from './redux/StateObserver';
-import { SceneID } from './redux/state/reducers/ui';
+import { SceneID, PopupID } from './redux/state/reducers/ui';
+import PopupBasic from './game/components/popups/PopupBasic';
+import PopupError from './game/components/popups/PopupError';
 
 export default class Application extends View {
   private rootView: StackView;
   public scenes: { [K in SceneID]: View };
+  public popups: { [K in PopupID]: View };
 
   constructor(opts) {
     super(opts);
@@ -119,6 +122,18 @@ export default class Application extends View {
       title: new TitleScreen(),
       game: new GameScreen(),
     };
+
+    this.popups = {
+      basic: new PopupBasic({
+        id: 'popupBasic',
+        superview: this.rootView,
+      }),
+      error: new PopupError({
+        id: 'popupError',
+        superview: this.rootView,
+      }),
+    }
+    
 
     // check for scene navigation
     StateObserver.createSelector((state) => state.ui.scene).addListener(

@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
 
 export type SceneID = 'title' | 'game';
+
+export type PopupID = 'basic' | 'error';
 export type PopupOpts = {
   id: string;
   enabled: boolean;
