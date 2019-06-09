@@ -42,8 +42,6 @@ export default class Tile extends ImageView {
   }
 
   buildSolidityMap2(imageData: ImageData): number[] {
-    // console.log('>>>', imageData);
-
     const solidityMap = []; // new bool[bitmap.Width, bitmap.Height];
 
     for (let y = 0; y < imageData.height; y++) {

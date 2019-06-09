@@ -36,7 +36,6 @@ export const onSwipe = (
     );
 
     if (v.length() > threshold) {
-      // console.log('>>>', v);
       cb && cb(v);
       view.dragStartPoint = null;
     }

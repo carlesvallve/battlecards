@@ -80,22 +80,24 @@ export default class Monster extends Entity {
   getSpawnPosition(): point {
     const { mapData, tileSize } = level;
 
-    const min = settings[this.type].spawnDistance.min;
-    const max = settings[this.type].spawnDistance.max;
+    const min = settings[this.type].spawnDistance.min.x;
+    const max = settings[this.type].spawnDistance.max.x;
     let left = this.ninja.style.x - getRandomInt(min, max);
     let right = this.ninja.style.x + getRandomInt(min, max);
 
     // always between map limits
-    if (left < tileSize) {
-      left = tileSize;
-    }
+    if (left < tileSize) left = tileSize;
     if (right > (mapData[0].length - 1) * tileSize) {
       right = (mapData[0].length - 1) * tileSize;
     }
 
-    // get final pos
-    const y = this.ninja.style.y + getRandomInt(0, -100);
+    // get x
     const x = getRandomInt(1, 100) <= 50 ? left : right;
+
+    // get y
+    const minY = settings[this.type].spawnDistance.min.y;
+    const maxY = settings[this.type].spawnDistance.max.y;
+    const y = this.ninja.style.y + getRandomInt(minY, -maxY);
 
     return { x, y };
   }

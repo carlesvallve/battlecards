@@ -8,7 +8,7 @@ const slice = createSlice({
   reducers: {
     setGameState: (state, { payload }: PayloadAction<gameState>) => {
       state.gameState = payload;
-      console.log('>>> gameState:', state.gameState);
+      // console.log('gameState:', state.gameState);
     },
   },
 });
