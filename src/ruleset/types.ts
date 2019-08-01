@@ -10,3 +10,6 @@ export function isKey<T>(
 ): key is keyof T {
   return key in value;
 }
+
+// export type Point = { x: number; y: number };
+// export type Rect = { x: number; y: number; width: number; height: number };

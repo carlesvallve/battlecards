@@ -1,3 +1,4 @@
+import animate from 'animate';
 import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageScaleView from 'ui/ImageScaleView';
@@ -10,6 +11,8 @@ import i18n from 'src/lib/i18n/i18n';
 import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/ruleset';
 import { CardID } from 'src/ruleset/cards';
+import { format } from 'url';
+import { animDuration } from 'src/lib/uiConfig';
 // import { CardSetID } from 'src/replicant/ruleset/cardSets';
 // import {
 //   getCardInstancesOwned,
@@ -271,5 +274,39 @@ export default class Card {
       height: 170 * 2,
       onClick: () => onClick && onClick(this.props.id),
     });
+  }
+
+  private spawnCard(
+    from: { x: number; y: number; scale: number },
+    to: { x: number; y: number; scale: number },
+    delay: number,
+    cb?: () => void,
+  ) {
+    this.getView().updateOpts({
+      x: from.x,
+      y: from.y,
+    });
+
+    const t = animDuration;
+    animate(this.getView())
+      .clear()
+      .wait(delay)
+      .then({ x: to.x, y: to.y, scale: to.scale }, t, animate.easeInOut)
+      .then(() => cb && cb());
+  }
+
+  private flipCard() {
+    const t = animDuration * 0.5;
+    animate(this.getView())
+      .clear()
+      .then({ scaleX: 0 }, t, animate.easeInOut)
+      .then(() => {
+        this.setProps({ id: this.props.id, side: this.toggleSide() });
+      })
+      .then({ scaleX: 1 }, t, animate.easeInOut);
+  }
+
+  private toggleSide() {
+    return this.props.side === 'front' ? 'back' : 'front';
   }
 }
