@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-import { NavState, SceneID, PopupOpts } from 'src/types/customTypes';
+import { NavState, SceneID, PopupOpts } from 'src/types/custom';
 
 const slice = createSlice({
   initialState: {

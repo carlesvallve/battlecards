@@ -1,7 +1,7 @@
 import device from 'device';
 import animate from 'animate';
 import View from 'ui/View';
-import { Point } from '../types/customTypes';
+import { Point } from '../types/custom';
 
 export const isDevEnv = () => {
   return process.env.NODE_ENV === 'development' || process.env.STAGE === 'dev';

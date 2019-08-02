@@ -4,7 +4,7 @@ import ButtonView from 'ui/widget/ButtonView';
 
 import StateObserver from 'src/redux/StateObserver';
 import { animDuration } from 'src/lib/uiConfig';
-import { PopupID } from 'src/types/customTypes';
+import { PopupID } from 'src/types/custom';
 import { closePopup } from 'src/redux/shortcuts/ui';
 
 export default class PopupBasic {

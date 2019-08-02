@@ -1,6 +1,3 @@
-import View from 'ui/View';
-import Image from 'ui/resource/Image';
-
 // utility types
 
 export const tuple = <T extends string[]>(...args: T) => args;

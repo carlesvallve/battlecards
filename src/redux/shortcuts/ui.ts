@@ -1,5 +1,5 @@
 import StateObserver from '../StateObserver';
-import { NavState, PopupID, SceneID } from 'src/types/customTypes';
+import { NavState, PopupID, SceneID } from 'src/types/custom';
 import { togglePopup, selectScene, selectNavState } from '../state/reducers/ui';
 import { State } from '../state';
 

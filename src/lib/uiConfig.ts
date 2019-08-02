@@ -30,6 +30,8 @@ export default {
     size: 30,
     color: 'white',
     wordWrap: false,
+    centerOnOrigin: true,
+    centerAnchor: true,
   },
 
   // hud

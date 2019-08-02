@@ -8,8 +8,12 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions } from 'src/lib/utils';
 import { navigateToScene } from 'src/redux/shortcuts/ui';
 import Card from '../components/cards/Card';
+import Label from '../components/ui/Label';
+import { randomBytes } from 'crypto';
 
 export default class SceneGame extends SceneBasic {
+  private counter: number = 0;
+
   constructor() {
     super();
     this.createViews();
@@ -51,6 +55,15 @@ export default class SceneGame extends SceneBasic {
       y: screen.height / 2,
     });
 
+    const label = new Label({
+      superview: this.container,
+      localeText: () => 'Hello World',
+      x: screen.width / 2,
+      y: screen.height / 2 - 20,
+      size: 20,
+      color: 'yellow',
+    });
+
     const button = new ButtonScaleViewWithText(
       Object.assign({}, uiConfig.buttonGreen, {
         superview: this.container,
@@ -64,7 +77,21 @@ export default class SceneGame extends SceneBasic {
         size: 16,
         font: bitmapFonts('Title'),
         onClick: () => {
-          card.flip();
+          // card.flip();
+
+          this.counter++;
+          label.setProps({
+            localeText: () => this.counter.toString(),
+            color: 'red',
+            x: screen.width / 2 - 50 + Math.random() * 100,
+            y: screen.width / 2 - 50 + Math.random() * 100,
+            // size: Math.random() * 50,
+          });
+          // label.updateText(() => this.counter.toString());
+          // label.setProps({
+          //   localeText: () => this.counter.toString(),
+          //   color: 'red',
+          // });
         },
 
         // labelOffsetX: 20,

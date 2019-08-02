@@ -1,6 +1,6 @@
 import View from 'ui/View';
 import StateObserver from 'src/redux/StateObserver';
-import { NavState, SceneID } from 'src/types/customTypes';
+import { NavState, SceneID } from 'src/types/custom';
 import { getSceneNavState } from 'src/redux/shortcuts/ui';
 import { State } from 'src/redux/state';
 

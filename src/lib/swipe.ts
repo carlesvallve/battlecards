@@ -1,6 +1,6 @@
 import View from 'ui/View';
 import Vector from './vector';
-import { Point } from '../types/customTypes';
+import { Point } from '../types/custom';
 
 // handle swipes
 

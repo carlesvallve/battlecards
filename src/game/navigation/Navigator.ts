@@ -11,7 +11,7 @@ import SceneGame from 'src/game/screens/SceneGame';
 
 import PopupPause from 'src/game/components/popups/PopupPause';
 import StateObserver from 'src/redux/StateObserver';
-import { SceneID, PopupID } from 'src/types/customTypes';
+import { SceneID, PopupID } from 'src/types/custom';
 import { setNavState } from 'src/redux/shortcuts/ui';
 
 export default class Navigator {
