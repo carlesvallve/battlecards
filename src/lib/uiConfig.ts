@@ -1,5 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
+import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
+import bitmapFonts from 'src/lib/bitmapFonts';
 
 export const animDuration: number = 250;
 
@@ -21,6 +23,15 @@ export const animateDefault = (
 };
 
 export default {
+  // text
+  bitmapFontText: {
+    align: 'center',
+    verticalAlign: 'center',
+    size: 30,
+    color: 'white',
+    wordWrap: false,
+  },
+
   // hud
 
   buttonMenu: {

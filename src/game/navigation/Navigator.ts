@@ -3,15 +3,16 @@ import animate from 'animate';
 import device from 'device';
 import StackView from 'ui/StackView';
 import View from 'ui/View';
-import { setNavState } from 'src/redux/state/reducers/ui';
+
 import { getScreenDimensions } from 'src/lib/utils';
 
-import TitleScreen from 'src/game/screens/TitleScreen';
-import GameScreen from 'src/game/screens/GameScreen';
+import SceneTitle from 'src/game/screens/SceneTitle';
+import SceneGame from 'src/game/screens/SceneGame';
 
 import PopupPause from 'src/game/components/popups/PopupPause';
 import StateObserver from 'src/redux/StateObserver';
 import { SceneID, PopupID } from 'src/types/customTypes';
+import { setNavState } from 'src/redux/shortcuts/ui';
 
 export default class Navigator {
   private rootView: StackView;
@@ -33,8 +34,8 @@ export default class Navigator {
     });
 
     this.scenes = {
-      title: new TitleScreen(),
-      game: new GameScreen(),
+      title: new SceneTitle(),
+      game: new SceneGame(),
     };
 
     this.popups = {
@@ -61,15 +62,14 @@ export default class Navigator {
   }
 
   gotoScene(name: SceneID) {
+
     const scene = this.scenes[name].getView();
     const fromScene = this.rootView.stack[this.rootView.stack.length - 1];
     // console.log(fromScene, '->', scene);
 
     const changeScene = () => {
-      setNavState('left');
       this.rootView.pop(true);
       this.rootView.push(scene, true);
-      setNavState('entering');
     };
 
     const duration = 300;
@@ -80,7 +80,7 @@ export default class Navigator {
       return;
     }
 
-    setNavState('leaving');
+
     this.fadeOut(fromScene, duration, () => {
       this.rootView.pop(true);
       this.rootView.push(scene, true);

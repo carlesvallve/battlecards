@@ -12,7 +12,7 @@ export type Tuple<T, TLength extends number> = [T, ...T[]] & {
 
 export type GameState = 'title' | 'playing' | 'paused' | 'over';
 
-export type NavState = 'none' | 'leaving' | 'left' | 'entering' | 'entered';
+export type NavState = 'leaving' | 'left' | 'entering' | 'entered';
 
 export type SceneID = 'title' | 'game';
 

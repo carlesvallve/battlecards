@@ -1,6 +1,7 @@
 import StateObserver from '../StateObserver';
 import { NavState, PopupID, SceneID } from 'src/types/customTypes';
-import { togglePopup } from '../state/reducers/ui';
+import { togglePopup, selectScene, selectNavState } from '../state/reducers/ui';
+import { State } from '../state';
 
 export const getScene = () => {
   return StateObserver.getState().ui.scene;
@@ -18,14 +19,16 @@ export const closePopup = (id: PopupID) => {
   return StateObserver.dispatch(togglePopup({ id, enabled: false }));
 };
 
+export const navigateToScene = (scene: SceneID) => {
+  return StateObserver.dispatch(selectScene(scene));
+};
+
 export const setNavState = (navState: NavState) => {
-  return StateObserver.dispatch(setNavState(navState));
+  return StateObserver.dispatch(selectNavState(navState));
 };
 
 export const getSceneNavState = (scene: SceneID) => {
   const ui = StateObserver.getState().ui;
-  if (ui.scene === scene) {
-    return ui.navState;
-  }
-  return null;
+  if (ui.scene !== scene) return null;
+  return ui.navState;
 };

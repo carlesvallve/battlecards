@@ -65,19 +65,19 @@ export default class Application extends View {
         updateLoadingProgress();
       }, 16);
 
-      // load initial assets
-      initialAssets.load((res) => {
-        console.log('initial assets were preloaded', res);
+      i18n.loadLocale(locale).then(() => {
+        console.log('i18 locale was preloaded');
 
-        i18n.loadLocale(locale).then(() => {
-          console.log('i18 locale was preloaded');
+        // load initial assets
+        initialAssets.load((res) => {
+          console.log('initial assets were preloaded', res);
 
           setLoadingProgress(100);
           clearInterval(progressUpdateHandle);
           resolve();
 
           loadingGroups.soundAssets.load((res) => {
-            console.log('sounds were preloaded', res);
+            // console.log('sounds were preloaded', res);
           });
         });
       });

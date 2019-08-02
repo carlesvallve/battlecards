@@ -3,17 +3,24 @@ import { NavState, SceneID, PopupOpts } from 'src/types/customTypes';
 
 const slice = createSlice({
   initialState: {
+    locale: 'en',
     isLoading: false,
+    previousScene: null,
     scene: 'title' as SceneID,
-    navState: 'none',
+    navState: null,
     togglePopup: { id: '', enabled: false },
   },
 
   reducers: {
-    setNavState: (state, { payload }: PayloadAction<NavState>) => {
+    setLocale: (state, { payload }: PayloadAction<string>) => {
+      state.locale = payload;
+    },
+
+    selectNavState: (state, { payload }: PayloadAction<NavState>) => {
       state.navState = payload;
     },
     selectScene: (state, { payload }: PayloadAction<SceneID>) => {
+      state.previousScene = state.scene;
       state.scene = payload;
     },
    
@@ -31,7 +38,7 @@ const slice = createSlice({
 
 export const {
   selectScene,
-  setNavState,
+  selectNavState,
   togglePopup,
   showLoading,
   hideLoading,
