@@ -7,12 +7,9 @@ import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions } from 'src/lib/utils';
 import { navigateToScene } from 'src/redux/shortcuts/ui';
-import { blink } from 'src/lib/animations';
-import i18n from 'src/lib/i18n/i18n';
+import Card from '../components/cards/Card';
 
 export default class SceneGame extends SceneBasic {
-  startLabel: LangBitmapFontTextView;
-
   constructor() {
     super();
     this.createViews();
@@ -21,8 +18,6 @@ export default class SceneGame extends SceneBasic {
 
   protected init() {
     console.log('Init game');
-    sounds.playSong('win');
-    blink(this.startLabel, 350);
   }
 
   private createViews() {
@@ -38,34 +33,40 @@ export default class SceneGame extends SceneBasic {
       onClick: () => navigateToScene('title'),
     });
 
-    this.startLabel = new LangBitmapFontTextView({
+    const title = new LangBitmapFontTextView({
       superview: this.container,
       x: screen.width / 2,
-      y: 80 + screen.height / 2,
-      visible: false,
+      y: 40,
       ...uiConfig.bitmapFontText,
       font: bitmapFonts('Title'),
-      localeText: () => i18n('title.start'),
-      size: 12,
+      localeText: () => 'Battle Start',
+      size: 32,
       color: '#eee',
+    });
+
+    const card = new Card({
+      superview: this.container,
+      id: 'airForce',
+      x: screen.width / 2,
+      y: screen.height / 2,
     });
 
     const button = new ButtonScaleViewWithText(
       Object.assign({}, uiConfig.buttonGreen, {
         superview: this.container,
         x: screen.width / 2,
-        y: screen.height / 2,
-        width: 160,
-        height: 60,
+        y: screen.height - 50,
+        width: 100,
+        height: 50,
         centerOnOrigin: true,
-
-        localeText: () => 'Button',
-        fontSize: 25,
+        labelOffsetY: -2,
+        localeText: () => 'FLIP',
+        size: 16,
         font: bitmapFonts('Title'),
+        onClick: () => {
+          card.flip();
+        },
 
-        onClick: () => console.log('>>> clicked on button!'),
-
-        // labelOffsetY: -1,
         // labelOffsetX: 20,
         // iconData: {
         //   url: 'resources/images/ui/buttons/icon_hud_coin.png',

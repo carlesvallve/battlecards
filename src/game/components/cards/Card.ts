@@ -3,7 +3,7 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
-import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
+
 import bitmapFonts from 'src/lib/bitmapFonts';
 // import CardBadge from './CardBadge';
 import CardStars from './CardStars';
@@ -13,13 +13,14 @@ import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { format } from 'url';
 import { animDuration } from 'src/lib/uiConfig';
+import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 // import { CardSetID } from 'src/replicant/ruleset/cardSets';
 // import {
 //   getCardInstancesOwned,
 //   isCardLocked,
 // } from 'src/replicant/getters/cards';
 
-type Opts = {
+export type CardOpts = {
   superview: View;
   id: CardID;
   side?: 'front' | 'back';
@@ -41,18 +42,23 @@ export default class Card {
   private imageMask: View;
   private pic: ImageView;
   private ribbon: ImageScaleView;
-  private title: BitmapFontTextView;
+  private title: LangBitmapFontTextView;
   // private badge: CardBadge;
   private stars: CardStars;
-  private lock: BitmapFontTextView;
+  private lock: LangBitmapFontTextView;
   private button: ButtonView;
 
-  constructor(opts: Opts) {
+  constructor(opts: CardOpts) {
     this.props.id = opts.id;
     this.props.side = opts.side || 'back';
 
     this.createViews(opts);
     this.createSelectors();
+
+    this.setProps({
+      id: opts.id,
+      side: opts.side || 'back',
+    });
   }
 
   destroy() {
@@ -145,7 +151,7 @@ export default class Card {
 
   private createSelectors() {}
 
-  private createViews({ superview, id, x, y, scale, onClick }: Opts) {
+  private createViews({ superview, id, x, y, scale, onClick }: CardOpts) {
     // 120 x 170
 
     this.container = new View({
@@ -217,14 +223,14 @@ export default class Card {
       },
     });
 
-    this.title = new BitmapFontTextView({
+    this.title = new LangBitmapFontTextView({
       superview: this.ribbon,
       // backgroundColor: 'rgba(255,0,0,0.5)',
-      y: 5 * 2,
+      y: 12,
       x: 17,
       width: this.container.style.width - 20,
       localeText: () => i18n(`cardNames.${id}`),
-      size: 12 * 2,
+      size: 20,
       font: bitmapFonts('TitleStroke'),
       align: 'center',
       verticalAlign: 'center',
@@ -276,7 +282,7 @@ export default class Card {
     });
   }
 
-  private spawnCard(
+  spawnCard(
     from: { x: number; y: number; scale: number },
     to: { x: number; y: number; scale: number },
     delay: number,
@@ -295,7 +301,7 @@ export default class Card {
       .then(() => cb && cb());
   }
 
-  private flipCard() {
+  flip() {
     const t = animDuration * 0.5;
     animate(this.getView())
       .clear()
