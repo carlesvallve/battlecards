@@ -6,7 +6,7 @@ import Entity from 'src/game/components/Entity';
 import { Actions } from 'src/lib/enums';
 import sounds from 'src/lib/sounds';
 import { debugPoint, waitForIt } from 'src/lib/utils';
-import { point } from 'src/lib/customTypes';
+import { point } from 'src/types/customTypes';
 import level, { getTileTypeAtPixel } from 'src/conf/levels';
 import World from './World';
 import StateObserver from 'src/redux/StateObserver';

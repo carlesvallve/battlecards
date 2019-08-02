@@ -3,7 +3,7 @@ import World from 'src/game/components/World';
 import Tile from 'src/game/components/Tile';
 import { getScreenDimensions, debugPoint } from 'src/lib/utils';
 import level, { getTileData } from 'src/conf/levels/index';
-import { point, screen } from 'src/lib/customTypes';
+import { point, screen } from 'src/types/customTypes';
 
 // Terrain builds the level tiles inside mapbox container
 

@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-import { gameState, tuple } from 'src/lib/customTypes';
+import { GameState } from 'src/types/customTypes';
 
 const slice = createSlice({
   initialState: {
-    gameState: 'Title',
+    gameState: 'title',
   },
   reducers: {
-    setGameState: (state, { payload }: PayloadAction<gameState>) => {
+    setGameState: (state, { payload }: PayloadAction<GameState>) => {
       state.gameState = payload;
       // console.log('gameState:', state.gameState);
     },

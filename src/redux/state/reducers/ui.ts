@@ -1,24 +1,22 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-
-export type SceneID = 'title' | 'game';
-
-export type PopupID = 'pause' | 'continue';
-export type PopupOpts = {
-  id: string;
-  enabled: boolean;
-  opts?: any;
-};
+import { NavState, SceneID, PopupOpts } from 'src/types/customTypes';
 
 const slice = createSlice({
   initialState: {
     isLoading: false,
     scene: 'title' as SceneID,
-    togglePopup: { id: '', enabled: false }, // opts: {} as any },
+    navState: 'none',
+    togglePopup: { id: '', enabled: false },
   },
+
   reducers: {
+    setNavState: (state, { payload }: PayloadAction<NavState>) => {
+      state.navState = payload;
+    },
     selectScene: (state, { payload }: PayloadAction<SceneID>) => {
       state.scene = payload;
     },
+   
     togglePopup: (state, { payload }: PayloadAction<PopupOpts>) => {
       state.togglePopup = payload;
     },
@@ -33,6 +31,7 @@ const slice = createSlice({
 
 export const {
   selectScene,
+  setNavState,
   togglePopup,
   showLoading,
   hideLoading,

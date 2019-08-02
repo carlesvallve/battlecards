@@ -1,29 +1,32 @@
 import animate from 'animate';
 import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
-
+import { screen } from 'src/types/customTypes';
+import { getScreenDimensions } from 'src/lib/utils';
 import StateObserver from 'src/redux/StateObserver';
+import { PopupID } from 'src/redux/state/reducers/ui';
+import { closePopup } from 'src/redux/shortcuts';
 import { animDuration } from 'src/lib/uiConfig';
-import { PopupID } from 'src/types/customTypes';
-import { closePopup } from 'src/redux/shortcuts/ui';
 
-export default class PopupBasic {
-  protected container = new View({ opacity: 0, backgroundColor: 'black' });
-  protected id: PopupID;
-  protected closeableWithBg: boolean;
-  protected bg: View;
-  protected box: View;
+export default class PopupBasic extends View {
+  screen: screen;
+  id: PopupID;
+  closeableWithBg: boolean;
+  bg: View;
+  box: View;
+  baseY: number;
 
-  constructor(opts: { superview: View, id: PopupID }) {
+  constructor(opts) {
+    super(opts);
+    this.canHandleEvents(false, false);
+    this.screen = getScreenDimensions();
+
     this.id = opts.id;
     this.closeableWithBg = true;
-    this.container.canHandleEvents(false, false);
-  }
 
-  protected createViews(opts) {
     const { width, height } = opts.superview.style;
 
-    this.container.updateOpts({
+    this.updateOpts({
       zIndex: 9998,
       width,
       height,
@@ -32,7 +35,7 @@ export default class PopupBasic {
     });
 
     this.bg = new ButtonView({
-      superview: this.container,
+      superview: this,
       backgroundColor: 'rgba(0,0,0,0.6)',
       width,
       height,
@@ -44,19 +47,17 @@ export default class PopupBasic {
     });
 
     this.box = new View({
-      superview: this.container,
+      superview: this,
       backgroundColor: 'black',
       width: 480,
       height: 640,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5,
+      x: this.style.width * 0.5,
+      y: this.style.height * 0.5,
       centerOnOrigin: true,
       centerAnchor: true,
       scale: 1,
     });
-  }
 
-  protected createNavSelector(opts) {
     StateObserver.createSelector((state) => state.ui.togglePopup).addListener(
       ({ id, enabled }) => {
         if (id !== this.id) return;
@@ -69,18 +70,18 @@ export default class PopupBasic {
     );
   }
 
-  protected init(opts?: any) {
+  init(opts?: any) {
     this.bg.canHandleEvents(true, false);
     this.fadeIn();
   }
 
-  protected close() {
+  close() {
     this.bg.canHandleEvents(false, false);
     closePopup(this.id);
   }
 
-  private fadeIn() {
-    this.container.show();
+  fadeIn() {
+    this.show();
     animate(this)
       .clear()
       .then({ opacity: 1 }, animDuration, animate.easeOut);
@@ -91,14 +92,14 @@ export default class PopupBasic {
       .then({ scale: 1 }, animDuration, animate.easeOut);
   }
 
-  private fadeOut() {
+  fadeOut() {
     animate(this)
       .clear()
       .wait(animDuration)
       .then({ opacity: 0 }, animDuration, animate.easeOut)
       .then(() => {
-        this.container.hide();
-        // this.cb && this.cb();
+        this.hide();
+        this.cb && this.cb();
       });
 
     animate(this.box)

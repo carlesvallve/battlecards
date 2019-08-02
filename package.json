@@ -1,7 +1,7 @@
 {
-  "name": "slimesmash",
-  "shortName": "slimesmash",
-  "title": "Slimesmash",
+  "name": "battlecards",
+  "shortName": "battlecards",
+  "title": "battlecards",
   "version": "1.0.0",
   "private": true,
   "manifest": {

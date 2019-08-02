@@ -2,7 +2,7 @@ import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import Image from 'ui/resource/Image';
 import { debugPoint } from 'src/lib/utils';
-import { tileData } from 'src/lib/customTypes';
+import { tileData } from 'src/types/customTypes';
 
 export default class Tile extends ImageView {
   parent: View;

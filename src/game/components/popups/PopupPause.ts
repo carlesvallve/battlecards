@@ -12,41 +12,40 @@ export default class PopupPause extends PopupBasic {
   constructor(opts) {
     super(opts);
 
-    this.box.hide();
-    this.baseY = 20 + this.screen.height / 4;
+    // this.box.hide();
+    // this.baseY = 20 + this.screen.height / 4;
 
-    this.pauseLabel = new BitmapFontTextView({
-      superview: this,
-      text: i18n('hud.pause'),
-      x: this.screen.width / 2,
-      y: this.baseY,
-      align: 'center',
-      verticalAlign: 'center',
-      size: 44,
-      color: '#fff',
-      wordWrap: false,
-      font: bitmapFonts('Body'),
-      centerOnOrigin: true,
-      centerAnchor: true,
-    });
+    // this.pauseLabel = new BitmapFontTextView({
+    //   superview: this,
+    //   text: i18n('hud.pause'),
+    //   x: screen.width / 2,
+    //   y: this.baseY,
+    //   align: 'center',
+    //   verticalAlign: 'center',
+    //   size: 44,
+    //   color: '#fff',
+    //   wordWrap: false,
+    //   font: bitmapFonts('Body'),
+    //   centerOnOrigin: true,
+    //   centerAnchor: true,
+    // });
   }
 
   init() {
     super.init();
 
-    animateDefault(this.pauseLabel, {
-      y: this.baseY,
-      mode: 'in',
-    });
+    // animateDefault(this.pauseLabel, {
+    //   y: this.baseY,
+    //   mode: 'in',
+    // });
   }
 
   close() {
     super.close();
-    StateObserver.dispatch(setGameState('Play'));
 
-    animateDefault(this.pauseLabel, {
-      y: this.baseY,
-      mode: 'out',
-    });
+    // animateDefault(this.pauseLabel, {
+    //   y: this.baseY,
+    //   mode: 'out',
+    // });
   }
 }

@@ -5,7 +5,7 @@ import animate from 'animate';
 import SpriteView from 'ui/SpriteView';
 import settings from 'src/conf/settings';
 import level, { mapHeight } from 'src/conf/levels';
-import { point } from 'src/lib/customTypes';
+import { point } from 'src/types/customTypes';
 import Entity from 'src/game/components/Entity';
 import Ninja from './Ninja';
 

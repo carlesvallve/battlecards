@@ -1,7 +1,7 @@
 import device from 'device';
 import animate from 'animate';
 import View from 'ui/View';
-import { point } from './customTypes';
+import { Point } from '../types/customTypes';
 
 export const isDevEnv = () => {
   return process.env.NODE_ENV === 'development' || process.env.STAGE === 'dev';
@@ -46,7 +46,7 @@ export const getRandomItemFromArray = (arr: any[]) => {
   return arr[getRandomInt(0, arr.length - 1)];
 };
 
-export const getRandomPos = (min: number, max: number): point => {
+export const getRandomPos = (min: number, max: number): Point => {
   const screen = getScreenDimensions();
   const x = getRandomInt(20, screen.width - 20);
   const y = getRandomInt(20, -4 + screen.height / 2);

@@ -28,17 +28,3 @@
   },
   "include": ["src/*", "src/**/*", "tests/*", "tests/**/*"]
 }
-
-// {
-//   "compilerOptions": {
-//     "target": "es6",
-//     "sourceMap": false,
-//     // "allowJs": true,
-//     "experimentalDecorators": true,
-//     "moduleResolution": "node"
-//   },
-//   "include": [
-//     "src",
-//     "tests"
-//   ]
-// }

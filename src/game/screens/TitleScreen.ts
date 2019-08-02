@@ -1,71 +1,51 @@
-import pubsub from 'pubsub-js';
-
-import animate from 'animate';
+import SceneBasic from './SceneBasic';
 import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
-import InputView from 'src/game/ui/InputView';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
-import { screen } from 'src/lib/customTypes';
-import StateObserver from 'src/redux/StateObserver';
-import { selectScene } from 'src/redux/state/reducers/ui';
-import { setGameState } from 'src/redux/state/reducers/game';
 import i18n from 'src/lib/i18n/i18n';
 
-export default class TitleScreen extends View {
-  screen: screen;
+export default class TitleScreen extends SceneBasic {
   startLabel: BitmapFontTextView;
 
   constructor() {
-    super({});
-    this.screen = getScreenDimensions();
-    console.log('dimensions:', this.screen.width, this.screen.height);
-
-    this.createElements();
-
-    const inputView = new InputView({
-      parent: this,
-      width: this.screen.width,
-      height: this.screen.height,
-      dragThreshold: 0,
-    });
-
-    inputView.registerHandlerForTouch((x: number, y: number) => {
-      animate(this.startLabel).clear();
-      this.startLabel.hide();
-      StateObserver.dispatch(selectScene('game'));
-    });
-
-    pubsub.subscribe('title:start', this.init.bind(this));
+    super();
+    this.createViews();
+    this.createNavSelector('title');
   }
 
-  init() {
-    StateObserver.dispatch(setGameState('Title'));
+  protected init() {
+    console.log('Init title');
     sounds.playSong('win');
     blink(this.startLabel, 350);
   }
 
-  createElements() {
+  private createViews() {
+    const screen = getScreenDimensions();
+    console.log('dimensions:', screen.width, screen.height);
+
     const bg = new View({
-      parent: this,
-      width: this.screen.width,
-      height: this.screen.height,
+      superview: this.container,
+      x: 10,
+      y: 10,
+      width: screen.width - 20,
+      height: screen.height - 20,
       backgroundColor: '#010101',
     });
 
-    const fontName = 'Body';
+    const fontName = 'Title';
     const dy = 110;
 
     const titleTop = new BitmapFontTextView({
-      superview: this,
-      text: i18n('title.slime'),
-      x: this.screen.width / 2,
-      y: -dy + this.screen.height / 2,
+      superview: this.container,
+      text: i18n('title.battle'),
+      x: screen.width / 2,
+      y: -dy + screen.height / 2,
       align: 'center',
       verticalAlign: 'center',
-      size: 66,
+      size: 64,
       color: '#CC0000',
       strokeColor: '#ff0000',
       wordWrap: false,
@@ -73,23 +53,23 @@ export default class TitleScreen extends View {
     });
 
     const titleBottom = new BitmapFontTextView({
-      superview: this,
-      text: i18n('title.smash'),
-      x: this.screen.width / 2,
-      y: -dy + 68 + this.screen.height / 2,
+      superview: this.container,
+      text: i18n('title.cards'),
+      x: screen.width / 2,
+      y: -dy + 50 + screen.height / 2,
       align: 'center',
       verticalAlign: 'center',
-      size: 57,
+      size: 72,
       color: '#ddd',
       wordWrap: false,
       font: bitmapFonts(fontName),
     });
 
     this.startLabel = new BitmapFontTextView({
-      superview: this,
+      superview: this.container,
       text: i18n('title.start'),
-      x: this.screen.width / 2,
-      y: 200 - dy + this.screen.height / 2,
+      x: screen.width / 2,
+      y: 200 - dy + screen.height / 2,
       align: 'center',
       verticalAlign: 'center',
       size: 12,

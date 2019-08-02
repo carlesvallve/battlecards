@@ -9,7 +9,7 @@ import BitmapFontTextView from 'ui/bitmapFont/BitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions } from 'src/lib/utils';
 import { blink } from 'src/lib/animations';
-import { screen } from 'src/lib/customTypes';
+import { screen } from 'src/types/customTypes';
 
 import StateObserver from 'src/redux/StateObserver';
 import {

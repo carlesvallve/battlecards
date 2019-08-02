@@ -1,6 +1,6 @@
 import View from 'ui/View';
 import Vector from './vector';
-import { point } from './customTypes';
+import { Point } from '../types/customTypes';
 
 // handle swipes
 
@@ -10,22 +10,22 @@ export const onSwipe = (
   cb: (v: Vector) => void,
 ) => {
   // mouse-down inside element
-  view.onInputStart = (evt: any, pt: point) => {
+  view.onInputStart = (evt: any, pt: Point) => {
     view.dragStartPoint = pt;
   };
 
   // mouse-up inside element
-  view.onInputSelect = (evt: any, pt: point) => {
+  view.onInputSelect = (evt: any, pt: Point) => {
     view.dragStartPoint = null;
   };
 
   // mouse-out-of-element
-  view.onInputOut = (evt: any, pt: point) => {
+  view.onInputOut = (evt: any, pt: Point) => {
     view.dragStartPoint = null;
   };
 
   // mouse-move-inside-element
-  view.onInputMove = (evt: any, pt: point) => {
+  view.onInputMove = (evt: any, pt: Point) => {
     if (!view.dragStartPoint) {
       return;
     }

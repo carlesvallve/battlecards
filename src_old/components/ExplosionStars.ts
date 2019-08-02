@@ -11,7 +11,7 @@ import {
 import sounds from 'src/lib/sounds';
 import { rayCast } from 'src/lib/raycast';
 import Ninja from './Ninja';
-import { screen } from 'src/lib/customTypes';
+import { screen } from 'src/types/customTypes';
 import StateObserver from 'src/redux/StateObserver';
 import { addStars } from 'src/redux/state/reducers/user';
 import { isGameActive, isGameOver, isNinjaDead } from 'src/redux/shortcuts';
