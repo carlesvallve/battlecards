@@ -44,19 +44,19 @@ export default class Basic {
   }
 
   protected update(props: BasicProps) {
-    animate(this.container).clear();
+    // xxanimate(this.container).clear();
 
     const t = 150;
     animate(this.container)
-      .clear()
+      // .clear()
       .then({ ...props }, t, animate.easeInOut);
   }
 
   protected createViews(props: BasicProps) {
     this.container = new View({
       backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      width: 40,
-      height: 40,
+      width: 4,
+      height: 4,
       centerOnOrigin: true,
       centerAnchor: true,
       ...props,

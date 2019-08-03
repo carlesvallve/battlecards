@@ -1,15 +1,13 @@
 import SceneBasic from './SceneBasic';
-import sounds from 'src/lib/sounds';
 import uiConfig from 'src/lib/uiConfig';
 import ButtonView from 'ui/widget/ButtonView';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions } from 'src/lib/utils';
 import { navigateToScene } from 'src/redux/shortcuts/ui';
 import Card from '../components/cards/Card';
 import Label from '../components/ui/Label';
-import { randomBytes } from 'crypto';
+import { getRandomColor } from 'src/lib/colors';
 
 export default class SceneGame extends SceneBasic {
   private counter: number = 0;
@@ -37,16 +35,15 @@ export default class SceneGame extends SceneBasic {
       onClick: () => navigateToScene('title'),
     });
 
-    const title = new LangBitmapFontTextView({
+    const title = new Label({
       superview: this.container,
       x: screen.width / 2,
       y: 40,
       ...uiConfig.bitmapFontText,
-      font: bitmapFonts('Title'),
       localeText: () => 'Battle Start',
       size: 32,
       color: '#eee',
-    });
+    })
 
     const card = new Card({
       superview: this.container,
@@ -57,7 +54,7 @@ export default class SceneGame extends SceneBasic {
 
     const label = new Label({
       superview: this.container,
-      localeText: () => 'Hello World',
+      localeText: () => this.counter.toString(),
       x: screen.width / 2,
       y: screen.height / 2 - 20,
       size: 20,
@@ -82,19 +79,14 @@ export default class SceneGame extends SceneBasic {
           this.counter++;
           label.setProps({
             localeText: () => this.counter.toString(),
-            color: 'red',
+            color: getRandomColor(),
             x: screen.width / 2 - 50 + Math.random() * 100,
-            y: screen.width / 2 - 50 + Math.random() * 100,
+            y: screen.height / 2 - 50 + Math.random() * 100,
             // size: Math.random() * 50,
           });
-          // label.updateText(() => this.counter.toString());
-          // label.setProps({
-          //   localeText: () => this.counter.toString(),
-          //   color: 'red',
-          // });
+          
         },
 
-        // labelOffsetX: 20,
         // iconData: {
         //   url: 'resources/images/ui/buttons/icon_hud_coin.png',
         //   size: 0.6,

@@ -15,16 +15,25 @@ export default class Label extends Basic {
     super.update(props);
 
     // update localeText
+    this.text.localeText = props.localeText
+
     const t = 100;
     if (props.localeText) {
       animate(this.text)
-        .then({ scale: 1.25 }, t, animate.easeInOut)
+        .clear()
+        // .wait(t)
+        .then({ scale: 1.5 }, t * 1, animate.easeInOut)
         .then(() => (this.text.localeText = props.localeText))
-        .then({ scale: 1 }, t, animate.easeInOut);
+        .then({ scale: 1 }, t * 5, animate.easeOutElastic);
     }
 
     // update color
     if (props.color) this.text.color = props.color;
+
+    this.text.updateOpts({
+      centerOnOrigin: true,
+      centerAnchor: true,
+    });
   }
 
   protected createViews(props: BasicProps) {
@@ -34,9 +43,10 @@ export default class Label extends Basic {
       ...uiConfig.bitmapFontText,
       ...props,
       superview: this.container,
-      x: this.container.style.width / 2,
-      y: this.container.style.height / 4,
       font: bitmapFonts('TitleStroke'),
+
+      x: 0,
+      y: -props.size / 2,
     });
   }
 }

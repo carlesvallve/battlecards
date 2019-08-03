@@ -32,6 +32,8 @@ export default {
     wordWrap: false,
     centerOnOrigin: true,
     centerAnchor: true,
+    // needs to be loaded beforehand, so can't be defined here
+    // font: bitmapFonts('Title'),
   },
 
   // hud
