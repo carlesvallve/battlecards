@@ -1,59 +1,42 @@
 import animate from 'animate';
-import View from 'ui/View';
+import Basic, { BasicProps } from '../basic/Basic';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 
-export type Props = {
-  superview?: View;
-  localeText?: () => string;
-  x?: number;
-  y?: number;
-  size?: number;
-  color?: string;
-};
+export default class Label extends Basic {
+  private text: LangBitmapFontTextView;
 
-export default class Label {
-  private container: LangBitmapFontTextView;
-  private props: Props = {};
-
-  constructor(props: Props) {
-    this.createViews(props);
+  constructor(props: BasicProps) {
+    super(props);
   }
 
-  getView() {
-    return this.container;
-  }
+  protected update(props: BasicProps) {
+    super.update(props);
 
-  setProps(props: Props) {
-    this.update(props);
-    this.props = { ...props };
-  }
-
-  private update(props: Props) {
-    if (props !== this.props) {
-      const t = 100;
-      animate(this.container)
-        .clear()
+    // update localeText
+    const t = 100;
+    if (props.localeText) {
+      animate(this.text)
         .then({ scale: 1.25 }, t, animate.easeInOut)
-        .then(() => {
-          if (props.localeText) this.container.localeText = props.localeText;
-          this.container.updateOpts({ ...props });
-        })
+        .then(() => (this.text.localeText = props.localeText))
         .then({ scale: 1 }, t, animate.easeInOut);
     }
+
+    // update color
+    if (props.color) this.text.color = props.color;
   }
 
-  private createViews(props: Props) {
-    this.container = new LangBitmapFontTextView({
+  protected createViews(props: BasicProps) {
+    super.createViews(props);
+
+    this.text = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       ...props,
+      superview: this.container,
+      x: this.container.style.width / 2,
+      y: this.container.style.height / 4,
       font: bitmapFonts('TitleStroke'),
-    });
-
-    this.container.updateOpts({
-      centerOnOrigin: true,
-      centerAnchor: true,
     });
   }
 }
