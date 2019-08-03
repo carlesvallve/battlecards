@@ -8,6 +8,7 @@ import { navigateToScene } from 'src/redux/shortcuts/ui';
 import Card from '../components/cards/Card';
 import Label from '../components/ui/Label';
 import { getRandomColor } from 'src/lib/colors';
+import BattleFooter from '../components/battle/BattleFooter';
 
 export default class SceneGame extends SceneBasic {
   private counter: number = 0;
@@ -34,6 +35,10 @@ export default class SceneGame extends SceneBasic {
       backgroundColor: '#222',
       onClick: () => navigateToScene('title'),
     });
+
+    const footer = new BattleFooter({
+      superview: this.container,
+    })
 
     const title = new Label({
       superview: this.container,
@@ -65,7 +70,7 @@ export default class SceneGame extends SceneBasic {
       Object.assign({}, uiConfig.buttonGreen, {
         superview: this.container,
         x: screen.width / 2,
-        y: screen.height - 50,
+        y: screen.height - 130,
         width: 100,
         height: 50,
         centerOnOrigin: true,
