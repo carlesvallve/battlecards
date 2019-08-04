@@ -13,7 +13,7 @@ import { Target } from 'src/types/custom';
 import Label from '../ui/Label';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 
-export default class BattleArea extends Basic {
+export default class BattleArena extends Basic {
   constructor(props: BasicProps) {
     super(props);
     this.createSelectors();
@@ -34,7 +34,7 @@ export default class BattleArea extends Basic {
       ({ combat }) => combat.hero.attacks,
     ).addListener((attack) => {
       if (attack === 0) return;
-      console.log('>>> hero attacking monster');
+      console.log('     hero attacking monster');
       this.attack('hero', 'monster');
     });
 
@@ -42,7 +42,7 @@ export default class BattleArea extends Basic {
       ({ combat }) => combat.monster.attacks,
     ).addListener((attack) => {
       if (attack === 0) return;
-      console.log('>>> monster attacking hero');
+      console.log('     monster attacking hero');
       this.attack('monster', 'hero');
     });
   }
@@ -50,7 +50,7 @@ export default class BattleArea extends Basic {
   private attack(attacker: Target, defender: Target) {
     const combat = StateObserver.getState().combat;
     const damage = combat[attacker].damage - combat[defender].armour;
-    console.log('>>>', attacker, 'damage', damage);
+    console.log('    ', attacker, 'damage', damage);
 
     // remove defender's HP
     addHp(defender, -damage);
@@ -83,6 +83,7 @@ export default class BattleArea extends Basic {
     const y = this.container.style.height / 2 - 20 + d * 160;
     animate(labelDamage)
       .clear()
+      .wait(150)
       .then({ scale: 1 }, 100, animate.easeInOut)
       .then({ y, opacity: 0 }, 600, animate.linear)
       .then({ scale: 0 }, 100, animate.easeInOut)
@@ -95,6 +96,7 @@ export default class BattleArea extends Basic {
     super.createViews(props);
 
     const screen = getScreenDimensions();
+
     this.container.updateOpts({
       width: screen.width - 20,
       height: screen.height * 0.7,
@@ -119,8 +121,7 @@ export default class BattleArea extends Basic {
       y: this.container.style.height * 0.5 - 35,
       width: 220,
       height: 50,
-
-      type: 'monster',
+      target: 'monster',
       stepLimit: 12,
     });
 
@@ -128,7 +129,7 @@ export default class BattleArea extends Basic {
       superview: this.container,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.5 - 110,
-      type: 'monster',
+      target: 'monster',
     });
 
     const meterHero = new ProgressMeter({
@@ -137,8 +138,7 @@ export default class BattleArea extends Basic {
       y: this.container.style.height * 0.5 + 35,
       width: 220,
       height: 50,
-
-      type: 'hero',
+      target: 'hero',
       stepLimit: 12,
     });
 
@@ -146,73 +146,50 @@ export default class BattleArea extends Basic {
       superview: this.container,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.5 + 105,
-      type: 'hero',
+      target: 'hero',
     });
 
-    const buttonHero = new ButtonScaleViewWithText(
-      Object.assign({}, uiConfig.buttonMenu, {
-        superview: this.container,
-        x: this.container.style.width * 0.33,
-        y: this.container.style.height - 30,
-        width: 80,
-        height: 40,
-        centerOnOrigin: true,
-        centerAnchor: true,
-        labelOffsetY: -3,
-        localeText: () => 'Hero',
-        size: 16,
-        font: bitmapFonts('TitleStroke'),
-        onClick: () => {
-          updateTurn('hero');
-        },
-      }),
-    );
+    const buttonHero = new ButtonScaleViewWithText({
+      ...uiConfig.buttonMenu,
+      superview: this.container,
+      x: this.container.style.width * 0.33,
+      y: this.container.style.height - 30,
+      width: 80,
+      height: 40,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      labelOffsetY: -3,
+      localeText: () => 'Hero',
+      size: 16,
+      font: bitmapFonts('TitleStroke'),
+      onClick: () => {
+        updateTurn('hero');
+      },
+    });
 
-    const buttonMonster = new ButtonScaleViewWithText(
-      Object.assign({}, uiConfig.buttonMenu, {
-        superview: this.container,
-        x: this.container.style.width * 0.66,
-        y: this.container.style.height - 30,
-        width: 80,
-        height: 40,
-        centerOnOrigin: true,
-        centerAnchor: true,
-        labelOffsetY: -3,
-        localeText: () => 'Monster',
-        size: 16,
-        font: bitmapFonts('TitleStroke'),
-        onClick: () => {
-          updateTurn('monster');
-        },
-      }),
-    );
+    const buttonMonster = new ButtonScaleViewWithText({
+      ...uiConfig.buttonMenu,
+      superview: this.container,
+      x: this.container.style.width * 0.66,
+      y: this.container.style.height - 30,
+      width: 80,
+      height: 40,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      labelOffsetY: -3,
+      localeText: () => 'Monster',
+      size: 16,
+      font: bitmapFonts('TitleStroke'),
+      onClick: () => {
+        updateTurn('monster');
+      },
+    });
   }
-
-  // animations
-
-  // animateAttack(target: Target, damage: number) {
-  //   animate(this.container)
-  //     .clear()
-  //     .wait(100)
-  //     .then({ scale: 1.15 }, 50, animate.easeInOut)
-  //     .then({ scale: 1 }, 50, animate.easeOut);
-
-  //   const d = target === 'hero' ? 150 : -150;
-
-  //   const labelDamage = new Label({
-  //     superview: this.container,
-  //     localeText: () => '0',
-  //     x: this.container.style.width / 2,
-  //     y: this.container.height / 2 + d,
-  //     size: 30,
-  //     color: 'yellow',
-  //   });
-  // }
 
   // utility functions
 
-  static getEnemyType(type: Target) {
-    return type === 'hero' ? 'monster' : 'hero';
+  static getTargetEnemy(target: Target) {
+    return target === 'hero' ? 'monster' : 'hero';
   }
 
   static getColorByType(type: Target) {
@@ -220,7 +197,7 @@ export default class BattleArea extends Basic {
   }
 
   static getColorByDiff(type: Target, currentMeter: number) {
-    const enemyMeter = getCurrentMeter(this.getEnemyType(type));
+    const enemyMeter = getCurrentMeter(this.getTargetEnemy(type));
     return enemyMeter < currentMeter
       ? uiConfig.frameYellow
       : uiConfig.frameOrange;

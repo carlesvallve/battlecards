@@ -5,7 +5,7 @@ import { waitForIt } from 'src/lib/utils';
 import StateObserver from 'src/redux/StateObserver';
 import { getAttackIcons, executeAttack } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
-import BattleArea from '../battle/BattleArea';
+import BattleArena from '../battle/BattleArena';
 
 const animDuration = 150;
 
@@ -19,21 +19,22 @@ export default class AttackIcons extends Basic {
   }
 
   private createSelectors() {
-    const type = this.props.type;
-    const enemyType = BattleArea.getEnemyType(type);
+    const target = this.props.target;
+    const enemyType = BattleArena.getTargetEnemy(target);
 
     // enemy meter went down to 0 -> add attacks
     StateObserver.createSelector(
       ({ combat }) => combat[enemyType].meter === 0,
-    ).addListener((shouldAddAttacks) => {
-      if (!shouldAddAttacks) return;
-      const maxAttacks = getAttackIcons(type);
-      console.log('>>> attackIcons', type, maxAttacks);
-      this.createIcons(maxAttacks);
+    ).addListener(() => {
+      const maxAttacks = getAttackIcons(target);
+      if (maxAttacks > 0) {
+        console.log('>>> adding', maxAttacks, 'attackIcons to', target);
+        this.createIcons(maxAttacks);
 
-      waitForIt(() => {
-        this.executeAttacks(maxAttacks);
-      }, (maxAttacks + 1) * (animDuration * 2));
+        waitForIt(() => {
+          this.executeAttacks(maxAttacks);
+        }, (maxAttacks + 0.5) * (animDuration * 2));
+      }
     });
   }
 
@@ -87,7 +88,14 @@ export default class AttackIcons extends Basic {
       // this.icons.slice(1);
       waitForIt(() => {
         const icon = this.icons.shift();
-        console.log('executing attack', i, '/', maxAttacks);
+        console.log(
+          'executing',
+          this.props.target,
+          'attack',
+          i,
+          '/',
+          maxAttacks,
+        );
         const x2 = this.container.style.x - 32 / 2;
         this.animateIcon(icon, {
           t: animDuration,
@@ -96,8 +104,8 @@ export default class AttackIcons extends Basic {
           scale: 0,
         });
 
-        executeAttack(this.props.type);
-      }, i * animDuration * 2);
+        executeAttack(this.props.target);
+      }, i * animDuration * 3);
     }
   }
 

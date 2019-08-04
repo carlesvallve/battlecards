@@ -31,7 +31,7 @@ export default class ProgressBar extends Basic {
         valueMax: combat[target][`${type}Max`],
       };
     }).addListener(({ value, valueMax }) => {
-      console.log('>>>', target, type, value);
+      console.log('    ', target, type, value);
       this.setProgress(value, valueMax);
     });
   }

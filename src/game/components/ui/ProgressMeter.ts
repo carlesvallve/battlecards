@@ -11,7 +11,7 @@ import {
   getCurrentMeter,
   addAttackIcons,
 } from 'src/redux/shortcuts/combat';
-import BattleArea from '../battle/BattleArea';
+import BattleArena from '../battle/BattleArena';
 
 const totalSteps = 12;
 const animDuration = 75;
@@ -30,22 +30,22 @@ export default class ProgressMeter extends Basic {
   }
 
   private createSelectors() {
-    const type = this.props.type;
+    const target = this.props.target;
 
     // turn was played -> throw dice and add steps
-    StateObserver.createSelector(({ combat }) => combat[type].turn).addListener(
-      (turn) => {
-        if (turn === 0) return;
+    StateObserver.createSelector(
+      ({ combat }) => combat[target].turn,
+    ).addListener((turn) => {
+      if (turn === 0) return;
 
-        const dice = getRandomInt(1, 6);
-        // console.log('>>>', type, 'turn', turn, 'dice', dice);
-        this.addSteps(dice);
-      },
-    );
+      const dice = getRandomInt(1, 6);
+      // console.log('>>>', target, 'turn', turn, 'dice', dice);
+      this.addSteps(dice);
+    });
 
     // enemy meter changed -> update meter colors
     StateObserver.createSelector(
-      ({ combat }) => combat[BattleArea.getEnemyType(type)].meter,
+      ({ combat }) => combat[BattleArena.getTargetEnemy(target)].meter,
     ).addListener((enemyMeter) => {
       this.refreshColors(enemyMeter);
     });
@@ -96,7 +96,7 @@ export default class ProgressMeter extends Basic {
 
       const step = new ImageScaleView({
         superview: this.container,
-        ...BattleArea.getColorByType(this.props.type),
+        ...BattleArena.getColorByType(this.props.target),
         centerOnOrigin: false,
         width: w - 1,
         height: this.container.style.height - 10,
@@ -109,24 +109,26 @@ export default class ProgressMeter extends Basic {
   }
 
   resetSteps(over: number) {
+    const target = this.props.target;
+
     for (let i = 0; i < totalSteps; i++) {
       const step = this.steps[i].updateOpts({
-        ...BattleArea.getColorByType(this.props.type),
+        ...BattleArena.getColorByType(target),
         centerOnOrigin: false,
       });
       this.steps.push(step);
     }
 
-    console.log('>>> adding attacks to redux:', this.props.type, over);
-    addAttackIcons(BattleArea.getEnemyType(this.props.type), over);
+    console.log('>>> resetting', target, 'meter: over by', over);
+    addAttackIcons(BattleArena.getTargetEnemy(target), over);
 
-    resetMeter(this.props.type);
+    resetMeter(target);
     this.label.setProps({ localeText: () => '0' });
   }
 
   addSteps(dice: number) {
     // get start position
-    const lastMeter = getCurrentMeter(this.props.type);
+    const lastMeter = getCurrentMeter(this.props.target);
     const start = lastMeter;
 
     // escape if overhead
@@ -147,18 +149,18 @@ export default class ProgressMeter extends Basic {
           const step = this.steps[num - 1];
 
           step.updateOpts({
-            ...BattleArea.getColorByDiff(this.props.type, num),
+            ...BattleArena.getColorByDiff(this.props.target, num),
             centerOnOrigin: false,
           });
 
-          updateMeter(this.props.type, 1); // update redux meter
+          updateMeter(this.props.target, 1); // update redux meter
         }, animDuration * i);
       }
     }, animDuration * 2);
   }
 
   refreshColors(enemyMeter: number) {
-    const currentMeter = getCurrentMeter(this.props.type);
+    const currentMeter = getCurrentMeter(this.props.target);
 
     for (let i = 1; i <= currentMeter; i++) {
       const step = this.steps[i - 1];

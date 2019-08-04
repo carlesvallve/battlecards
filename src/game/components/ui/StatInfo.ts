@@ -23,7 +23,7 @@ export default class StatInfo extends Basic {
     StateObserver.createSelector(
       ({ combat }) => combat[target][type],
     ).addListener((value) => {
-      console.log('>>>', target, type, value);
+      console.log('    ', target, type, value);
       this.label.localeText = () => value;
     });
   }
