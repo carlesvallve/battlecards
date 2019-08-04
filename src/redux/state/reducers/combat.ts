@@ -11,6 +11,7 @@ const slice = createSlice({
       turn: 0,
       dice: 0,
       meter: 0,
+      attacks: 0,
     },
 
     monster: {
@@ -22,6 +23,7 @@ const slice = createSlice({
       turn: 0,
       dice: 0,
       meter: 0,
+      attacks: 0,
     },
   },
 
@@ -76,6 +78,14 @@ const slice = createSlice({
       const { target } = payload;
       state[target].meter = 0;
     },
+
+    action_addAttacks: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].attacks += value;
+    },
   },
 });
 
@@ -88,5 +98,6 @@ export const {
   action_setDice,
   action_updateMeter,
   action_resetMeter,
+  action_addAttacks
 } = slice.actions;
 export default slice.reducer;

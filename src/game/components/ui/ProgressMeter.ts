@@ -9,7 +9,10 @@ import {
   updateMeter,
   resetMeter,
   getCurrentMeter,
+  addAttacks,
 } from 'src/redux/shortcuts/combat';
+import { Target } from 'src/types/custom';
+import BattleArea from '../battle/BattleArea';
 
 const totalSteps = 12;
 
@@ -42,7 +45,7 @@ export default class ProgressMeter extends Basic {
 
     // enemy meter changed -> update meter colors
     StateObserver.createSelector(
-      ({ combat }) => combat[this.getEnemyType()].meter,
+      ({ combat }) => combat[BattleArea.getEnemyType(type)].meter,
     ).addListener((enemyMeter) => {
       this.refreshColors(enemyMeter);
     });
@@ -93,7 +96,7 @@ export default class ProgressMeter extends Basic {
 
       const step = new ImageScaleView({
         superview: this.container,
-        ...this.getColorByType(),
+        ...BattleArea.getColorByType(this.props.type),
         centerOnOrigin: false,
         width: w - 1,
         height: this.container.style.height - 10,
@@ -105,14 +108,17 @@ export default class ProgressMeter extends Basic {
     }
   }
 
-  resetSteps() {
+  resetSteps(over: number) {
     for (let i = 0; i < totalSteps; i++) {
       const step = this.steps[i].updateOpts({
-        ...this.getColorByType(),
+        ...BattleArea.getColorByType(this.props.type),
         centerOnOrigin: false,
       });
       this.steps.push(step);
     }
+
+    console.log('>>> adding attacks to redux:', this.props.type, over);
+    addAttacks(BattleArea.getEnemyType(this.props.type), over);
 
     resetMeter(this.props.type);
     this.label.setProps({ localeText: () => '0' });
@@ -127,7 +133,7 @@ export default class ProgressMeter extends Basic {
     let end = start + dice;
     const over = end - this.props.stepLimit;
     if (over > 0) {
-      this.resetSteps();
+      this.resetSteps(over);
       return;
     }
 
@@ -141,7 +147,7 @@ export default class ProgressMeter extends Basic {
         const step = this.steps[num - 1];
 
         step.updateOpts({
-          ...this.getColorByDiff(num),
+          ...BattleArea.getColorByDiff(this.props.type, num),
           centerOnOrigin: false,
         });
 
@@ -161,20 +167,5 @@ export default class ProgressMeter extends Basic {
         centerOnOrigin: false,
       });
     }
-  }
-
-  // utility functions
-
-  getEnemyType() {
-    return this.props.type === 'hero' ? 'monster' : 'hero';
-  }
-
-  getColorByType() {
-    return this.props.type === 'hero' ? uiConfig.frameBlue : uiConfig.frameRed;
-  }
-
-  getColorByDiff(num: number) {
-    const enemyMeter = getCurrentMeter(this.getEnemyType());
-    return enemyMeter < num ? uiConfig.frameYellow : uiConfig.frameOrange;
   }
 }

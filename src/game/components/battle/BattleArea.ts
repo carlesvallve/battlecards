@@ -15,7 +15,10 @@ import StateObserver from 'src/redux/StateObserver';
 import {
   setDice,
   updateTurn,
+  getCurrentMeter,
 } from 'src/redux/shortcuts/combat';
+import AttackIcons from '../ui/AttackIcons';
+import { Target } from 'src/types/custom';
 
 export default class BattleArea extends Basic {
   constructor(props: BasicProps) {
@@ -69,6 +72,15 @@ export default class BattleArea extends Basic {
       stepLimit: 12,
     });
 
+    const attackMonster = new AttackIcons({
+      superview: this.container,
+      x: this.container.style.width * 0.5,
+      y: this.container.style.height * 0.5 - 110,
+      width: 220,
+      height: 50,
+      type: 'monster',
+    });
+
     const meterHero = new ProgressMeter({
       superview: this.container,
       x: this.container.style.width * 0.5,
@@ -80,11 +92,20 @@ export default class BattleArea extends Basic {
       stepLimit: 12,
     });
 
+    const attackHero = new AttackIcons({
+      superview: this.container,
+      x: this.container.style.width * 0.5,
+      y: this.container.style.height * 0.5 + 105,
+      width: 220,
+      height: 50,
+      type: 'hero',
+    });
+
     const buttonHero = new ButtonScaleViewWithText(
       Object.assign({}, uiConfig.buttonMenu, {
         superview: this.container,
         x: this.container.style.width * 0.33,
-        y: this.container.style.height - 40,
+        y: this.container.style.height - 30,
         width: 80,
         height: 40,
         centerOnOrigin: true,
@@ -103,7 +124,7 @@ export default class BattleArea extends Basic {
       Object.assign({}, uiConfig.buttonMenu, {
         superview: this.container,
         x: this.container.style.width * 0.66,
-        y: this.container.style.height - 40,
+        y: this.container.style.height - 30,
         width: 80,
         height: 40,
         centerOnOrigin: true,
@@ -117,5 +138,22 @@ export default class BattleArea extends Basic {
         },
       }),
     );
+  }
+
+  // utility functions
+
+  static getEnemyType(type: Target) {
+    return type === 'hero' ? 'monster' : 'hero';
+  }
+
+  static getColorByType(type: Target) {
+    return type === 'hero' ? uiConfig.frameBlue : uiConfig.frameRed;
+  }
+
+  static getColorByDiff(type: Target, currentMeter: number) {
+    const enemyMeter = getCurrentMeter(this.getEnemyType(type));
+    return enemyMeter < currentMeter
+      ? uiConfig.frameYellow
+      : uiConfig.frameOrange;
   }
 }

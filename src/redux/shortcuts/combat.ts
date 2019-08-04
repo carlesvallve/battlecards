@@ -5,6 +5,7 @@ import {
   action_updateMeter,
   action_resetMeter,
   action_updateTurn,
+  action_addAttacks,
 } from 'src/redux/state/reducers/combat';
 
 // export const getCoin = (target: Target) => {
@@ -29,6 +30,10 @@ export const getCurrentMeter = (target: Target) => {
   return StateObserver.getState().combat[target].meter;
 };
 
+export const getNumberOfAttacks = (target: Target) => {
+  return StateObserver.getState().combat[target].attacks;
+};
+
 // setters
 
 export const updateTurn = (target: Target) => {
@@ -46,4 +51,8 @@ export const updateMeter = (target: Target, value: number) => {
 
 export const resetMeter = (target: Target) => {
   StateObserver.dispatch(action_resetMeter({ target }));
+};
+
+export const addAttacks = (target: Target, value: number) => {
+  StateObserver.dispatch(action_addAttacks({ target, value }));
 };
