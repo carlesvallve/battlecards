@@ -1,20 +1,22 @@
 import animate from 'animate';
 import View from 'ui/View';
 
-export type BasicProps = {
-  superview?: View;
-  x?: number;
-  y?: number;
-  scale?: number;
+// export type BasicProps = {
+//   superview?: View;
+//   x?: number;
+//   y?: number;
+//   scale?: number;
 
-  localeText?: () => string;
-  size?: number;
-  color?: string;
-};
+//   localeText?: () => string;
+//   size?: number;
+//   color?: string;
+// };
 
-export type DefaultProps = {
-  superview: View;
-};
+// export type DefaultProps = {
+//   superview: View;
+// };
+
+export type BasicProps = any;
 
 export default class Basic {
   protected container: View;
@@ -30,7 +32,7 @@ export default class Basic {
     return this.container;
   }
 
-  setProps(props: BasicProps) {
+  setProps(props: any) {
     this.previousProps = Object.assign({}, this.props);
     const changedProps = {} as BasicProps;
     for (let i in props) {
@@ -54,7 +56,7 @@ export default class Basic {
 
   protected createViews(props: BasicProps) {
     this.container = new View({
-      backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: 4,
       height: 4,
       centerOnOrigin: true,

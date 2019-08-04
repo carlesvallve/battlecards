@@ -21,6 +21,8 @@ export type PopupOpts = {
   opts?: any;
 };
 
+export type Target = 'hero' | 'monster';
+
 // custom types
 
 export type Screen = { width: number; height: number };

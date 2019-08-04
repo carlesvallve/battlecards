@@ -1,5 +1,6 @@
 import ImageScaleView from 'ui/ImageScaleView';
 import { initTapBehavior, addTapBehavior } from './tapBehavior';
+import { waitForIt } from '../utils';
 
 export default class ButtonScaleView extends ImageScaleView {
   protected preventDefault: boolean;
@@ -92,11 +93,13 @@ export default class ButtonScaleView extends ImageScaleView {
       this.onDown && this.onDown();
       this.offsetSubviews();
     } else {
-      if (!this.disabled) {
-        if (this.normalImage) this.setImage(this.normalImage);
-      }
-      this.onUp && this.onUp();
-      this.onsetSubviews();
+      waitForIt(() => {
+        if (!this.disabled) {
+          if (this.normalImage) this.setImage(this.normalImage);
+        }
+        this.onUp && this.onUp();
+        this.onsetSubviews();
+      }, 100);
     }
   }
   getPressed() {

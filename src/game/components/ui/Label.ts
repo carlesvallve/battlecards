@@ -24,7 +24,7 @@ export default class Label extends Basic {
         // .wait(t)
         .then({ scale: 1.5 }, t * 1, animate.easeInOut)
         .then(() => (this.text.localeText = props.localeText))
-        .then({ scale: 1 }, t * 5, animate.easeOutElastic);
+        .then({ scale: 1 }, t * 3, animate.easeOutElastic);
     }
 
     // update color

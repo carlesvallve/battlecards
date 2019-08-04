@@ -23,6 +23,78 @@ export const animateDefault = (
 };
 
 export default {
+  colors: {
+    red: '#eb4e4e',
+    blue: '#2f86ca',
+  },
+  // frames
+
+  frameBlack: {
+    centerOnOrigin: true,
+    centerAnchor: true,
+    image: 'resources/images/ui/frames/frame-black.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 8, right: 8 },
+      vertical: { top: 8, bottom: 8 },
+    },
+  },
+
+  frameWhite: {
+    centerOnOrigin: true,
+    centerAnchor: true,
+    image: 'resources/images/ui/frames/frame-white.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 8, right: 8 },
+      vertical: { top: 8, bottom: 8 },
+    },
+  },
+
+  frameRed: {
+    centerOnOrigin: true,
+    centerAnchor: true,
+    image: 'resources/images/ui/frames/frame-red.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 8, right: 8 },
+      vertical: { top: 8, bottom: 8 },
+    },
+  },
+
+  frameBlue: {
+    centerOnOrigin: true,
+    centerAnchor: true,
+    image: 'resources/images/ui/frames/frame-blue.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 8, right: 8 },
+      vertical: { top: 8, bottom: 8 },
+    },
+  },
+
+  frameOrange: {
+    centerOnOrigin: true,
+    centerAnchor: true,
+    image: 'resources/images/ui/frames/frame-orange.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 8, right: 8 },
+      vertical: { top: 8, bottom: 8 },
+    },
+  },
+
+  frameYellow: {
+    centerOnOrigin: true,
+    centerAnchor: true,
+    image: 'resources/images/ui/frames/frame-yellow.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 8, right: 8 },
+      vertical: { top: 8, bottom: 8 },
+    },
+  },
+
   // text
   bitmapFontText: {
     align: 'center',

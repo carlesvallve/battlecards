@@ -1,0 +1,49 @@
+import StateObserver from 'src/redux/StateObserver';
+import { Target } from 'src/types/custom';
+import {
+  action_setDice,
+  action_updateMeter,
+  action_resetMeter,
+  action_updateTurn,
+} from 'src/redux/state/reducers/combat';
+
+// export const getCoin = (target: Target) => {
+//   return StateObserver.getState().target.coin;
+// };
+
+// export const getLevel = (target: Target) => {
+//   return StateObserver.getState().target.level;
+// };
+
+// export const getHP = (target: Target) => {
+//   return StateObserver.getState().target.HP;
+// };
+
+// export const getEP = (target: Target) => {
+//   return StateObserver.getState().target.HP;
+// };
+
+// getters
+
+export const getCurrentMeter = (target: Target) => {
+  return StateObserver.getState().combat[target].meter;
+};
+
+// setters
+
+export const updateTurn = (target: Target) => {
+  StateObserver.dispatch(action_updateTurn({ target }));
+  return StateObserver.getState().combat[target].turn;
+};
+
+export const setDice = (target: Target, value: number) => {
+  StateObserver.dispatch(action_setDice({ target, value }));
+};
+
+export const updateMeter = (target: Target, value: number) => {
+  StateObserver.dispatch(action_updateMeter({ target, value }));
+};
+
+export const resetMeter = (target: Target) => {
+  StateObserver.dispatch(action_resetMeter({ target }));
+};
