@@ -10,6 +10,8 @@ import StateObserver from 'src/redux/StateObserver';
 import { updateTurn, getCurrentMeter, addHp } from 'src/redux/shortcuts/combat';
 import AttackIcons from '../ui/AttackIcons';
 import { Target } from 'src/types/custom';
+import Label from '../ui/Label';
+import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 
 export default class BattleArea extends Basic {
   constructor(props: BasicProps) {
@@ -48,10 +50,45 @@ export default class BattleArea extends Basic {
   private attack(attacker: Target, defender: Target) {
     const combat = StateObserver.getState().combat;
     const damage = combat[attacker].damage - combat[defender].armour;
-    const hp = combat[defender].hp;
     console.log('>>>', attacker, 'damage', damage);
+
+    // remove defender's HP
     addHp(defender, -damage);
-    this.animateAttack();
+
+    // animate screen effect
+    animate(this.container)
+      .clear()
+      .wait(100)
+      .then({ scale: 1.15 }, 50, animate.easeInOut)
+      .then({ scale: 1 }, 50, animate.easeOut);
+
+    // create damage label
+    const d = defender === 'hero' ? 1 : -1;
+    const labelDamage = new LangBitmapFontTextView({
+      ...uiConfig.bitmapFontText,
+      superview: this.container,
+      font: bitmapFonts('TitleStroke'),
+      localeText: () => `${damage}`,
+      x: this.container.style.width / 2,
+      y: this.container.style.height / 2 - 15 + d * 85,
+      size: 20,
+      color: 'yellow',
+      scale: 0,
+      zIndex: 100,
+      centerOnOrigin: true,
+      centerAnchor: true,
+    });
+
+    // animate damage label
+    const y = this.container.style.height / 2 - 5 + d * 200;
+    animate(labelDamage)
+      .clear()
+      .then({ scale: 1 }, 100, animate.easeInOut)
+      .then({ y }, 500, animate.linear)
+      .then({ scale: 0 }, 100, animate.easeInOut)
+      .then(() => {
+        labelDamage.removeFromSuperview();
+      });
   }
 
   protected createViews(props: BasicProps) {
@@ -154,13 +191,24 @@ export default class BattleArea extends Basic {
 
   // animations
 
-  animateAttack() {
-    animate(this.container)
-      .clear()
-      .wait(100)
-      .then({ scale: 1.15 }, 50, animate.easeInOut)
-      .then({ scale: 1 }, 50, animate.easeOut);
-  }
+  // animateAttack(target: Target, damage: number) {
+  //   animate(this.container)
+  //     .clear()
+  //     .wait(100)
+  //     .then({ scale: 1.15 }, 50, animate.easeInOut)
+  //     .then({ scale: 1 }, 50, animate.easeOut);
+
+  //   const d = target === 'hero' ? 150 : -150;
+
+  //   const labelDamage = new Label({
+  //     superview: this.container,
+  //     localeText: () => '0',
+  //     x: this.container.style.width / 2,
+  //     y: this.container.height / 2 + d,
+  //     size: 30,
+  //     color: 'yellow',
+  //   });
+  // }
 
   // utility functions
 

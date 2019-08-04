@@ -11,11 +11,10 @@ import {
   getCurrentMeter,
   addAttackIcons,
 } from 'src/redux/shortcuts/combat';
-import { Target } from 'src/types/custom';
 import BattleArea from '../battle/BattleArea';
 
 const totalSteps = 12;
-const animDuration = 100;
+const animDuration = 75;
 
 export default class ProgressMeter extends Basic {
   private label: Label;
@@ -140,21 +139,22 @@ export default class ProgressMeter extends Basic {
 
     // update label
     this.label.setProps({ localeText: () => end.toString() });
+    waitForIt(() => {
+      // iterate all steps
+      for (let i = 0; i < dice; i++) {
+        waitForIt(() => {
+          const num = i + start + 1;
+          const step = this.steps[num - 1];
 
-    // iterate all steps
-    for (let i = 0; i < dice; i++) {
-      waitForIt(() => {
-        const num = i + start + 1;
-        const step = this.steps[num - 1];
+          step.updateOpts({
+            ...BattleArea.getColorByDiff(this.props.type, num),
+            centerOnOrigin: false,
+          });
 
-        step.updateOpts({
-          ...BattleArea.getColorByDiff(this.props.type, num),
-          centerOnOrigin: false,
-        });
-
-        updateMeter(this.props.type, 1); // update redux meter
-      }, animDuration * i);
-    }
+          updateMeter(this.props.type, 1); // update redux meter
+        }, animDuration * i);
+      }
+    }, animDuration * 2);
   }
 
   refreshColors(enemyMeter: number) {

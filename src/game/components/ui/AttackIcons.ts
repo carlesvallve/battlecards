@@ -1,21 +1,13 @@
 import animate from 'animate';
 import Basic, { BasicProps } from '../basic/Basic';
-import uiConfig from 'src/lib/uiConfig';
 import ImageScaleView from 'ui/ImageScaleView';
-import Label from './Label';
-import { waitForIt, getRandomInt, getScreenDimensions } from 'src/lib/utils';
+import { waitForIt } from 'src/lib/utils';
 import StateObserver from 'src/redux/StateObserver';
-import {
-  updateMeter,
-  resetMeter,
-  getCurrentMeter,
-  getAttackIcons,
-  executeAttack,
-} from 'src/redux/shortcuts/combat';
+import { getAttackIcons, executeAttack } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import BattleArea from '../battle/BattleArea';
 
-const totalSteps = 12;
+const animDuration = 150;
 
 export default class AttackIcons extends Basic {
   private center: number;
@@ -41,7 +33,7 @@ export default class AttackIcons extends Basic {
 
       waitForIt(() => {
         this.executeAttacks(maxAttacks);
-      }, maxAttacks * 500);
+      }, (maxAttacks + 1) * (animDuration * 2));
     });
   }
 
@@ -62,7 +54,7 @@ export default class AttackIcons extends Basic {
     for (let i = 0; i < maxAttacks; i++) {
       waitForIt(() => {
         this.createIcon(i);
-      }, i * 400);
+      }, i * animDuration * 2);
     }
   }
 
@@ -84,7 +76,7 @@ export default class AttackIcons extends Basic {
     });
 
     const x2 = this.center - (this.icons.length * d) / 2;
-    this.animateIcon(icon, { t: 200, x, x2, scale: 1 });
+    this.animateIcon(icon, { t: animDuration, x, x2, scale: 1 });
 
     this.icons.push(icon);
     return icon;
@@ -98,14 +90,14 @@ export default class AttackIcons extends Basic {
         console.log('executing attack', i, '/', maxAttacks);
         const x2 = this.container.style.x - 32 / 2;
         this.animateIcon(icon, {
-          t: 100,
+          t: animDuration,
           x: icon.style.x + 32 / 2,
           x2,
           scale: 0,
         });
 
         executeAttack(this.props.type);
-      }, i * 400);
+      }, i * animDuration * 2);
     }
   }
 

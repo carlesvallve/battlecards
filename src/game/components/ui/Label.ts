@@ -15,16 +15,16 @@ export default class Label extends Basic {
     super.update(props);
 
     // update localeText
-    this.text.localeText = props.localeText
+    this.text.localeText = props.localeText;
 
-    const t = 100;
+    const t = 150;
     if (props.localeText) {
       animate(this.text)
         .clear()
         // .wait(t)
-        .then({ scale: 1.5 }, t * 1, animate.easeInOut)
+        .then({ scale: 1.5 }, t * 0.5, animate.easeInOut)
         .then(() => (this.text.localeText = props.localeText))
-        .then({ scale: 1 }, t * 2, animate.easeInOut);
+        .then({ scale: 1 }, t * 1, animate.easeInOut);
     }
 
     // update color
