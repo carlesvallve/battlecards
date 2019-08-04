@@ -18,14 +18,7 @@ export default class MonsterInfo extends Basic {
   protected createViews(props: BasicProps) {
     super.createViews(props);
 
-    this.container.updateOpts({
-      // backgroundColor: 'rgba(128, 255, 128, 0.5)',
-      // width: props.width || 140,
-      // height: props.height || 25,
-      // scale: props.scale || 1,
-      // centerOnOrigin: true,
-      // centerAnchor: true,
-    });
+    this.container.updateOpts({});
 
     const box = new ImageScaleView({
       superview: this.container,
@@ -47,24 +40,11 @@ export default class MonsterInfo extends Basic {
       scale: 1,
     });
 
-    // const icon = new ImageView({
-    //   superview: this.container,
-    //   width: 16,
-    //   height: 16,
-    //   x: this.container.style.width * 0.5,
-    //   y: this.container.style.height * 0.5,
-    //   centerOnOrigin: true,
-    //   centerAnchor: true,
-    //   image: `resources/images/ui/icons/${
-    //     props.type === 'attack' ? 'sword' : 'helmet'
-    //   }.png`,
-    // });
-
     const labelName = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('Title'),
-      size: 12,
+      size: 11,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.15,
       localeText: () => props.data.name,
@@ -74,9 +54,9 @@ export default class MonsterInfo extends Basic {
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('Body'),
-      size: 9,
+      size: 8,
       x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.55,
+      y: this.container.style.height * 0.56,
       localeText: () => props.data.description,
     });
   }

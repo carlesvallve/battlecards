@@ -5,7 +5,10 @@ import {
   action_updateMeter,
   action_resetMeter,
   action_updateTurn,
-  action_addAttacks,
+  action_addAttackIcons,
+  action_executeAttack,
+  action_addHpMax,
+  action_addHp,
 } from 'src/redux/state/reducers/combat';
 
 // export const getCoin = (target: Target) => {
@@ -30,11 +33,19 @@ export const getCurrentMeter = (target: Target) => {
   return StateObserver.getState().combat[target].meter;
 };
 
-export const getNumberOfAttacks = (target: Target) => {
-  return StateObserver.getState().combat[target].attacks;
+export const getAttackIcons = (target: Target) => {
+  return StateObserver.getState().combat[target].attackIcons;
 };
 
 // setters
+
+export const addHp = (target: Target, value: number) => {
+  StateObserver.dispatch(action_addHp({ target, value }));
+};
+
+export const addHpMax = (target: Target, value: number) => {
+  StateObserver.dispatch(action_addHpMax({ target, value }));
+};
 
 export const updateTurn = (target: Target) => {
   StateObserver.dispatch(action_updateTurn({ target }));
@@ -53,6 +64,10 @@ export const resetMeter = (target: Target) => {
   StateObserver.dispatch(action_resetMeter({ target }));
 };
 
-export const addAttacks = (target: Target, value: number) => {
-  StateObserver.dispatch(action_addAttacks({ target, value }));
+export const addAttackIcons = (target: Target, value: number) => {
+  StateObserver.dispatch(action_addAttackIcons({ target, value }));
+};
+
+export const executeAttack = (target: Target) => {
+  StateObserver.dispatch(action_executeAttack({ target }));
 };

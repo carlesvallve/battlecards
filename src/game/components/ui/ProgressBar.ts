@@ -6,12 +6,34 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
 import View from 'ui/View';
+import StateObserver from 'src/redux/StateObserver';
+import Label from './Label';
+
+const animDuration = 150;
 
 export default class ProgressBar extends Basic {
   bar: ImageScaleView;
+  barTip: View;
+  labelDamage: Label;
 
   constructor(props: BasicProps) {
     super(props);
+    this.createSelectors();
+  }
+
+  private createSelectors() {
+    const target = this.props.target;
+    const type = this.props.type;
+
+    StateObserver.createSelector(({ combat }) => {
+      return {
+        value: combat[target][type],
+        valueMax: combat[target][`${type}Max`],
+      };
+    }).addListener(({ value, valueMax }) => {
+      console.log('>>>', target, type, value);
+      this.setProgress(value, valueMax);
+    });
   }
 
   protected update(props: BasicProps) {
@@ -53,7 +75,7 @@ export default class ProgressBar extends Basic {
       y: 2.5,
     });
 
-    this.bar.tip = new View({
+    this.barTip = new View({
       superview: this.bar,
       // backgroundColor: props.type === 'hp' ? 'red' : 'blue',
       backgroundColor:
@@ -84,10 +106,11 @@ export default class ProgressBar extends Basic {
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
       size: size / 2,
-      x: 22,
+      align: 'left',
+      x: size * 0.7,
       y: this.container.style.height * 0.45,
       height: this.container.style.height,
-      localeText: () => '20',
+      localeText: () => '0',
     });
 
     const labelMax = new LangBitmapFontTextView({
@@ -95,31 +118,51 @@ export default class ProgressBar extends Basic {
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
       size: size / 2.5,
-      x: this.container.style.width - 18,
+      align: 'right',
+      x: this.container.style.width - size * 0.4,
       y: this.container.style.height * 0.45,
       height: this.container.style.height,
-      localeText: () => '/20',
+      localeText: () => '/0',
       opacity: 0.5,
     });
+
+    // this.labelDamage = new Label({
+    //   ...uiConfig.bitmapFontText,
+    //   superview: this.container,
+    //   font: bitmapFonts('TitleStroke'),
+    //   size: 12,
+    //   x: this.container.style.width / 2,
+    //   y: 0, // this.container.style.height / 2,
+    //   // height: this.container.style.height,
+    //   localeText: () => '+0',
+    // });
   }
+
+  // setDamage(damage: number) {
+  //   this.labelDamage.setProps({ y: 0, localeText: () => `+${damage}` });
+  //   animate(this.labelDamage).then({ y: -40 }, animDuration, animate.easeInOut);
+
+  //   // this.setProgress()
+  // }
 
   setProgress(value: number, maxValue: number) {
     const percent = (1 * value) / maxValue;
     const width = (this.container.style.width - 5) * percent;
 
-    const t = 150;
-    const ease = animate.easeInOut;
+    const tipVisible = percent > 0 && percent < 1;
 
     animate(this.bar)
       .clear()
-      .then({ width, t, ease });
+      .wait(animDuration)
+      .then({ width }, animDuration, animate.easeInOut);
 
-    this.bar.tip.updateOpts({ visible: percent < 1 });
-    animate(this.bar.tip)
+    this.barTip.updateOpts({ visible: tipVisible });
+    animate(this.barTip)
       .clear()
-      .then({ x: width - 5, t, ease })
+      .wait(animDuration)
+      .then({ x: width - 5 }, animDuration, animate.easeInOut)
       .then(() => {
-        this.bar.tip.updateOpts({ visible: percent < 1 });
+        this.barTip.updateOpts({ visible: tipVisible });
       });
   }
 }

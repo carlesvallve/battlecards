@@ -5,10 +5,27 @@ import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
+import Label from './Label';
+import StateObserver from 'src/redux/StateObserver';
 
 export default class StatInfo extends Basic {
+  label: LangBitmapFontTextView;
+
   constructor(props: BasicProps) {
     super(props);
+    this.createSelectors();
+  }
+
+  private createSelectors() {
+    const target = this.props.target;
+    const type = this.props.type;
+
+    StateObserver.createSelector(
+      ({ combat }) => combat[target][type],
+    ).addListener((value) => {
+      console.log('>>>', target, type, value);
+      this.label.localeText = () => value;
+    });
   }
 
   protected update(props: BasicProps) {
@@ -18,14 +35,7 @@ export default class StatInfo extends Basic {
   protected createViews(props: BasicProps) {
     super.createViews(props);
 
-    this.container.updateOpts({
-      // backgroundColor: 'rgba(128, 255, 128, 0.5)',
-      // width: props.width || 140,
-      // height: props.height || 25,
-      // scale: props.scale || 1,
-      // centerOnOrigin: true,
-      // centerAnchor: true,
-    });
+    this.container.updateOpts({});
 
     const box = new ImageScaleView({
       superview: this.container,
@@ -56,18 +66,18 @@ export default class StatInfo extends Basic {
       centerOnOrigin: true,
       centerAnchor: true,
       image: `resources/images/ui/icons/${
-        props.type === 'attack' ? 'sword' : 'helmet'
+        props.type === 'damage' ? 'sword' : 'helmet'
       }.png`,
     });
 
-    const label = new LangBitmapFontTextView({
+    this.label = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
       size: 11,
       x: this.container.style.width * 0.46,
       y: this.container.style.height * 0.5 + 8,
-      localeText: () => '20',
+      localeText: () => '0',
     });
   }
 }

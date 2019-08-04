@@ -57,8 +57,8 @@ export default class Basic {
   protected createViews(props: BasicProps) {
     this.container = new View({
       // backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      width: 4,
-      height: 4,
+      width: 0, // 4,
+      height: 0, // 4,
       centerOnOrigin: true,
       centerAnchor: true,
       ...props,

@@ -20,7 +20,7 @@ export default class SceneTitle extends SceneBasic {
 
   protected init() {
     console.log('Init title');
-    sounds.playSong('win');
+    // sounds.playSong('win');
     blink(this.startLabel, 350);
   }
 

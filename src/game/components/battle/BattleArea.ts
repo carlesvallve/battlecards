@@ -1,42 +1,58 @@
 import animate from 'animate';
 import Basic, { BasicProps } from '../basic/Basic';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
-import View from 'ui/View';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
-import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
-import ProgressBar from '../ui/ProgressBar';
+import { getScreenDimensions } from 'src/lib/utils';
 import ImageScaleView from 'ui/ImageScaleView';
-import StatInfo from '../ui/StatInfo';
-import MonsterInfo from '../ui/MonsterInfo';
 import ProgressMeter from '../ui/ProgressMeter';
 import StateObserver from 'src/redux/StateObserver';
-import {
-  setDice,
-  updateTurn,
-  getCurrentMeter,
-} from 'src/redux/shortcuts/combat';
+import { updateTurn, getCurrentMeter, addHp } from 'src/redux/shortcuts/combat';
 import AttackIcons from '../ui/AttackIcons';
 import { Target } from 'src/types/custom';
 
 export default class BattleArea extends Basic {
   constructor(props: BasicProps) {
     super(props);
+    this.createSelectors();
   }
 
   protected update(props: BasicProps) {
     super.update(props);
-    // this.createSelectors();
   }
 
-  // createSelectors() {
-  //   StateObserver.createSelector(({ combat }) => combat).addListener(
-  //     (dice) => {
+  private createSelectors() {
+    // StateObserver.createSelector(({ combat }) => combat).addListener(
+    //   (combat) => {
+    //     console.log('>>> combat', combat);
+    //   },
+    // );
 
-  //     },
-  //   );
-  // }
+    StateObserver.createSelector(
+      ({ combat }) => combat.hero.attacks,
+    ).addListener((attack) => {
+      if (attack === 0) return;
+      console.log('>>> hero attacking monster');
+      this.attack('hero', 'monster');
+    });
+
+    StateObserver.createSelector(
+      ({ combat }) => combat.monster.attacks,
+    ).addListener((attack) => {
+      if (attack === 0) return;
+      console.log('>>> monster attacking hero');
+      this.attack('monster', 'hero');
+    });
+  }
+
+  private attack(attacker: Target, defender: Target) {
+    const combat = StateObserver.getState().combat;
+    const damage = combat[attacker].damage - combat[defender].armour;
+    const hp = combat[defender].hp;
+    console.log('>>>', attacker, 'damage', damage);
+    addHp(defender, -damage);
+    this.animateAttack();
+  }
 
   protected createViews(props: BasicProps) {
     super.createViews(props);
@@ -76,8 +92,6 @@ export default class BattleArea extends Basic {
       superview: this.container,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.5 - 110,
-      width: 220,
-      height: 50,
       type: 'monster',
     });
 
@@ -96,8 +110,6 @@ export default class BattleArea extends Basic {
       superview: this.container,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.5 + 105,
-      width: 220,
-      height: 50,
       type: 'hero',
     });
 
@@ -138,6 +150,16 @@ export default class BattleArea extends Basic {
         },
       }),
     );
+  }
+
+  // animations
+
+  animateAttack() {
+    animate(this.container)
+      .clear()
+      .wait(100)
+      .then({ scale: 1.15 }, 50, animate.easeInOut)
+      .then({ scale: 1 }, 50, animate.easeOut);
   }
 
   // utility functions

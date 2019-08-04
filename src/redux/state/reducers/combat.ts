@@ -4,25 +4,30 @@ import { Target } from 'src/types/custom';
 const slice = createSlice({
   initialState: {
     hero: {
-      // level: 0,
-      // coin: 0,
-      // HP: 20,
-      // EP: 20,
+      hp: 20,
+      hpMax: 20,
+
+      damage: 5,
+      armour: 1,
+
       turn: 0,
       dice: 0,
       meter: 0,
+      attackIcons: 0,
       attacks: 0,
     },
 
     monster: {
-      // level: 0,
-      // coin: 0,
-      // HP: 20,
-      // EP: 20,
+      hp: 20,
+      hpMax: 20,
+
+      damage: 5,
+      armour: 1,
 
       turn: 0,
       dice: 0,
       meter: 0,
+      attackIcons: 0,
       attacks: 0,
     },
   },
@@ -46,6 +51,22 @@ const slice = createSlice({
     //   const { target, value } = payload;
     //   state[target].EP = value;
     // },
+
+    action_addHp: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].hp += value;
+    },
+
+    action_addHpMax: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].hpMax = value;
+    },
 
     action_updateTurn: (
       state,
@@ -79,12 +100,21 @@ const slice = createSlice({
       state[target].meter = 0;
     },
 
-    action_addAttacks: (
+    action_addAttackIcons: (
       state,
       { payload }: PayloadAction<{ target: Target; value: number }>,
     ) => {
       const { target, value } = payload;
-      state[target].attacks += value;
+      state[target].attackIcons += value;
+    },
+
+    action_executeAttack: (
+      state,
+      { payload }: PayloadAction<{ target: Target }>,
+    ) => {
+      const { target } = payload;
+      state[target].attackIcons -= 1;
+      state[target].attacks += 1;
     },
   },
 });
@@ -94,10 +124,14 @@ export const {
   // setCoin,
   // setHP,
   // setEP,
+  action_addHp,
+  action_addHpMax,
+
   action_updateTurn,
   action_setDice,
   action_updateMeter,
   action_resetMeter,
-  action_addAttacks
+  action_addAttackIcons,
+  action_executeAttack,
 } = slice.actions;
 export default slice.reducer;

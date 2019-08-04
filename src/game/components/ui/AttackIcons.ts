@@ -3,13 +3,14 @@ import Basic, { BasicProps } from '../basic/Basic';
 import uiConfig from 'src/lib/uiConfig';
 import ImageScaleView from 'ui/ImageScaleView';
 import Label from './Label';
-import { waitForIt, getRandomInt } from 'src/lib/utils';
+import { waitForIt, getRandomInt, getScreenDimensions } from 'src/lib/utils';
 import StateObserver from 'src/redux/StateObserver';
 import {
   updateMeter,
   resetMeter,
   getCurrentMeter,
-  getNumberOfAttacks,
+  getAttackIcons,
+  executeAttack,
 } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import BattleArea from '../battle/BattleArea';
@@ -17,6 +18,7 @@ import BattleArea from '../battle/BattleArea';
 const totalSteps = 12;
 
 export default class AttackIcons extends Basic {
+  private center: number;
   private icons: ImageScaleView[];
 
   constructor(props: BasicProps) {
@@ -32,9 +34,14 @@ export default class AttackIcons extends Basic {
     StateObserver.createSelector(
       ({ combat }) => combat[enemyType].meter === 0,
     ).addListener((shouldAddAttacks) => {
-      const maxAttacks = getNumberOfAttacks(type);
-      console.log('>>> maxAttacks', type, maxAttacks);
+      if (!shouldAddAttacks) return;
+      const maxAttacks = getAttackIcons(type);
+      console.log('>>> attackIcons', type, maxAttacks);
       this.createIcons(maxAttacks);
+
+      waitForIt(() => {
+        this.executeAttacks(maxAttacks);
+      }, maxAttacks * 500);
     });
   }
 
@@ -45,43 +52,70 @@ export default class AttackIcons extends Basic {
   protected createViews(props: BasicProps) {
     super.createViews(props);
     this.container.updateOpts({ backgroundColor: '#333' });
+    this.center = this.container.style.x;
   }
 
   public createIcons(maxAttacks: number) {
+    this.container.updateOpts({ x: this.center });
+
     this.icons = [];
     for (let i = 0; i < maxAttacks; i++) {
-      this.createIcon(i);
-    }
-
-    for (let i = 0; i < maxAttacks; i++) {
-      const d = 40;
-      this.icons[i].updateOpts({
-        x: this.container.style.width / 2 + i * d - ((maxAttacks - 1) * d) / 2,
-      });
+      waitForIt(() => {
+        this.createIcon(i);
+      }, i * 400);
     }
   }
 
   private createIcon(i: number) {
-    const x = 0;
+    const d = 32;
+    const x = this.container.style.width / 2 + i * d;
     const y = this.container.style.height / 2;
 
     const icon = new ImageScaleView({
       superview: this.container,
       image: 'resources/images/ui/icons/sword.png',
-      width: 32,
-      height: 32,
-      x,
+      width: 24,
+      height: 24,
+      x: x + d * 1.5,
       y,
       centerOnOrigin: true,
       centerAnchor: true,
       scale: 0,
     });
 
-    animate(icon)
-      .clear()
-      .then({ scale: 1 }, 100, animate.easeInOut);
+    const x2 = this.center - (this.icons.length * d) / 2;
+    this.animateIcon(icon, { t: 200, x, x2, scale: 1 });
 
     this.icons.push(icon);
     return icon;
+  }
+
+  executeAttacks(maxAttacks: number) {
+    for (let i = 0; i < maxAttacks; i++) {
+      // this.icons.slice(1);
+      waitForIt(() => {
+        const icon = this.icons.shift();
+        console.log('executing attack', i, '/', maxAttacks);
+        const x2 = this.container.style.x - 32 / 2;
+        this.animateIcon(icon, {
+          t: 100,
+          x: icon.style.x + 32 / 2,
+          x2,
+          scale: 0,
+        });
+
+        executeAttack(this.props.type);
+      }, i * 400);
+    }
+  }
+
+  animateIcon(icon: View, { t, x, x2, scale }) {
+    animate(icon)
+      .clear()
+      .then({ x, scale }, t, animate.easeInOut);
+
+    animate(this.container)
+      .clear()
+      .then({ x: x2 }, t, animate.easeInOut);
   }
 }

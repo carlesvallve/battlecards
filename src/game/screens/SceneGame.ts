@@ -38,6 +38,10 @@ export default class SceneGame extends SceneBasic {
       onClick: () => navigateToScene('title'),
     });
 
+    const battleArea = new BattleArea({
+      superview: this.container,
+    })
+
     const header = new BattleHeader({
       superview: this.container,
     });
@@ -46,9 +50,7 @@ export default class SceneGame extends SceneBasic {
       superview: this.container,
     });
 
-    const battleArea = new BattleArea({
-      superview: this.container,
-    })
+    
 
     // const title = new Label({
     //   superview: this.container,

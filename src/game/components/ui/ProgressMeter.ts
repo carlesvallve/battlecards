@@ -9,12 +9,13 @@ import {
   updateMeter,
   resetMeter,
   getCurrentMeter,
-  addAttacks,
+  addAttackIcons,
 } from 'src/redux/shortcuts/combat';
 import { Target } from 'src/types/custom';
 import BattleArea from '../battle/BattleArea';
 
 const totalSteps = 12;
+const animDuration = 100;
 
 export default class ProgressMeter extends Basic {
   private label: Label;
@@ -38,7 +39,7 @@ export default class ProgressMeter extends Basic {
         if (turn === 0) return;
 
         const dice = getRandomInt(1, 6);
-        console.log('>>>', type, 'turn', turn, 'dice', dice);
+        // console.log('>>>', type, 'turn', turn, 'dice', dice);
         this.addSteps(dice);
       },
     );
@@ -118,7 +119,7 @@ export default class ProgressMeter extends Basic {
     }
 
     console.log('>>> adding attacks to redux:', this.props.type, over);
-    addAttacks(BattleArea.getEnemyType(this.props.type), over);
+    addAttackIcons(BattleArea.getEnemyType(this.props.type), over);
 
     resetMeter(this.props.type);
     this.label.setProps({ localeText: () => '0' });
@@ -152,7 +153,7 @@ export default class ProgressMeter extends Basic {
         });
 
         updateMeter(this.props.type, 1); // update redux meter
-      }, 50 * i);
+      }, animDuration * i);
     }
   }
 
