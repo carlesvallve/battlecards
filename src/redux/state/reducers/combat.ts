@@ -7,6 +7,9 @@ const slice = createSlice({
       hp: 20,
       hpMax: 20,
 
+      ep: 20,
+      epMax: 20,
+
       damage: 5,
       armour: 1,
 
@@ -20,6 +23,9 @@ const slice = createSlice({
     monster: {
       hp: 20,
       hpMax: 20,
+
+      ep: 20,
+      epMax: 20,
 
       damage: 5,
       armour: 1,
@@ -66,6 +72,22 @@ const slice = createSlice({
     ) => {
       const { target, value } = payload;
       state[target].hpMax = value;
+    },
+
+    action_addEp: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].ep += value;
+    },
+
+    action_addEpMax: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].epMax = value;
     },
 
     action_updateTurn: (
@@ -126,6 +148,9 @@ export const {
   // setEP,
   action_addHp,
   action_addHpMax,
+
+  action_addEp,
+  action_addEpMax,
 
   action_updateTurn,
   action_setDice,

@@ -9,6 +9,8 @@ import {
   action_executeAttack,
   action_addHpMax,
   action_addHp,
+  action_addEp,
+  action_addEpMax,
 } from 'src/redux/state/reducers/combat';
 
 // export const getCoin = (target: Target) => {
@@ -45,6 +47,14 @@ export const addHp = (target: Target, value: number) => {
 
 export const addHpMax = (target: Target, value: number) => {
   StateObserver.dispatch(action_addHpMax({ target, value }));
+};
+
+export const addEp = (target: Target, value: number) => {
+  StateObserver.dispatch(action_addEp({ target, value }));
+};
+
+export const addEpMax = (target: Target, value: number) => {
+  StateObserver.dispatch(action_addEpMax({ target, value }));
 };
 
 export const updateTurn = (target: Target) => {

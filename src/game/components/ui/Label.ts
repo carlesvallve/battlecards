@@ -17,7 +17,7 @@ export default class Label extends Basic {
     // update localeText
     this.text.localeText = props.localeText;
 
-    const t = 150;
+    const t = 100;
     if (props.localeText) {
       animate(this.text)
         .clear()

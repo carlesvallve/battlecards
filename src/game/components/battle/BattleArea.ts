@@ -70,7 +70,7 @@ export default class BattleArea extends Basic {
       font: bitmapFonts('TitleStroke'),
       localeText: () => `${damage}`,
       x: this.container.style.width / 2,
-      y: this.container.style.height / 2 - 15 + d * 85,
+      y: this.container.style.height / 2 - 20 + d * 85,
       size: 20,
       color: 'yellow',
       scale: 0,
@@ -80,11 +80,11 @@ export default class BattleArea extends Basic {
     });
 
     // animate damage label
-    const y = this.container.style.height / 2 - 5 + d * 200;
+    const y = this.container.style.height / 2 - 20 + d * 160;
     animate(labelDamage)
       .clear()
       .then({ scale: 1 }, 100, animate.easeInOut)
-      .then({ y }, 500, animate.linear)
+      .then({ y, opacity: 0 }, 600, animate.linear)
       .then({ scale: 0 }, 100, animate.easeInOut)
       .then(() => {
         labelDamage.removeFromSuperview();
@@ -96,7 +96,6 @@ export default class BattleArea extends Basic {
 
     const screen = getScreenDimensions();
     this.container.updateOpts({
-      // backgroundColor: 'rgba(255, 128, 128, 0.5)',
       width: screen.width - 20,
       height: screen.height * 0.7,
       x: screen.width / 2,
