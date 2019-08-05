@@ -2,7 +2,7 @@ import animate from 'animate';
 import Basic, { BasicProps } from '../basic/Basic';
 import uiConfig from 'src/lib/uiConfig';
 import ImageScaleView from 'ui/ImageScaleView';
-import Label from './Label';
+import Label from '../battle/Label';
 import { waitForIt, getRandomInt } from 'src/lib/utils';
 import StateObserver from 'src/redux/StateObserver';
 import {
@@ -11,19 +11,22 @@ import {
   getCurrentMeter,
   addAttackIcons,
   resolveCombat,
+  getTargetEnemy,
+  getColorByTarget,
+  getColorByDiff,
 } from 'src/redux/shortcuts/combat';
 import BattleArena from '../battle/BattleArena';
 
 const totalSteps = 12;
 const animDuration = 75;
 
-export default class ProgressMeter extends Basic {
+export default class ProgressMeter2 extends Basic {
   private label: Label;
   private steps: ImageScaleView[];
 
   constructor(props: BasicProps) {
     super(props);
-    this.createSelectors();
+    // this.createSelectors();
   }
 
   protected update(props: BasicProps) {
@@ -49,7 +52,7 @@ export default class ProgressMeter extends Basic {
 
     // enemy meter changed -> update meter colors
     StateObserver.createSelector(
-      ({ combat }) => combat[BattleArena.getTargetEnemy(target)].meter,
+      ({ combat }) => combat[getTargetEnemy(target)].meter,
     ).addListener((enemyMeter) => {
       this.refreshColors(enemyMeter);
     });
@@ -100,7 +103,7 @@ export default class ProgressMeter extends Basic {
 
       const step = new ImageScaleView({
         superview: this.container,
-        ...BattleArena.getColorByType(this.props.target),
+        ...getColorByTarget(this.props.target),
         centerOnOrigin: false,
         width: w - 1,
         height: this.container.style.height - 10,
@@ -117,14 +120,13 @@ export default class ProgressMeter extends Basic {
 
     for (let i = 0; i < totalSteps; i++) {
       const step = this.steps[i].updateOpts({
-        ...BattleArena.getColorByType(target),
+        ...getColorByTarget(target),
         centerOnOrigin: false,
       });
       this.steps.push(step);
     }
 
     console.log('    resetting', target, 'meter: over by', over);
-    // addAttackIcons(BattleArena.getTargetEnemy(target), over);
 
     resetMeter(target);
     this.label.setProps({ localeText: () => '0' });
@@ -132,7 +134,7 @@ export default class ProgressMeter extends Basic {
 
   addSteps(dice: number, forceResolve: boolean = false) {
     const target = this.props.target;
-    const enemy = BattleArena.getTargetEnemy(target);
+    const enemy = getTargetEnemy(target);
 
     console.log('>>> dice', dice);
 
@@ -159,7 +161,7 @@ export default class ProgressMeter extends Basic {
           const num = i + start + 1;
           const step = this.steps[num - 1];
           step.updateOpts({
-            ...BattleArena.getColorByDiff(target, num),
+            ...getColorByDiff(target, num),
             centerOnOrigin: false,
           });
 

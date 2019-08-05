@@ -4,9 +4,9 @@ import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
-import ProgressBar from '../ui/ProgressBar';
-import ButtonCards from '../ui/ButtonCards';
-import ButtonAction from '../ui/ButtonAction';
+import ProgressBar from './ProgressBar';
+import ButtonCards from './ButtonCards';
+import ButtonAction from './ButtonAction';
 
 export default class BattleFooter extends Basic {
   constructor(props: BasicProps) {

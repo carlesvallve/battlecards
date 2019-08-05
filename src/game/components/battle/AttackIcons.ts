@@ -7,9 +7,10 @@ import {
   executeAttack,
   addAttackIcons,
   resetCombat,
+  getTargetEnemy,
 } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
-import BattleArena from '../battle/BattleArena';
+import BattleArena from './BattleArena';
 
 const animDuration = 150;
 
@@ -19,12 +20,12 @@ export default class AttackIcons extends Basic {
 
   constructor(props: BasicProps) {
     super(props);
-    this.createSelectors();
+    // this.createSelectors();
   }
 
   private createSelectors() {
     const target = this.props.target;
-    const enemy = BattleArena.getTargetEnemy(target);
+    const enemy = getTargetEnemy(target);
 
     // combat was resolved -> add attacks
     StateObserver.createSelector(({ combat }) => combat.result).addListener(

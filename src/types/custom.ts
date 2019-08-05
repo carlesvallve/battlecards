@@ -21,6 +21,10 @@ export type PopupOpts = {
   opts?: any;
 };
 
+// combat
+
+export type CombatPhase = 'none' | 'drawing' | 'preparingAttacks' | 'attacking';
+
 export type Target = 'hero' | 'monster';
 
 // custom types

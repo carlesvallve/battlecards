@@ -5,7 +5,7 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import { getScreenDimensions, waitForIt } from 'src/lib/utils';
 import ImageScaleView from 'ui/ImageScaleView';
-import ProgressMeter from '../ui/ProgressMeter';
+import ProgressMeter from './ProgressMeter';
 import StateObserver from 'src/redux/StateObserver';
 import {
   updateTurn,
@@ -13,9 +13,9 @@ import {
   addHp,
   resetCombat,
 } from 'src/redux/shortcuts/combat';
-import AttackIcons from '../ui/AttackIcons';
+import AttackIcons from './AttackIcons';
 import { Target } from 'src/types/custom';
-import Label from '../ui/Label';
+import Label from './Label';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 
 export default class BattleArena extends Basic {
@@ -29,52 +29,60 @@ export default class BattleArena extends Basic {
   }
 
   private createSelectors() {
-    const t = 500;
-    // hero wins
-
-    StateObserver.createSelector(
-      ({ combat }) => combat.hero.attackIcons,
-    ).addListener((attackIcons) => {
-      console.log('    hero attack icons', attackIcons);
-      if (attackIcons === 0) {
-        waitForIt(() => {
-          console.log('>>> resetting combat');
-          resetCombat();
-        }, t);
-        return;
-      }
-    });
-
-    StateObserver.createSelector(
-      ({ combat }) => combat.hero.attacks,
-    ).addListener((attack) => {
-      if (attack === 0) return;
-      console.log('     hero attacking monster', attack);
-      this.attack('hero', 'monster');
-    });
-
-    // monster wins
-
-    StateObserver.createSelector(
-      ({ combat }) => combat.monster.attacks,
-    ).addListener((attack) => {
-      if (attack === 0) return;
-      console.log('     monster attacking hero', attack);
-      this.attack('monster', 'hero');
-    });
-
-    StateObserver.createSelector(
-      ({ combat }) => combat.monster.attackIcons,
-    ).addListener((attackIcons) => {
-      console.log('    monster attack icons', attackIcons);
-      if (attackIcons === 0) {
-        waitForIt(() => {
-          console.log('>>> resetting combat');
-          resetCombat();
-        }, t);
-      }
-    });
+    StateObserver.createSelector(({ combat }) => combat).addListener(
+      (combat) => {
+        console.log('>>> combat turn', combat.turn);
+      },
+    );
   }
+
+  // private createSelectors() {
+  //   const t = 500;
+  //   // hero wins
+
+  //   StateObserver.createSelector(
+  //     ({ combat }) => combat.hero.attackIcons,
+  //   ).addListener((attackIcons) => {
+  //     console.log('    hero attack icons', attackIcons);
+  //     if (attackIcons === 0) {
+  //       waitForIt(() => {
+  //         console.log('>>> resetting combat');
+  //         resetCombat();
+  //       }, t);
+  //       return;
+  //     }
+  //   });
+
+  //   StateObserver.createSelector(
+  //     ({ combat }) => combat.hero.attacks,
+  //   ).addListener((attack) => {
+  //     if (attack === 0) return;
+  //     console.log('     hero attacking monster', attack);
+  //     this.attack('hero', 'monster');
+  //   });
+
+  //   // monster wins
+
+  //   StateObserver.createSelector(
+  //     ({ combat }) => combat.monster.attacks,
+  //   ).addListener((attack) => {
+  //     if (attack === 0) return;
+  //     console.log('     monster attacking hero', attack);
+  //     this.attack('monster', 'hero');
+  //   });
+
+  //   StateObserver.createSelector(
+  //     ({ combat }) => combat.monster.attackIcons,
+  //   ).addListener((attackIcons) => {
+  //     console.log('    monster attack icons', attackIcons);
+  //     if (attackIcons === 0) {
+  //       waitForIt(() => {
+  //         console.log('>>> resetting combat');
+  //         resetCombat();
+  //       }, t);
+  //     }
+  //   });
+  // }
 
   private attack(attacker: Target, defender: Target) {
     const combat = StateObserver.getState().combat;
@@ -192,7 +200,7 @@ export default class BattleArena extends Basic {
       size: 16,
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
-        updateTurn('hero');
+        updateTurn();
       },
     });
 
@@ -210,25 +218,8 @@ export default class BattleArena extends Basic {
       size: 16,
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
-        updateTurn('monster');
+        updateTurn();
       },
     });
-  }
-
-  // utility functions
-
-  static getTargetEnemy(target: Target) {
-    return target === 'hero' ? 'monster' : 'hero';
-  }
-
-  static getColorByType(type: Target) {
-    return type === 'hero' ? uiConfig.frameBlue : uiConfig.frameRed;
-  }
-
-  static getColorByDiff(type: Target, currentMeter: number) {
-    const enemyMeter = getCurrentMeter(this.getTargetEnemy(type));
-    return enemyMeter < currentMeter
-      ? uiConfig.frameYellow
-      : uiConfig.frameOrange;
   }
 }

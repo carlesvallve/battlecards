@@ -14,6 +14,7 @@ import {
   action_resolveCombat,
   action_resetCombat,
 } from 'src/redux/state/reducers/combat';
+import uiConfig from 'src/lib/uiConfig';
 
 // export const getCoin = (target: Target) => {
 //   return StateObserver.getState().target.coin;
@@ -30,6 +31,21 @@ import {
 // export const getEP = (target: Target) => {
 //   return StateObserver.getState().target.HP;
 // };
+
+export const getTargetEnemy = (target: Target) => {
+  return target === 'hero' ? 'monster' : 'hero';
+}
+
+export const  getColorByTarget = (target: Target) => {
+  return target === 'hero' ? uiConfig.frameBlue : uiConfig.frameRed;
+}
+
+export const  getColorByDiff = (target: Target, currentMeter: number) => {
+  const enemyMeter = getCurrentMeter(this.getTargetEnemy(target));
+  return enemyMeter < currentMeter
+    ? uiConfig.frameYellow
+    : uiConfig.frameOrange;
+}
 
 // getters
 
@@ -59,9 +75,9 @@ export const addEpMax = (target: Target, value: number) => {
   StateObserver.dispatch(action_addEpMax({ target, value }));
 };
 
-export const updateTurn = (target: Target) => {
-  StateObserver.dispatch(action_updateTurn({ target }));
-  return StateObserver.getState().combat[target].turn;
+export const updateTurn = () => {
+  StateObserver.dispatch(action_updateTurn());
+  // return StateObserver.getState().combat[target].turn;
 };
 
 export const setDice = (target: Target, value: number) => {

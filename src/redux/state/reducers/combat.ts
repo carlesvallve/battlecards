@@ -6,8 +6,8 @@ const slice = createSlice({
     result: null,
 
     turn: {
-      target: 'hero',
-      index: 0,
+      target: null as Target,
+      index: 0 as number,
     },
 
     hero: {
@@ -48,22 +48,16 @@ const slice = createSlice({
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
 
-    // setLevel: (state, { payload }: PayloadAction<{ target: Target, value: number }>) => {
-    //   const { target, value } = payload;
-    //   state[target].level = value;
-    // },
-    // setCoin: (state, { payload }: PayloadAction<{ target: Target, value: number }>) => {
-    //   const { target, value } = payload;
-    //   state[target].coin = value;
-    // },
-    // setHP: (state, { payload }: PayloadAction<{ target: Target, value: number }>) => {
-    //   const { target, value } = payload;
-    //   state[target].HP = value;
-    // },
-    // setEP: (state, { payload }: PayloadAction<{ target: Target, value: number }>) => {
-    //   const { target, value } = payload;
-    //   state[target].EP = value;
-    // },
+    action_updateTurn: (state) => {
+      // toggle target
+      const target = state.turn.target === 'hero' ? 'monster' : 'hero';
+      // set turn data
+      state.turn = {
+        target,
+        index: state.turn.index + 1,
+      };
+      console.log(state.turn);
+    },
 
     action_addHp: (
       state,
@@ -95,16 +89,6 @@ const slice = createSlice({
     ) => {
       const { target, value } = payload;
       state[target].epMax = value;
-    },
-
-    action_updateTurn: (
-      state,
-      { payload }: PayloadAction<{ target: Target }>,
-    ) => {
-      const { target } = payload;
-      (state.turn.target = target === 'hero' ? 'monster' : 'hero'),
-        (state.turn.index += 1);
-      state[target].turn += 1;
     },
 
     action_setDice: (

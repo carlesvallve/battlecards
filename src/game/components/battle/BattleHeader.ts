@@ -1,9 +1,9 @@
 import animate from 'animate';
 import Basic, { BasicProps } from '../basic/Basic';
 import { getScreenDimensions } from 'src/lib/utils';
-import ProgressBar from '../ui/ProgressBar';
-import StatInfo from '../ui/StatInfo';
-import MonsterInfo from '../ui/MonsterInfo';
+import ProgressBar from './ProgressBar';
+import StatInfo from './StatInfo';
+import MonsterInfo from './MonsterInfo';
 
 export default class BattleHeader extends Basic {
   constructor(props: BasicProps) {

@@ -5,7 +5,7 @@ import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
-import Label from './Label';
+import Label from '../battle/Label';
 import StateObserver from 'src/redux/StateObserver';
 
 export default class StatInfo extends Basic {
@@ -13,7 +13,7 @@ export default class StatInfo extends Basic {
 
   constructor(props: BasicProps) {
     super(props);
-    this.createSelectors();
+    // this.createSelectors();
   }
 
   private createSelectors() {
