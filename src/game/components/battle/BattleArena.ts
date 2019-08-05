@@ -3,11 +3,16 @@ import Basic, { BasicProps } from '../basic/Basic';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
-import { getScreenDimensions } from 'src/lib/utils';
+import { getScreenDimensions, waitForIt } from 'src/lib/utils';
 import ImageScaleView from 'ui/ImageScaleView';
 import ProgressMeter from '../ui/ProgressMeter';
 import StateObserver from 'src/redux/StateObserver';
-import { updateTurn, getCurrentMeter, addHp } from 'src/redux/shortcuts/combat';
+import {
+  updateTurn,
+  getCurrentMeter,
+  addHp,
+  resetCombat,
+} from 'src/redux/shortcuts/combat';
 import AttackIcons from '../ui/AttackIcons';
 import { Target } from 'src/types/custom';
 import Label from '../ui/Label';
@@ -24,26 +29,50 @@ export default class BattleArena extends Basic {
   }
 
   private createSelectors() {
-    // StateObserver.createSelector(({ combat }) => combat).addListener(
-    //   (combat) => {
-    //     console.log('>>> combat', combat);
-    //   },
-    // );
+    const t = 500;
+    // hero wins
+
+    StateObserver.createSelector(
+      ({ combat }) => combat.hero.attackIcons,
+    ).addListener((attackIcons) => {
+      console.log('    hero attack icons', attackIcons);
+      if (attackIcons === 0) {
+        waitForIt(() => {
+          console.log('>>> resetting combat');
+          resetCombat();
+        }, t);
+        return;
+      }
+    });
 
     StateObserver.createSelector(
       ({ combat }) => combat.hero.attacks,
     ).addListener((attack) => {
       if (attack === 0) return;
-      console.log('     hero attacking monster');
+      console.log('     hero attacking monster', attack);
       this.attack('hero', 'monster');
     });
+
+    // monster wins
 
     StateObserver.createSelector(
       ({ combat }) => combat.monster.attacks,
     ).addListener((attack) => {
       if (attack === 0) return;
-      console.log('     monster attacking hero');
+      console.log('     monster attacking hero', attack);
       this.attack('monster', 'hero');
+    });
+
+    StateObserver.createSelector(
+      ({ combat }) => combat.monster.attackIcons,
+    ).addListener((attackIcons) => {
+      console.log('    monster attack icons', attackIcons);
+      if (attackIcons === 0) {
+        waitForIt(() => {
+          console.log('>>> resetting combat');
+          resetCombat();
+        }, t);
+      }
     });
   }
 

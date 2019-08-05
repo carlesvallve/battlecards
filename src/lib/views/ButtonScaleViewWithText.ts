@@ -27,7 +27,7 @@ export default class ButtonScaleViewWithText extends ButtonScaleView {
         y: (this.style.height - size * 1.1) / 2 + y, // most button has a bottom bevel, so account for it
         width: size,
         height: size,
-        image: new Image({ url: url }),
+        image: url, // new Image({ url: url }),
       });
     }
 
@@ -96,6 +96,25 @@ export default class ButtonScaleViewWithText extends ButtonScaleView {
 
   set text(value) {
     this.label.text = value;
+  }
+
+  updateIconImage(opts: {
+    url: string;
+    size?: number;
+    x?: number;
+    y?: number;
+  }) {
+    const size = this.style.height * (opts.size || this.iconImage.style.width);
+    const x = (this.style.width - size) / 2 + opts.x || 0;
+    const y = (this.style.height - size * 1.1) / 2 + opts.y || 0; // most button has a bottom bevel, so account for it
+
+    this.iconImage.updateOpts({
+      image: opts.url,
+      width: size,
+      height: size,
+      x,
+      y,
+    });
   }
 
   updateButtonImage(img) {

@@ -3,6 +3,8 @@ import { Target } from 'src/types/custom';
 
 const slice = createSlice({
   initialState: {
+    result: null,
+
     hero: {
       hp: 20,
       hpMax: 20,
@@ -138,6 +140,38 @@ const slice = createSlice({
       state[target].attackIcons -= 1;
       state[target].attacks += 1;
     },
+
+    action_resolveCombat: (
+      state,
+      { payload }: PayloadAction<{ winner: Target | null }>,
+    ) => {
+      let winner = payload.winner;
+      if (winner === null) {
+        winner = state.hero.meter > state.monster.meter ? 'hero' : 'monster';
+      }
+
+      const loser = winner === 'hero' ? 'monster' : 'hero';
+
+      const diff = Math.abs(state[winner].meter - state[loser].meter);
+      if (diff === 0) winner = null;
+
+      state.result = { winner, attacks: diff };
+      console.log('>>> combat result', state.result);
+    },
+
+    action_resetCombat: (state) => {
+      state.result = null;
+
+      state.hero.turn = 0;
+      state.hero.meter = 0;
+      state.hero.attackIcons = 0;
+      state.hero.attacks = 0;
+
+      state.monster.turn = 0;
+      state.monster.meter = 0;
+      state.monster.attackIcons = 0;
+      state.monster.attacks = 0;
+    },
   },
 });
 
@@ -156,7 +190,11 @@ export const {
   action_setDice,
   action_updateMeter,
   action_resetMeter,
+
   action_addAttackIcons,
   action_executeAttack,
+
+  action_resolveCombat,
+  action_resetCombat,
 } = slice.actions;
 export default slice.reducer;

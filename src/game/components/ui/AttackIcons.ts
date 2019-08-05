@@ -3,7 +3,11 @@ import Basic, { BasicProps } from '../basic/Basic';
 import ImageScaleView from 'ui/ImageScaleView';
 import { waitForIt } from 'src/lib/utils';
 import StateObserver from 'src/redux/StateObserver';
-import { getAttackIcons, executeAttack } from 'src/redux/shortcuts/combat';
+import {
+  executeAttack,
+  addAttackIcons,
+  resetCombat,
+} from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import BattleArena from '../battle/BattleArena';
 
@@ -20,22 +24,36 @@ export default class AttackIcons extends Basic {
 
   private createSelectors() {
     const target = this.props.target;
-    const enemyType = BattleArena.getTargetEnemy(target);
+    const enemy = BattleArena.getTargetEnemy(target);
 
-    // enemy meter went down to 0 -> add attacks
-    StateObserver.createSelector(
-      ({ combat }) => combat[enemyType].meter === 0,
-    ).addListener(() => {
-      const maxAttacks = getAttackIcons(target);
-      if (maxAttacks > 0) {
-        console.log('>>> adding', maxAttacks, 'attackIcons to', target);
-        this.createIcons(maxAttacks);
+    // combat was resolved -> add attacks
+    StateObserver.createSelector(({ combat }) => combat.result).addListener(
+      (result) => {
+        if (!result) return;
 
-        waitForIt(() => {
-          this.executeAttacks(maxAttacks);
-        }, (maxAttacks + 0.5) * (animDuration * 2));
-      }
-    });
+        // reset combat if it's a draw
+        if (result.winner === null) {
+          console.log('>>> combat is a draw. resetting...', result);
+          waitForIt(() => resetCombat(), animDuration);
+          return;
+        }
+
+        if (result.winner !== target) return;
+
+        console.log('>>> selector result', result);
+
+        const maxAttacks = result.attacks;
+        if (maxAttacks > 0) {
+          console.log('>>> adding', maxAttacks, 'attackIcons to', target);
+          addAttackIcons(target, maxAttacks);
+          this.createIcons(maxAttacks);
+
+          waitForIt(() => {
+            this.executeAttacks(maxAttacks);
+          }, (maxAttacks + 0.5) * (animDuration * 2));
+        }
+      },
+    );
   }
 
   protected update(props: BasicProps) {
@@ -88,14 +106,7 @@ export default class AttackIcons extends Basic {
       // this.icons.slice(1);
       waitForIt(() => {
         const icon = this.icons.shift();
-        console.log(
-          'executing',
-          this.props.target,
-          'attack',
-          i,
-          '/',
-          maxAttacks,
-        );
+
         const x2 = this.container.style.x - 32 / 2;
         this.animateIcon(icon, {
           t: animDuration,
@@ -103,6 +114,15 @@ export default class AttackIcons extends Basic {
           x2,
           scale: 0,
         });
+
+        console.log(
+          'executing',
+          this.props.target,
+          'attack',
+          i + 1,
+          '/',
+          maxAttacks,
+        );
 
         executeAttack(this.props.target);
       }, i * animDuration * 3);

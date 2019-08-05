@@ -5,6 +5,8 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 import ProgressBar from '../ui/ProgressBar';
+import ButtonCards from '../ui/ButtonCards';
+import ButtonAction from '../ui/ButtonAction';
 
 export default class BattleFooter extends Basic {
   constructor(props: BasicProps) {
@@ -25,48 +27,23 @@ export default class BattleFooter extends Basic {
       y: screen.height - 75,
     });
 
-    const buttonDraw = new ButtonScaleViewWithText(
-      Object.assign({}, uiConfig.buttonGreen, {
-        superview: this.container,
-        x: 30,
-        y: 38,
-        width: 50,
-        height: 60,
-        centerOnOrigin: true,
-        centerAnchor: true,
-        labelOffsetY: -3,
-        localeText: () => '24',
-        size: 16,
-        font: bitmapFonts('TitleStroke'),
-        onClick: () => {},
-      }),
-    );
+    const buttonCards = new ButtonCards({
+      superview: this.container,
+      x: 35,
+      y: 35,
+    });
 
-    const buttonAction = new ButtonScaleViewWithText(
-      Object.assign({}, uiConfig.buttonGreen, {
-        superview: this.container,
-        x: this.container.style.width - 30,
-        y: 38,
-        width: 50,
-        height: 60,
-        centerOnOrigin: true,
-        centerAnchor: true,
-        labelOffsetY: -3,
-        localeText: () => 'A',
-        size: 16,
-        font: bitmapFonts('TitleStroke'),
-        onClick: () => {
-          barHP.setProgress(getRandomInt(1, 20), 20);
-          barEP.setProgress(getRandomInt(1, 20), 20);
-        },
-      }),
-    );
+    const buttonAction = new ButtonAction({
+      superview: this.container,
+      x: this.container.style.width - 35,
+      y: 35,
+    });
 
     const barHP = new ProgressBar({
       superview: this.container,
       x: this.container.style.width / 2 + 5,
       y: 20,
-      width: 190,
+      width: 170,
       height: 25,
       type: 'hp',
       target: 'hero',
@@ -76,8 +53,7 @@ export default class BattleFooter extends Basic {
       superview: this.container,
       x: this.container.style.width / 2 + 5,
       y: 50,
-
-      width: 190,
+      width: 170,
       height: 25,
       type: 'ep',
       target: 'hero',

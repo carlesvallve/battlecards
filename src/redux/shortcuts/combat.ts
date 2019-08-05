@@ -11,6 +11,8 @@ import {
   action_addHp,
   action_addEp,
   action_addEpMax,
+  action_resolveCombat,
+  action_resetCombat,
 } from 'src/redux/state/reducers/combat';
 
 // export const getCoin = (target: Target) => {
@@ -80,4 +82,12 @@ export const addAttackIcons = (target: Target, value: number) => {
 
 export const executeAttack = (target: Target) => {
   StateObserver.dispatch(action_executeAttack({ target }));
+};
+
+export const resolveCombat = (winner: Target | null) => {
+  StateObserver.dispatch(action_resolveCombat({ winner }));
+};
+
+export const resetCombat = () => {
+  StateObserver.dispatch(action_resetCombat());
 };

@@ -10,6 +10,7 @@ import {
   resetMeter,
   getCurrentMeter,
   addAttackIcons,
+  resolveCombat,
 } from 'src/redux/shortcuts/combat';
 import BattleArena from '../battle/BattleArena';
 
@@ -36,7 +37,10 @@ export default class ProgressMeter extends Basic {
     StateObserver.createSelector(
       ({ combat }) => combat[target].turn,
     ).addListener((turn) => {
-      if (turn === 0) return;
+      if (turn === 0) {
+        this.resetSteps(0);
+        return;
+      }
 
       const dice = getRandomInt(1, 6);
       // console.log('>>>', target, 'turn', turn, 'dice', dice);
@@ -119,14 +123,19 @@ export default class ProgressMeter extends Basic {
       this.steps.push(step);
     }
 
-    console.log('>>> resetting', target, 'meter: over by', over);
-    addAttackIcons(BattleArena.getTargetEnemy(target), over);
+    console.log('    resetting', target, 'meter: over by', over);
+    // addAttackIcons(BattleArena.getTargetEnemy(target), over);
 
     resetMeter(target);
     this.label.setProps({ localeText: () => '0' });
   }
 
-  addSteps(dice: number) {
+  addSteps(dice: number, forceResolve: boolean = false) {
+    const target = this.props.target;
+    const enemy = BattleArena.getTargetEnemy(target);
+
+    console.log('>>> dice', dice);
+
     // get start position
     const lastMeter = getCurrentMeter(this.props.target);
     const start = lastMeter;
@@ -136,6 +145,8 @@ export default class ProgressMeter extends Basic {
     const over = end - this.props.stepLimit;
     if (over > 0) {
       this.resetSteps(over);
+      // updateMeter(target, over);
+      this.addSteps(over, true);
       return;
     }
 
@@ -147,13 +158,24 @@ export default class ProgressMeter extends Basic {
         waitForIt(() => {
           const num = i + start + 1;
           const step = this.steps[num - 1];
-
           step.updateOpts({
-            ...BattleArena.getColorByDiff(this.props.target, num),
+            ...BattleArena.getColorByDiff(target, num),
             centerOnOrigin: false,
           });
 
-          updateMeter(this.props.target, 1); // update redux meter
+          // update redux meter
+          updateMeter(target, 1);
+
+          // check for forced combat resolve caused by overhead
+          const targetMeter = StateObserver.getState().combat[target].meter;
+          if (forceResolve && targetMeter === dice) {
+            // avoid draws in forced resolve mode
+            const enemyMeter = StateObserver.getState().combat[enemy].meter;
+            if (targetMeter === enemyMeter) updateMeter(target, 1);
+            // resolve combat
+            console.log('meter went over the maximum. resolving combat...');
+            resolveCombat(enemy);
+          }
         }, animDuration * i);
       }
     }, animDuration * 2);
