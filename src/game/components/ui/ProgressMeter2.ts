@@ -176,7 +176,7 @@ export default class ProgressMeter2 extends Basic {
             if (targetMeter === enemyMeter) updateMeter(target, 1);
             // resolve combat
             console.log('meter went over the maximum. resolving combat...');
-            resolveCombat(enemy);
+            // resolveCombat(enemy);
           }
         }, animDuration * i);
       }

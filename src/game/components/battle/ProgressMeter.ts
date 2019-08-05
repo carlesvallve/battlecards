@@ -20,7 +20,7 @@ import View from 'ui/View';
 import { Target } from 'src/types/custom';
 
 const totalSteps = 12;
-const animDuration = 75;
+const animDuration = 25;
 
 type Props = {
   superview: View;
@@ -154,60 +154,116 @@ export default class ProgressMeter {
     }
   }
 
-  resetSteps(over: number) {
+  refresh(enemyMeter: number, updateLabel: boolean) {
+    const currentMeter = getCurrentMeter(this.props.target);
+    if (currentMeter === 0) return;
+
+    // update label
+    if (updateLabel) {
+      this.label.setProps({ localeText: () => currentMeter.toString() });
+    }
+
+    // update steps
+    for (let i = 0; i < currentMeter; i++) {
+      waitForIt(() => {
+        const num = i + 1;
+        const step = this.steps[num - 1];
+        let color =
+          enemyMeter < num ? uiConfig.frameYellow : uiConfig.frameOrange;
+        if (step) step.updateOpts({ ...color, centerOnOrigin: false });
+      }, i * 100);
+    }
+  }
+
+  resolveTo(value: number, animated: boolean = true) {
+    const current = getCurrentMeter(this.props.target);
+
+    // update steps
+    for (let i = 0; i < current; i++) {
+      waitForIt(() => {
+        const num = current - i - 1;
+        const step = this.steps[num];
+        let color = getColorByTarget(this.props.target);
+        if (num < value) color = uiConfig.frameYellow;
+        if (step) step.updateOpts({ ...color, centerOnOrigin: false });
+
+        // update label
+        if (num >= value) {
+          this.label.setProps({ localeText: () => num.toString() });
+        }
+      }, i * 100);
+    }
+  }
+
+  reset(overhead: number) {
     const target = this.props.target;
 
     for (let i = 0; i < totalSteps; i++) {
+      const num = i + 1;
       const step = this.steps[i].updateOpts({
-        ...getColorByTarget(target),
+        ...(num > overhead ? getColorByTarget(target) : uiConfig.frameWhite),
         centerOnOrigin: false,
       });
       this.steps.push(step);
     }
 
-    console.log('    resetting', target, 'meter: over by', over);
-
-    resetMeter(target);
     this.label.setProps({ localeText: () => '0' });
   }
 
-  addSteps(dice: number) {
-    // get target and enemy
-    console.log('>>>', this.props.target);
-    const target = this.props.target;
-    const enemy = getTargetEnemy(target);
+  // resetSteps(over: number) {
+  //   const target = this.props.target;
 
-    console.log('updatig meter steps...', target);
+  //   for (let i = 0; i < totalSteps; i++) {
+  //     const step = this.steps[i].updateOpts({
+  //       ...getColorByTarget(target),
+  //       centerOnOrigin: false,
+  //     });
+  //     this.steps.push(step);
+  //   }
 
-    // get start position
-    const lastMeter = getCurrentMeter(target);
-    const start = lastMeter;
-    let end = start + dice;
+  //   console.log('    resetting', target, 'meter: over by', over);
 
-    // check for overhead
-    const over = end - this.props.stepLimit;
-    if (over > 0) {
-      this.resetSteps(over);
-      // updateMeter(target, over);
-      // this.addSteps2(over, true);
-      return;
-    }
+  //   resetMeter(target);
+  //   this.label.setProps({ localeText: () => '0' });
+  // }
 
-    // update label
-    this.label.setProps({ localeText: () => end.toString() });
+  // addSteps(dice: number) {
+  //   // get target and enemy
+  //   console.log('>>>', this.props.target);
+  //   const target = this.props.target;
+  //   const enemy = getTargetEnemy(target);
 
-    for (let i = 0; i < dice; i++) {
-      const num = i + start + 1;
-      const step = this.steps[num - 1];
-      step.updateOpts({
-        ...getColorByDiff(target, num),
-        centerOnOrigin: false,
-      });
-    }
+  //   console.log('updatig meter steps...', target);
 
-    // update redux meter
-    updateMeter(target, end);
-  }
+  //   // get start position
+  //   const lastMeter = getCurrentMeter(target);
+  //   const start = lastMeter;
+  //   let end = start + dice;
+
+  //   // check for overhead
+  //   const over = end - this.props.stepLimit;
+  //   if (over > 0) {
+  //     this.resetSteps(over);
+  //     // updateMeter(target, over);
+  //     // this.addSteps2(over, true);
+  //     return;
+  //   }
+
+  //   // update label
+  //   this.label.setProps({ localeText: () => end.toString() });
+
+  //   for (let i = 0; i < dice; i++) {
+  //     const num = i + start + 1;
+  //     const step = this.steps[num - 1];
+  //     step.updateOpts({
+  //       ...getColorByDiff(target, num),
+  //       centerOnOrigin: false,
+  //     });
+  //   }
+
+  //   // update redux meter
+  //   updateMeter(target, end);
+  // }
 
   // addSteps2(dice: number, forceResolve: boolean = false) {
   //   const target = this.props.target;
@@ -274,47 +330,4 @@ export default class ProgressMeter {
   //     });
   //   }
   // }
-
-  refresh(enemyMeter: number) {
-    const currentMeter = getCurrentMeter(this.props.target);
-    // console.log(
-    //   'refreshing',
-    //   this.props.target,
-    //   currentMeter,
-    //   'vs',
-    //   enemyMeter,
-    // );
-
-    this.label.setProps({ localeText: () => currentMeter.toString() });
-
-    for (let i = 0; i < currentMeter; i++) {
-      const num = i + 1;
-      const step = this.steps[num - 1];
-
-      // for (let i = 1; i <= currentMeter; i++) {
-      //   const step = this.steps[i - 1];
-      let color =
-        enemyMeter < num ? uiConfig.frameYellow : uiConfig.frameOrange;
-      step.updateOpts({
-        ...color,
-        centerOnOrigin: false,
-      });
-    }
-  }
-
-  reset(overhead: number) {
-    const target = this.props.target;
-
-    for (let i = 0; i < totalSteps; i++) {
-      const step = this.steps[i].updateOpts({
-        ...(i + 1 > overhead ? getColorByTarget(target) : uiConfig.frameWhite),
-        centerOnOrigin: false,
-      });
-      this.steps.push(step);
-    }
-
-    // console.log('    resetting', target, 'meter: over by', over);
-
-    this.label.setProps({ localeText: () => '0' });
-  }
 }

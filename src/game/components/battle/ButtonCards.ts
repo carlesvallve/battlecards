@@ -44,7 +44,6 @@ export default class ButtonCards extends Basic {
           y: -1,
         },
         onClick: () => {
-          console.log('>>> draw number');
           updateTurn();
         },
       }),

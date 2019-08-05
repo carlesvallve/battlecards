@@ -23,9 +23,18 @@ export type PopupOpts = {
 
 // combat
 
-export type CombatPhase = 'none' | 'drawing' | 'preparingAttacks' | 'attacking';
-
 export type Target = 'hero' | 'monster';
+
+export type CombatPhase = 'none' | 'dice' | 'resolve' | 'attack' | 'end';
+
+export type CombatResult = {
+  winner: Target;
+  loser: Target;
+  attacks: number;
+  isOverhead: boolean;
+  isCritical: boolean;
+  attacking: boolean,
+};
 
 // custom types
 

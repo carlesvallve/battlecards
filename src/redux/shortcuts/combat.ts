@@ -1,18 +1,21 @@
 import StateObserver from 'src/redux/StateObserver';
-import { Target } from 'src/types/custom';
+import { Target, CombatPhase } from 'src/types/custom';
 import {
   action_setDice,
   action_updateMeter,
   action_resetMeter,
   action_updateTurn,
   action_addAttackIcons,
-  action_executeAttack,
+  action_executeAttacks,
   action_addHpMax,
   action_addHp,
   action_addEp,
   action_addEpMax,
   action_resolveCombat,
   action_resetCombat,
+  action_setPhase,
+  action_resolveCombatOverhead,
+  action_endTurn,
 } from 'src/redux/state/reducers/combat';
 import uiConfig from 'src/lib/uiConfig';
 
@@ -47,10 +50,28 @@ export const getColorByDiff = (target: Target, currentMeter: number) => {
     : uiConfig.frameOrange;
 };
 
+export const calculateNumberOfAttacks = (target: Target) => {
+  const targetMeter = getCurrentMeter(target);
+  const enemyMeter = getCurrentMeter(getTargetEnemy(target));
+  return Math.max(targetMeter - enemyMeter, 0);
+};
+
+export const calculateNumberOfAttacksOverhead = (
+  target: Target,
+  overhead: number,
+) => {
+  const enemyMeter = getCurrentMeter(getTargetEnemy(target));
+  return Math.abs(overhead - enemyMeter);
+};
+
 // getters
 
 export const getCurrentMeter = (target: Target) => {
   return StateObserver.getState().combat[target].meter;
+};
+
+export const getCombatResult = () => {
+  return StateObserver.getState().combat.result;
 };
 
 export const getAttackIcons = (target: Target) => {
@@ -58,6 +79,34 @@ export const getAttackIcons = (target: Target) => {
 };
 
 // setters
+
+// ======================================================
+
+export const setCombatPhase = (value: CombatPhase) => {
+  StateObserver.dispatch(action_setPhase({ value }));
+};
+
+export const updateTurn = () => {
+  StateObserver.dispatch(action_updateTurn());
+};
+
+export const resolveCombat = () => {
+  StateObserver.dispatch(action_resolveCombat());
+};
+
+export const resolveCombatOverhead = (target: Target, overhead: number) => {
+  StateObserver.dispatch(action_resolveCombatOverhead({ target, overhead }));
+};
+
+export const executeAttacks = () => {
+  StateObserver.dispatch(action_executeAttacks());
+};
+
+export const endTurn = () => {
+  StateObserver.dispatch(action_endTurn());
+};
+
+// ======================================================
 
 export const addHp = (target: Target, value: number) => {
   StateObserver.dispatch(action_addHp({ target, value }));
@@ -73,11 +122,6 @@ export const addEp = (target: Target, value: number) => {
 
 export const addEpMax = (target: Target, value: number) => {
   StateObserver.dispatch(action_addEpMax({ target, value }));
-};
-
-export const updateTurn = () => {
-  StateObserver.dispatch(action_updateTurn());
-  // return StateObserver.getState().combat[target].turn;
 };
 
 export const setDice = (target: Target, value: number) => {
@@ -97,13 +141,9 @@ export const addAttackIcons = (target: Target, value: number) => {
   StateObserver.dispatch(action_addAttackIcons({ target, value }));
 };
 
-export const executeAttack = (target: Target) => {
-  StateObserver.dispatch(action_executeAttack({ target }));
-};
-
-export const resolveCombat = (winner: Target | null) => {
-  StateObserver.dispatch(action_resolveCombat({ winner }));
-};
+// export const executeAttack = (target: Target) => {
+//   StateObserver.dispatch(action_executeAttack({ target }));
+// };
 
 export const resetCombat = () => {
   StateObserver.dispatch(action_resetCombat());

@@ -87,7 +87,7 @@ export default class ButtonAction extends Basic {
         y: -2,
       },
       onClick: () => {
-        resolveCombat(null);
+        resolveCombat();
       },
     });
   }
