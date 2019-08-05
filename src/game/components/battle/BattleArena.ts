@@ -95,6 +95,7 @@ export default class BattleArena extends Basic {
     // switch active player
     // Wait for user to play, or initialize ai to throw a dice
     StateObserver.createSelector(({ combat }) => {
+      if (combat.turn.index === null) return;
       if (combat.result) return;
       if (combat.hero.meter > 0 || combat.monster.meter > 0) return null;
       return true;

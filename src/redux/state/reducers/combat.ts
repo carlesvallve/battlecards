@@ -12,7 +12,7 @@ const slice = createSlice({
 
     turn: {
       target: null as Target,
-      index: 0 as number,
+      index: null as number,
     } as CombatTurn,
 
     // todo: grab this from ruleset
