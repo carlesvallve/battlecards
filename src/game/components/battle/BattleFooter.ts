@@ -22,6 +22,7 @@ export default class BattleFooter extends Basic {
 
     const screen = getScreenDimensions();
     this.container.updateOpts({
+      // backgroundColor: 'red',
       width: screen.width,
       height: 75,
       y: screen.height - 75,

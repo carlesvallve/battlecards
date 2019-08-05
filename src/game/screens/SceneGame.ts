@@ -41,8 +41,6 @@ export default class SceneGame extends SceneBasic {
       superview: this.container,
     });
 
-
-
     // const card = new Card({
     //   superview: this.container,
     //   id: 'airForce',

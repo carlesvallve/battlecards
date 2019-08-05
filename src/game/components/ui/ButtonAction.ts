@@ -63,15 +63,19 @@ export default class ButtonAction extends Basic {
   protected createViews(props: BasicProps) {
     super.createViews(props);
 
-    this.container.updateOpts({ infinite: true, canHandleEvents: true });
+    this.container.updateOpts({
+      // backgroundColor: 'yellow',
+      width: 60,
+      height: 70,
+      centerOnOrigin: true,
+      centerAnchor: true,
+    });
 
     this.button = new ButtonScaleViewWithText({
       ...uiConfig.buttonMenu,
       superview: this.container,
       width: 60,
       height: 70,
-      centerOnOrigin: true,
-      centerAnchor: true,
       labelOffsetY: -3,
       localeText: () => '',
       size: 16,

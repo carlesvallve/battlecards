@@ -5,6 +5,11 @@ const slice = createSlice({
   initialState: {
     result: null,
 
+    turn: {
+      target: 'hero',
+      index: 0,
+    },
+
     hero: {
       hp: 20,
       hpMax: 20,
@@ -97,6 +102,8 @@ const slice = createSlice({
       { payload }: PayloadAction<{ target: Target }>,
     ) => {
       const { target } = payload;
+      (state.turn.target = target === 'hero' ? 'monster' : 'hero'),
+        (state.turn.index += 1);
       state[target].turn += 1;
     },
 

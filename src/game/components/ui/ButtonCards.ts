@@ -19,15 +19,19 @@ export default class ButtonCards extends Basic {
   protected createViews(props: BasicProps) {
     super.createViews(props);
 
-    this.container.updateOpts({ infinite: true, canHandleEvents: true });
+    this.container.updateOpts({
+      // backgroundColor:'yellow',
+      width: 60,
+      height: 70,
+      centerOnOrigin: true,
+      centerAnchor: true,
+    });
 
     const button = new ButtonScaleViewWithText(
       Object.assign({}, uiConfig.buttonMenu, {
         superview: this.container,
         width: 60,
         height: 70,
-        centerOnOrigin: true,
-        centerAnchor: true,
         labelOffsetY: -3,
         localeText: () => '',
         size: 16,
@@ -38,7 +42,9 @@ export default class ButtonCards extends Basic {
           x: 0,
           y: -1,
         },
-        onClick: () => {},
+        onClick: () => {
+          console.log('>>> draw number');
+        },
       }),
     );
   }
