@@ -40,66 +40,114 @@ export default class BattleArena extends Basic {
       },
     );
 
+    // phase 1: Turn Start.
+    // Either target or enemy will throw a dice
+    // Update meters and check for overhead
     StateObserver.createSelector(({ combat }) => {
-      // const target = this.props.target;
-      // console.log('checking meter', target, combat.turn);
-      // if (combat.turn.target !== target) return null;
+      if (combat.turn.target === null) return null;
       return combat.turn;
     }).addListener((turn) => {
       if (!turn) return;
-      if (turn.target === null) return;
-
-      const target = turn.target;
-      const enemy = getTargetEnemy(target);
-
-      console.log('------', target, turn);
-
-      // throw dice
-      const dice = getRandomInt(1, 6);
-
-      // calucate overhead
-      const lastMeter = getCurrentMeter(target);
-      const overhead = lastMeter + dice - 12;
-
-      // resolve overhead
-      if (overhead > 0) {
-        console.log('>>> ', target, 'overhead of', overhead);
-
-        console.log(
-          '>>>',
-          target,
-          'threw a',
-          `(+${dice} dice)`,
-          'and updated meter from',
-          lastMeter,
-          'to',
-          lastMeter + dice,
-          'with an overhead of',
-          overhead,
-        );
-
-        resetMeter(target);
-        this.components[target].meter.reset(overhead);
-        return;
-      }
-
-      // update redux meter
-      const currentMeter = updateMeter(target, dice);
-      console.log(
-        '>>>',
-        target,
-        'threw a',
-        `(+${dice} dice)`,
-        'and updated meter from',
-        lastMeter,
-        'to',
-        currentMeter,
-      );
-
-      // refresh both meters
-      this.components[target].meter.refresh(getCurrentMeter(enemy));
-      this.components[enemy].meter.refresh(getCurrentMeter(target));
+      console.log('------', turn);
+      this.throwDice(turn.target);
     });
+
+    // phase 2: Resolve Combat.
+    // Can be normal or overhead mode
+    // Calculate winner and number of attacks
+    // Spawn attack icons
+    StateObserver.createSelector(({ combat }) => {}).addListener(() => {});
+
+    // phase 3: Attacks.
+    // One action per attack
+    // Calculate damage and apply it to enemy
+    StateObserver.createSelector(({ combat }) => {}).addListener(() => {});
+
+    // phase 4: Turn End.
+    // switch active player
+    // Wait for user to play, or initialize ai to throw a dice
+    StateObserver.createSelector(({ combat }) => {}).addListener(() => {});
+
+  }
+
+  throwDice(target: Target) {
+    // get last meter position
+    const lastMeter = getCurrentMeter(target);
+
+    // throw dice
+    const dice = getRandomInt(1, 6);
+
+    // calucate and resolve possible overhead
+    if (this.checkAndResolveOverhead(target, lastMeter, dice)) return;
+
+    // update redux meter
+    const currentMeter = updateMeter(target, dice);
+
+    // refresh both meters
+    const enemy = getTargetEnemy(target);
+    this.components[target].meter.refresh(getCurrentMeter(enemy));
+    this.components[enemy].meter.refresh(getCurrentMeter(target));
+
+    // log target turn
+    console.log(
+      '>>>',
+      target,
+      'threw a',
+      `(+${dice} dice)`,
+      'and updated meter from',
+      lastMeter,
+      'to',
+      currentMeter,
+    );
+  }
+
+  checkAndResolveOverhead(target, lastMeter, dice) {
+    // calucate overhead
+    const overhead = lastMeter + dice - 12;
+    if (overhead <= 0) return false;
+
+    // log target overhead info
+    console.log(
+      '>>>',
+      target,
+      'threw a',
+      `(+${dice} dice)`,
+      'and updated meter from',
+      lastMeter,
+      'to',
+      lastMeter + dice,
+      'with an overhead of',
+      overhead,
+    );
+
+    // calculate difference with enemy
+    const diff = this.calculateNumberOfAttacksOverhead(target, overhead);
+    console.log('>>> difference with enemy of', diff);
+
+    // reset target meter to current overhead
+    resetMeter(target);
+    this.components[target].meter.reset(overhead);
+
+    const enemy = getTargetEnemy(target);
+    this.components[enemy].meter.refresh(overhead);
+
+    // reset enemy meter to his current meter value
+    // const enemy = getTargetEnemy(target);
+    // resetMeter(enemy);
+    // this.components[enemy].meter.reset(getCurrentMeter(enemy));
+
+    return true;
+  }
+
+  calculateNumberOfAttacks(target: Target) {
+    const targetMeter = getCurrentMeter(target);
+    const enemyMeter = getCurrentMeter(getTargetEnemy(target));
+    return Math.max(targetMeter - enemyMeter, 0);
+  }
+
+  calculateNumberOfAttacksOverhead(target: Target, overhead: number) {
+    const enemyMeter = getCurrentMeter(getTargetEnemy(target));
+    return Math.abs(overhead - enemyMeter);
   }
 
   // private createSelectors() {
