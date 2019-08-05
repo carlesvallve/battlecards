@@ -4,7 +4,6 @@ import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
-import ImageView from 'ui/ImageView';
 
 export default class MonsterInfo extends Basic {
   constructor(props: BasicProps) {

@@ -18,7 +18,7 @@ export default class ProgressBar extends Basic {
 
   constructor(props: BasicProps) {
     super(props);
-    // this.createSelectors();
+    this.createSelectors();
   }
 
   private createSelectors() {

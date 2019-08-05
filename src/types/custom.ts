@@ -33,7 +33,22 @@ export type CombatResult = {
   attacks: number;
   isOverhead: boolean;
   isCritical: boolean;
-  attacking: boolean,
+  attacking: boolean;
+};
+
+export type CombatTurn = {
+  target: Target;
+  index: number;
+};
+
+export type CombatStats = {
+  meter: number,
+  hp: number,
+  hpMax: number,
+  ep: number,
+  epMax: number,
+  damage: number,
+  armour: number,
 };
 
 // custom types

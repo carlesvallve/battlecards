@@ -1,80 +1,51 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
+import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
 import { waitForIt } from 'src/lib/utils';
-import StateObserver from 'src/redux/StateObserver';
-import {
-  executeAttacks,
-  addAttackIcons,
-  resetCombat,
-  getTargetEnemy,
-} from 'src/redux/shortcuts/combat';
-import View from 'ui/View';
-import BattleArena from './BattleArena';
+import { Target } from 'src/types/custom';
 
-const animDuration = 150;
+type Props = {
+  superview: View;
+  x: number;
+  y: number;
+  target: Target;
+};
 
-export default class AttackIcons extends Basic {
+const iconSeparation = 36;
+const iconDisplacement = 24;
+const animDuration = 180;
+
+export default class AttackIcons {
+  private container: View;
+  private props: Props;
+
   private center: number;
   private icons: ImageScaleView[];
 
-  constructor(props: BasicProps) {
-    super(props);
-    // this.createSelectors();
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
   }
 
-  // private createSelectors() {
-  //   const target = this.props.target;
-  //   const enemy = getTargetEnemy(target);
+  protected createViews(props: Props) {
+    this.container = new View({
+      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      ...props,
+      centerOnOrigin: true,
+      centerAnchor: true,
+    });
 
-  //   // combat was resolved -> add attacks
-  //   StateObserver.createSelector(({ combat }) => combat.result).addListener(
-  //     (result) => {
-  //       if (!result) return;
-
-  //       // reset combat if it's a draw
-  //       if (result.winner === null) {
-  //         console.log('>>> combat is a draw. resetting...', result);
-  //         waitForIt(() => resetCombat(), animDuration);
-  //         return;
-  //       }
-
-  //       if (result.winner !== target) return;
-
-  //       console.log('>>> selector result', result);
-
-  //       const maxAttacks = result.attacks;
-  //       if (maxAttacks > 0) {
-  //         console.log('>>> adding', maxAttacks, 'attackIcons to', target);
-  //         addAttackIcons(target, maxAttacks);
-  //         this.createIcons(maxAttacks);
-
-  //         waitForIt(() => {
-  //           this.executeAttacks(maxAttacks);
-  //         }, (maxAttacks + 0.5) * (animDuration * 2));
-  //       }
-  //     },
-  //   );
-  // }
-
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-    this.container.updateOpts({ backgroundColor: '#333' });
     this.center = this.container.style.x;
   }
 
-  public createIcons(maxAttacks: number, delay: number = 0, cb: () => void) {
+  public addIcons(maxAttacks: number, delay: number = 0, cb: () => void) {
     this.container.updateOpts({ x: this.center });
 
     // create icon sequence
     this.icons = [];
     waitForIt(() => {
       for (let i = 0; i < maxAttacks; i++) {
-        waitForIt(() => this.createIcon(i), i * animDuration * 2);
+        waitForIt(() => this.addIcon(i), i * animDuration * 2);
       }
     }, delay);
 
@@ -83,8 +54,8 @@ export default class AttackIcons extends Basic {
     waitForIt(() => cb && cb(), callbackDelay);
   }
 
-  private createIcon(i: number) {
-    const d = 32;
+  private addIcon(i: number) {
+    const d = iconSeparation;
     const x = this.container.style.width / 2 + i * d;
     const y = this.container.style.height / 2;
 
@@ -93,15 +64,16 @@ export default class AttackIcons extends Basic {
       image: 'resources/images/ui/icons/sword.png',
       width: 24,
       height: 24,
-      x: x + d * 1,
+      x: x + iconDisplacement,
       y,
       centerOnOrigin: true,
       centerAnchor: true,
       scale: 0,
     });
 
+    const t = animDuration;
     const x2 = this.center - (this.icons.length * d) / 2;
-    this.animateIcon(icon, { t: animDuration, x, x2, scale: 1 });
+    this.animateIconIn(icon, { t, x, x2 });
 
     this.icons.push(icon);
     return icon;
@@ -110,51 +82,31 @@ export default class AttackIcons extends Basic {
   removeIcon() {
     const icon = this.icons.shift();
 
+    const d = iconSeparation;
     const t = animDuration;
-    const x = icon.style.x + 32 / 2;
-    const x2 = this.container.style.x - 32 / 2;
+    const x = icon.style.x + d / 2;
+    const x2 = this.container.style.x - d / 2;
 
-    this.animateIcon(icon, { t, x, x2, scale: 0 }, () =>
-      icon.removeFromSuperview(),
-    );
+    this.animateIconOut(icon, { t, x, x2 }, () => icon.removeFromSuperview());
   }
 
-  // executeAttacks(maxAttacks: number) {
-  //   console.log('>>> executeAttacks', maxAttacks);
-  //   for (let i = 0; i < maxAttacks; i++) {
-  //     waitForIt(() => {
-  //       const icon = this.icons.shift();
+  // animations
 
-  //       const x2 = this.container.style.x - 32 / 2;
-  //       this.animateIcon(icon, {
-  //         t: animDuration,
-  //         x: icon.style.x + 32 / 2,
-  //         x2,
-  //         scale: 0,
-  //       });
-
-  //       console.log(
-  //         'executing',
-  //         this.props.target,
-  //         'attack',
-  //         i + 1,
-  //         '/',
-  //         maxAttacks,
-  //       );
-
-  //       executeAttacks(this.props.target);
-  //     }, i * animDuration * 3);
-  //   }
-  // }
-
-  animateIcon(icon: View, { t, x, x2, scale }, cb?: () => void) {
+  animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
     animate(icon)
-      .clear()
-      .then({ x, scale }, t, animate.easeInOut);
+      .then({ x, scale: 1.5 }, t * 1, animate.easeInOut)
+      .then({ x, scale: 1 }, t * 0.5, animate.easeInOut);
 
     animate(this.container)
-      .clear()
       .then({ x: x2 }, t, animate.easeInOut)
+      .then(() => cb && cb());
+  }
+
+  animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
+    animate(icon).then({ x, scale: 0, opacity: 0 }, t * 0.5, animate.easeInOut);
+
+    animate(this.container)
+      .then({ x: x2 }, t * 0.5, animate.easeInOut)
       .then(() => cb && cb());
   }
 }

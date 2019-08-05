@@ -1,79 +1,60 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-import { Target, CombatPhase, CombatResult } from 'src/types/custom';
 import {
-  calculateNumberOfAttacks,
-  getTargetEnemy,
-  calculateNumberOfAttacksOverhead,
-} from 'src/redux/shortcuts/combat';
+  Target,
+  CombatResult,
+  CombatTurn,
+  CombatStats,
+} from 'src/types/custom';
 
 const slice = createSlice({
   initialState: {
-    phase: null as CombatPhase,
-
     result: null as CombatResult,
 
     turn: {
       target: null as Target,
       index: 0 as number,
-    },
+    } as CombatTurn,
 
+    // todo: grab this from ruleset
     hero: {
+      meter: 0,
       hp: 20,
       hpMax: 20,
-
       ep: 20,
       epMax: 20,
-
       damage: 5,
       armour: 1,
+    } as CombatStats,
 
-      turn: 0,
-      dice: 0,
-      meter: 0,
-      overhead: 0,
-      attackIcons: 0,
-      attacks: 0,
-    },
-
+    // todo: grab this from ruleset
     monster: {
+      meter: 0,
       hp: 20,
       hpMax: 20,
-
       ep: 20,
       epMax: 20,
-
       damage: 5,
       armour: 1,
-
-      turn: 0,
-      dice: 0,
-      meter: 0,
-      overhead: 0,
-      attackIcons: 0,
-      attacks: 0,
-    },
+    } as CombatStats,
   },
 
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
 
-    action_setPhase: (
-      state,
-      { payload }: PayloadAction<{ value: CombatPhase }>,
-    ) => {
-      // toggle target
-      state.phase = payload.value;
-      // if (state.phase !== 'resolve') state.result = null;
-    },
-
     action_updateTurn: (state) => {
-      // toggle target
       const target = state.turn.target === 'hero' ? 'monster' : 'hero';
-      // set turn data
       state.turn = {
         target,
         index: state.turn.index + 1,
       };
+    },
+
+    action_updateMeter: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].meter += value;
     },
 
     action_resolveCombat: (state) => {
@@ -90,9 +71,6 @@ const slice = createSlice({
         const loserMeter = state[loser].meter;
         attacks = Math.max(winnerMeter - loserMeter, 0);
       }
-
-      // no winner if is a draw
-      // if (attacks === 0) winner = null;
 
       // set result
       state.result = {
@@ -118,7 +96,6 @@ const slice = createSlice({
       const targetMeter = state[target].meter;
       const attacks = Math.abs(overhead - targetMeter);
 
-      // set result
       // set result
       state.result = {
         winner,
@@ -174,97 +151,20 @@ const slice = createSlice({
       const { target, value } = payload;
       state[target].epMax = value;
     },
-
-    action_setDice: (
-      state,
-      { payload }: PayloadAction<{ target: Target; value: number }>,
-    ) => {
-      const { target, value } = payload;
-      state[target].dice = value;
-    },
-
-    action_updateMeter: (
-      state,
-      { payload }: PayloadAction<{ target: Target; value: number }>,
-    ) => {
-      const { target, value } = payload;
-      state[target].meter += value;
-    },
-
-    action_resetMeter: (
-      state,
-      { payload }: PayloadAction<{ target: Target }>,
-    ) => {
-      const { target } = payload;
-      state[target].meter = 0;
-    },
-
-    action_addAttackIcons: (
-      state,
-      { payload }: PayloadAction<{ target: Target; value: number }>,
-    ) => {
-      const { target, value } = payload;
-      state[target].attackIcons += value;
-    },
-
-    // action_resolveCombat: (
-    //   state,
-    //   { payload }: PayloadAction<{ winner: Target | null }>,
-    // ) => {
-    //   let winner = payload.winner;
-    //   if (winner === null) {
-    //     winner = state.hero.meter > state.monster.meter ? 'hero' : 'monster';
-    //   }
-
-    //   const loser = winner === 'hero' ? 'monster' : 'hero';
-
-    //   const diff = Math.abs(state[winner].meter - state[loser].meter);
-    //   if (diff === 0) winner = null;
-
-    //   state.result = { winner, attacks: diff };
-    //   console.log('>>> combat result', state.result);
-    // },
-
-    action_resetCombat: (state) => {
-      state.result = null;
-
-      state.hero.turn = 0;
-      state.hero.meter = 0;
-      state.hero.attackIcons = 0;
-      state.hero.attacks = 0;
-
-      state.monster.turn = 0;
-      state.monster.meter = 0;
-      state.monster.attackIcons = 0;
-      state.monster.attacks = 0;
-    },
   },
 });
 
 export const {
-  action_setPhase,
   action_updateTurn,
+  action_updateMeter,
   action_resolveCombat,
   action_resolveCombatOverhead,
   action_executeAttacks,
   action_endTurn,
 
-  // setLevel,
-  // setCoin,
-  // setHP,
-  // setEP,
   action_addHp,
   action_addHpMax,
-
   action_addEp,
   action_addEpMax,
-
-  action_setDice,
-  action_updateMeter,
-  action_resetMeter,
-
-  action_addAttackIcons,
-
-  action_resetCombat,
 } = slice.actions;
 export default slice.reducer;

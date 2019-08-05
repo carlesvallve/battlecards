@@ -1,9 +1,6 @@
 import animate from 'animate';
 import Basic, { BasicProps } from '../basic/Basic';
-import uiConfig from 'src/lib/uiConfig';
-import bitmapFonts from 'src/lib/bitmapFonts';
-import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
-import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
+import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import ButtonCards from './ButtonCards';
 import ButtonAction from './ButtonAction';
