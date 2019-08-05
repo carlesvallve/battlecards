@@ -3,6 +3,7 @@ import Basic, { BasicProps } from '../basic/Basic';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
+import { updateTurn } from 'src/redux/shortcuts/combat';
 
 export default class ButtonCards extends Basic {
   constructor(props: BasicProps) {
@@ -44,6 +45,7 @@ export default class ButtonCards extends Basic {
         },
         onClick: () => {
           console.log('>>> draw number');
+          updateTurn();
         },
       }),
     );

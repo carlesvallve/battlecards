@@ -34,18 +34,18 @@ import uiConfig from 'src/lib/uiConfig';
 
 export const getTargetEnemy = (target: Target) => {
   return target === 'hero' ? 'monster' : 'hero';
-}
+};
 
-export const  getColorByTarget = (target: Target) => {
+export const getColorByTarget = (target: Target) => {
   return target === 'hero' ? uiConfig.frameBlue : uiConfig.frameRed;
-}
+};
 
-export const  getColorByDiff = (target: Target, currentMeter: number) => {
-  const enemyMeter = getCurrentMeter(this.getTargetEnemy(target));
+export const getColorByDiff = (target: Target, currentMeter: number) => {
+  const enemyMeter = getCurrentMeter(getTargetEnemy(target));
   return enemyMeter < currentMeter
     ? uiConfig.frameYellow
     : uiConfig.frameOrange;
-}
+};
 
 // getters
 
@@ -86,6 +86,7 @@ export const setDice = (target: Target, value: number) => {
 
 export const updateMeter = (target: Target, value: number) => {
   StateObserver.dispatch(action_updateMeter({ target, value }));
+  return getCurrentMeter(target);
 };
 
 export const resetMeter = (target: Target) => {

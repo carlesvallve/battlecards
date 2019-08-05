@@ -3,7 +3,7 @@ import Basic, { BasicProps } from '../basic/Basic';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
-import { getScreenDimensions, waitForIt } from 'src/lib/utils';
+import { getScreenDimensions, waitForIt, getRandomInt } from 'src/lib/utils';
 import ImageScaleView from 'ui/ImageScaleView';
 import ProgressMeter from './ProgressMeter';
 import StateObserver from 'src/redux/StateObserver';
@@ -12,6 +12,9 @@ import {
   getCurrentMeter,
   addHp,
   resetCombat,
+  getTargetEnemy,
+  updateMeter,
+  resetMeter,
 } from 'src/redux/shortcuts/combat';
 import AttackIcons from './AttackIcons';
 import { Target } from 'src/types/custom';
@@ -19,6 +22,8 @@ import Label from './Label';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 
 export default class BattleArena extends Basic {
+  private components;
+
   constructor(props: BasicProps) {
     super(props);
     this.createSelectors();
@@ -31,9 +36,70 @@ export default class BattleArena extends Basic {
   private createSelectors() {
     StateObserver.createSelector(({ combat }) => combat).addListener(
       (combat) => {
-        console.log('>>> combat turn', combat.turn);
+        // console.log('>>> combat turn', combat.turn);
       },
     );
+
+    StateObserver.createSelector(({ combat }) => {
+      // const target = this.props.target;
+      // console.log('checking meter', target, combat.turn);
+      // if (combat.turn.target !== target) return null;
+      return combat.turn;
+    }).addListener((turn) => {
+      if (!turn) return;
+      if (turn.target === null) return;
+
+      const target = turn.target;
+      const enemy = getTargetEnemy(target);
+
+      console.log('------', target, turn);
+
+      // throw dice
+      const dice = getRandomInt(1, 6);
+
+      // calucate overhead
+      const lastMeter = getCurrentMeter(target);
+      const overhead = lastMeter + dice - 12;
+
+      // resolve overhead
+      if (overhead > 0) {
+        console.log('>>> ', target, 'overhead of', overhead);
+
+        console.log(
+          '>>>',
+          target,
+          'threw a',
+          `(+${dice} dice)`,
+          'and updated meter from',
+          lastMeter,
+          'to',
+          lastMeter + dice,
+          'with an overhead of',
+          overhead,
+        );
+
+        resetMeter(target);
+        this.components[target].meter.reset(overhead);
+        return;
+      }
+
+      // update redux meter
+      const currentMeter = updateMeter(target, dice);
+      console.log(
+        '>>>',
+        target,
+        'threw a',
+        `(+${dice} dice)`,
+        'and updated meter from',
+        lastMeter,
+        'to',
+        currentMeter,
+      );
+
+      // refresh both meters
+      this.components[target].meter.refresh(getCurrentMeter(enemy));
+      this.components[enemy].meter.refresh(getCurrentMeter(target));
+    });
   }
 
   // private createSelectors() {
@@ -152,74 +218,79 @@ export default class BattleArena extends Basic {
       y: this.container.style.height * 0.5,
     });
 
-    const meterMonster = new ProgressMeter({
-      superview: this.container,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5 - 35,
-      width: 220,
-      height: 50,
-      target: 'monster',
-      stepLimit: 12,
-    });
+    this.components = {
+      hero: {
+        meter: new ProgressMeter({
+          superview: this.container,
+          x: this.container.style.width * 0.5,
+          y: this.container.style.height * 0.5 + 35,
+          width: 220,
+          height: 50,
+          target: 'hero',
+          stepLimit: 12,
+        }),
 
-    const attackMonster = new AttackIcons({
-      superview: this.container,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5 - 110,
-      target: 'monster',
-    });
-
-    const meterHero = new ProgressMeter({
-      superview: this.container,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5 + 35,
-      width: 220,
-      height: 50,
-      target: 'hero',
-      stepLimit: 12,
-    });
-
-    const attackHero = new AttackIcons({
-      superview: this.container,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5 + 105,
-      target: 'hero',
-    });
-
-    const buttonHero = new ButtonScaleViewWithText({
-      ...uiConfig.buttonMenu,
-      superview: this.container,
-      x: this.container.style.width * 0.33,
-      y: this.container.style.height - 30,
-      width: 80,
-      height: 40,
-      centerOnOrigin: true,
-      centerAnchor: true,
-      labelOffsetY: -3,
-      localeText: () => 'Hero',
-      size: 16,
-      font: bitmapFonts('TitleStroke'),
-      onClick: () => {
-        updateTurn();
+        icons: new AttackIcons({
+          superview: this.container,
+          x: this.container.style.width * 0.5,
+          y: this.container.style.height * 0.5 + 105,
+          target: 'hero',
+        }),
       },
-    });
 
-    const buttonMonster = new ButtonScaleViewWithText({
-      ...uiConfig.buttonMenu,
-      superview: this.container,
-      x: this.container.style.width * 0.66,
-      y: this.container.style.height - 30,
-      width: 80,
-      height: 40,
-      centerOnOrigin: true,
-      centerAnchor: true,
-      labelOffsetY: -3,
-      localeText: () => 'Monster',
-      size: 16,
-      font: bitmapFonts('TitleStroke'),
-      onClick: () => {
-        updateTurn();
+      monster: {
+        meter: new ProgressMeter({
+          superview: this.container,
+          x: this.container.style.width * 0.5,
+          y: this.container.style.height * 0.5 - 35,
+          width: 220,
+          height: 50,
+          target: 'monster',
+          stepLimit: 12,
+        }),
+        icons: new AttackIcons({
+          superview: this.container,
+          x: this.container.style.width * 0.5,
+          y: this.container.style.height * 0.5 - 110,
+          target: 'monster',
+        }),
       },
-    });
+    };
+
+    // const buttonHero = new ButtonScaleViewWithText({
+    //   ...uiConfig.buttonMenu,
+    //   superview: this.container,
+    //   x: this.container.style.width * 0.33,
+    //   y: this.container.style.height - 30,
+    //   width: 80,
+    //   height: 40,
+    //   centerOnOrigin: true,
+    //   centerAnchor: true,
+    //   labelOffsetY: -3,
+    //   localeText: () => 'Hero',
+    //   size: 16,
+    //   font: bitmapFonts('TitleStroke'),
+    //   onClick: () => {
+    //     updateTurn();
+    //   },
+    // });
+
+    // const buttonMonster = new ButtonScaleViewWithText({
+    //   ...uiConfig.buttonMenu,
+    //   superview: this.container,
+    //   x: this.container.style.width * 0.66,
+    //   y: this.container.style.height - 30,
+    //   width: 80,
+    //   height: 40,
+    //   centerOnOrigin: true,
+    //   centerAnchor: true,
+    //   labelOffsetY: -3,
+    //   localeText: () => 'Monster',
+    //   size: 16,
+    //   font: bitmapFonts('TitleStroke'),
+    //   onClick: () => {
+    //     updateTurn();
+    //   },
+    // });
   }
 }
