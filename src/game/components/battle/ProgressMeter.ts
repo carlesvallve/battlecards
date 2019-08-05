@@ -18,7 +18,7 @@ type Props = {
 };
 
 const totalSteps = 12;
-const animDuration = 25;
+const animDuration = 20;
 
 export default class ProgressMeter {
   private container: View;
