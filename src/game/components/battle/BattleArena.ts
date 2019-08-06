@@ -1,10 +1,16 @@
 import animate from 'animate';
-import uiConfig from 'src/lib/uiConfig';
-import bitmapFonts from 'src/lib/bitmapFonts';
-import { getScreenDimensions, waitForIt, getRandomInt } from 'src/lib/utils';
+import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
+import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
+import bitmapFonts from 'src/lib/bitmapFonts';
+import uiConfig from 'src/lib/uiConfig';
+import { getScreenDimensions, waitForIt, getRandomInt } from 'src/lib/utils';
+
 import ProgressMeter from './ProgressMeter';
+import AttackIcons from './AttackIcons';
+
 import StateObserver from 'src/redux/StateObserver';
+import { Target, CombatResult } from 'src/types/custom';
 import {
   getCurrentMeter,
   addHp,
@@ -14,10 +20,6 @@ import {
   executeAttacks,
   endTurn,
 } from 'src/redux/shortcuts/combat';
-import AttackIcons from './AttackIcons';
-import { Target, CombatResult } from 'src/types/custom';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
-import View from 'ui/View';
 
 type Props = { superview: View };
 

@@ -1,24 +1,26 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
+import View from 'ui/View';
 import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import StatInfo from './StatInfo';
 import MonsterInfo from './MonsterInfo';
 
-export default class BattleHeader extends Basic {
-  constructor(props: BasicProps) {
-    super(props);
+type Props = { superview: View };
+
+export default class BattleHeader {
+  private props: Props;
+  private container: View;
+
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
   }
 
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
+  private createViews(props: Props) {
     const screen = getScreenDimensions();
-    this.container.updateOpts({
+
+    this.container = new View({
+      ...props,
       width: screen.width,
       height: 80,
       y: 5,

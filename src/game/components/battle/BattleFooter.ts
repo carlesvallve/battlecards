@@ -1,24 +1,27 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
+import View from 'ui/View';
 import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import ButtonCards from './ButtonCards';
 import ButtonAction from './ButtonAction';
 
-export default class BattleFooter extends Basic {
-  constructor(props: BasicProps) {
-    super(props);
+
+type Props = { superview: View };
+
+export default class BattleFooter {
+  private props: Props;
+  private container: View;
+
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
   }
 
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
+  private createViews(props: Props) {
     const screen = getScreenDimensions();
-    this.container.updateOpts({
+
+    this.container = new View({
+      ...props,
       // backgroundColor: 'red',
       width: screen.width,
       height: 75,

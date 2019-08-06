@@ -5,8 +5,10 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import StateObserver from 'src/redux/StateObserver';
 import { resolveCombat } from 'src/redux/shortcuts/combat';
+import View from 'ui/View';
 
 type ButtonActionState = 'hold' | 'attack' | 'defend';
+type Props = { superview: View; x: number; y: number };
 
 const icons = {
   hold: 'resources/images/ui/icons/hold.png',
@@ -14,12 +16,15 @@ const icons = {
   defend: 'resources/images/ui/icons/shield.png',
 };
 
-export default class ButtonAction extends Basic {
+export default class ButtonAction {
   private button: ButtonScaleViewWithText;
   private state: ButtonActionState;
+  private props: Props;
+  private container: View;
 
-  constructor(props: BasicProps) {
-    super(props);
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
     this.createSelectors();
   }
 
@@ -56,14 +61,9 @@ export default class ButtonAction extends Basic {
     });
   }
 
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
-    this.container.updateOpts({
+  private createViews(props: Props) {
+    this.container = new View({
+      ...props,
       // backgroundColor: 'yellow',
       width: 60,
       height: 70,
