@@ -93,8 +93,10 @@ const slice = createSlice({
       const winner = target === 'hero' ? 'monster' : 'hero';
 
       // calculate number of overhead attacks
-      const targetMeter = state[target].meter;
-      const attacks = Math.abs(overhead - targetMeter);
+      const attacks = overhead;
+      // const winnerMeter = state[winner].meter;
+      // const attacks = Math.abs(overhead - winnerMeter);
+      // const attacks = Math.abs(overhead - winnerMeter);
 
       // set result
       state.result = {

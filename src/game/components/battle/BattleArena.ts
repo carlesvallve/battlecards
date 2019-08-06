@@ -1,5 +1,4 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions, waitForIt, getRandomInt } from 'src/lib/utils';
@@ -18,17 +17,19 @@ import {
 import AttackIcons from './AttackIcons';
 import { Target, CombatResult } from 'src/types/custom';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
+import View from 'ui/View';
 
-export default class BattleArena extends Basic {
+type Props = { superview: View };
+
+export default class BattleArena {
+  private props: Props;
+  private container: View;
   private components;
 
-  constructor(props: BasicProps) {
-    super(props);
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
     this.createSelectors();
-  }
-
-  protected update(props: BasicProps) {
-    super.update(props);
   }
 
   // ============================================================
@@ -162,12 +163,17 @@ export default class BattleArena extends Basic {
     );
 
     // redux: resolve combat overhead
-    resolveCombatOverhead(target, overhead);
+    resolveCombatOverhead(target, overhead); // lastMeter + dice
+
+    // const winnerMeter = getCurrentMeter(winner);
+    // const attacks = Math.abs(overhead - winnerMeter);
+    //const attacks = Math.abs(overhead - winnerMeter);
 
     // todo: we need to do this correctly!
     // reset target meter to current overhead
     // resetMeter(target);
-    // this.components[target].meter.reset(overhead);
+    this.components[target].meter.reset(true);
+    this.components[getTargetEnemy(target)].meter.resolveTo(overhead);
 
     return true;
   }
@@ -251,12 +257,12 @@ export default class BattleArena extends Basic {
 
   // ============================================================
 
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
+  protected createViews(props: Props) {
     const screen = getScreenDimensions();
 
-    this.container.updateOpts({
+    this.container = new View({
+      ...props,
+      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: screen.width - 20,
       height: screen.height * 0.7,
       x: screen.width / 2,
@@ -284,14 +290,14 @@ export default class BattleArena extends Basic {
           height: 50,
           target: 'hero',
           stepLimit: 12,
-        }),
+        }) as ProgressMeter,
 
         attackIcons: new AttackIcons({
           superview: this.container,
           x: this.container.style.width * 0.5,
           y: this.container.style.height * 0.5 + 105,
           target: 'hero',
-        }),
+        }) as AttackIcons,
       },
 
       monster: {
@@ -303,13 +309,13 @@ export default class BattleArena extends Basic {
           height: 50,
           target: 'monster',
           stepLimit: 12,
-        }),
+        }) as ProgressMeter,
         attackIcons: new AttackIcons({
           superview: this.container,
           x: this.container.style.width * 0.5,
           y: this.container.style.height * 0.5 - 110,
           target: 'monster',
-        }),
+        }) as AttackIcons,
       },
     };
   }

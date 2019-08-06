@@ -22,6 +22,7 @@ const animDuration = 20;
 
 export default class ProgressMeter {
   private container: View;
+  private bg: View;
   private props: Props;
 
   private label: Label;
@@ -50,7 +51,7 @@ export default class ProgressMeter {
       scale: 1,
     });
 
-    const bg = new ImageScaleView({
+    this.bg = new ImageScaleView({
       superview: this.container,
       ...uiConfig.frameBlack,
       width: this.container.style.width - 5,
@@ -68,6 +69,7 @@ export default class ProgressMeter {
       x: this.container.style.width / 2,
       y: -2,
       size: 30,
+      zIndex: 9,
     });
   }
 
@@ -95,6 +97,9 @@ export default class ProgressMeter {
   refresh(enemyMeter: number, updateLabel: boolean) {
     const currentMeter = getCurrentMeter(this.props.target);
     if (currentMeter === 0) return;
+
+    // update bg
+    this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });
 
     // update label
     if (updateLabel) {
@@ -133,18 +138,30 @@ export default class ProgressMeter {
     }
   }
 
-  reset(overhead: number) {
+  reset(isOverhead: boolean) {
     const target = this.props.target;
 
+    // update steps
     for (let i = 0; i < totalSteps; i++) {
-      const num = i + 1;
-      const step = this.steps[i].updateOpts({
-        ...(num > overhead ? getColorByTarget(target) : uiConfig.frameWhite),
+      // const num = i + 1;
+      this.steps[i].updateOpts({
+        ...getColorByTarget(target),
         centerOnOrigin: false,
       });
-      this.steps.push(step);
+
+      // const step = this.steps[i].updateOpts({
+      //   ...(num > overhead ? getColorByTarget(target) : uiConfig.frameWhite),
+      //   centerOnOrigin: false,
+      // });
+      // this.steps.push(step);
     }
 
+    // update bg
+    if (isOverhead) {
+      this.bg.updateOpts({ ...uiConfig.frameRed, zIndex: 2 });
+    }
+
+    // update label
     this.label.setProps({ localeText: () => '0' });
   }
 }
