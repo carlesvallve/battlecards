@@ -19,6 +19,7 @@ import {
   resolveCombatOverhead,
   executeAttacks,
   endTurn,
+  setMeter,
 } from 'src/redux/shortcuts/combat';
 
 type Props = { superview: View };
@@ -165,17 +166,14 @@ export default class BattleArena {
     );
 
     // redux: resolve combat overhead
-    resolveCombatOverhead(target, overhead); // lastMeter + dice
+    resolveCombatOverhead(target, overhead);
 
-    // const winnerMeter = getCurrentMeter(winner);
-    // const attacks = Math.abs(overhead - winnerMeter);
-    //const attacks = Math.abs(overhead - winnerMeter);
-
-    // todo: we need to do this correctly!
-    // reset target meter to current overhead
-    // resetMeter(target);
+    // update meters, both in redux and ui
+    const enemy = getTargetEnemy(target);
     this.components[target].meter.reset(true);
-    this.components[getTargetEnemy(target)].meter.resolveTo(overhead);
+    this.components[enemy].meter.resolveTo(overhead, true);
+    setMeter(target, 0);
+    setMeter(enemy, overhead);
 
     return true;
   }
@@ -186,10 +184,12 @@ export default class BattleArena {
   resolveMeters(result: CombatResult) {
     const { winner, loser, attacks } = result;
     if (winner && loser) {
-      this.components[winner].meter.resolveTo(attacks);
-      this.components[loser].meter.resolveTo(0);
-      updateMeter(winner, attacks);
-      updateMeter(loser, 0);
+      if (!result.isOverhead) {
+        this.components[winner].meter.resolveTo(attacks);
+        this.components[loser].meter.resolveTo(0);
+        updateMeter(winner, attacks);
+        updateMeter(loser, 0);
+      }
     } else {
       this.components.hero.meter.resolveTo(0, false);
       this.components.monster.meter.resolveTo(0, false);
@@ -266,9 +266,9 @@ export default class BattleArena {
       ...props,
       // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: screen.width - 20,
-      height: screen.height * 0.7,
+      height: screen.height * 0.69,
       x: screen.width / 2,
-      y: screen.height / 2,
+      y: screen.height * 0.493,
       centerOnOrigin: true,
       centerAnchor: true,
     });

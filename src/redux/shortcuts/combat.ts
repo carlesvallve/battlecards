@@ -11,6 +11,7 @@ import {
   action_addHp,
   action_addEp,
   action_addEpMax,
+  action_setMeter,
 } from 'src/redux/state/reducers/combat';
 import uiConfig from 'src/lib/uiConfig';
 
@@ -47,6 +48,11 @@ export const getColorByDiff = (target: Target, currentMeter: number) => {
 
 export const updateTurn = () => {
   StateObserver.dispatch(action_updateTurn());
+};
+
+export const setMeter = (target: Target, value: number) => {
+  StateObserver.dispatch(action_setMeter({ target, value }));
+  return getCurrentMeter(target);
 };
 
 export const updateMeter = (target: Target, value: number) => {

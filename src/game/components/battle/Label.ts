@@ -44,7 +44,6 @@ export default class Label extends Basic {
       ...props,
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
-
       x: 0,
       y: -props.size / 2,
     });

@@ -49,6 +49,14 @@ const slice = createSlice({
       };
     },
 
+    action_setMeter: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].meter = value;
+    },
+
     action_updateMeter: (
       state,
       { payload }: PayloadAction<{ target: Target; value: number }>,
@@ -158,6 +166,7 @@ const slice = createSlice({
 
 export const {
   action_updateTurn,
+  action_setMeter,
   action_updateMeter,
   action_resolveCombat,
   action_resolveCombatOverhead,

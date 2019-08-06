@@ -1,13 +1,12 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
-import Label from '../battle/Label';
-import StateObserver from 'src/redux/StateObserver';
 import View from 'ui/View';
+
+import StateObserver from 'src/redux/StateObserver';
 import { Target } from 'src/types/custom';
 
 type Props = {
@@ -29,7 +28,7 @@ export default class StatInfo {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
-    // this.createSelectors();
+    this.createSelectors();
   }
 
   private createSelectors() {
@@ -39,7 +38,7 @@ export default class StatInfo {
     StateObserver.createSelector(
       ({ combat }) => combat[target][type],
     ).addListener((value) => {
-      console.log('    ', target, type, value);
+      console.log('stat changed:', target, type, value);
       this.label.localeText = () => value;
     });
   }

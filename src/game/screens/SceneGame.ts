@@ -6,6 +6,7 @@ import { navigateToScene } from 'src/redux/shortcuts/ui';
 import BattleFooter from '../components/battle/BattleFooter';
 import BattleHeader from '../components/battle/BattleHeader';
 import BattleArena from '../components/battle/BattleArena';
+import BattleCardHand from '../components/battle/BattleCardHand';
 
 export default class SceneGame extends SceneBasic {
   constructor() {
@@ -38,6 +39,10 @@ export default class SceneGame extends SceneBasic {
     });
 
     const footer = new BattleFooter({
+      superview: this.container,
+    });
+
+    const cards = new BattleCardHand({
       superview: this.container,
     });
 

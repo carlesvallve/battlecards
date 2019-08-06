@@ -39,6 +39,7 @@ export default class ProgressMeter {
       ...props,
       centerOnOrigin: true,
       centerAnchor: true,
+      scale: 0.75,
     });
 
     const box = new ImageScaleView({
@@ -73,7 +74,7 @@ export default class ProgressMeter {
     });
   }
 
-  createSteps(props) {
+  createSteps(props: Props) {
     const w = (this.container.style.width - totalSteps) / totalSteps;
 
     this.steps = [];
@@ -118,8 +119,12 @@ export default class ProgressMeter {
     }
   }
 
-  resolveTo(value: number, animated: boolean = true) {
+  resolveTo(value: number, animatedLabel: boolean = true) {
     const current = getCurrentMeter(this.props.target);
+
+    if (!animatedLabel) {
+      this.label.setProps({ localeText: () => value.toString() });
+    }
 
     // update steps
     for (let i = 0; i < current; i++) {
@@ -131,14 +136,16 @@ export default class ProgressMeter {
         if (step) step.updateOpts({ ...color, centerOnOrigin: false });
 
         // update label
-        if (num >= value) {
-          this.label.setProps({ localeText: () => num.toString() });
+        if (animatedLabel) {
+          if (num >= value) {
+            this.label.setProps({ localeText: () => num.toString() });
+          }
         }
       }, i * animDuration);
     }
   }
 
-  reset(isOverhead: boolean) {
+  reset(isOverhead: boolean = false) {
     const target = this.props.target;
 
     // update steps
@@ -148,17 +155,13 @@ export default class ProgressMeter {
         ...getColorByTarget(target),
         centerOnOrigin: false,
       });
-
-      // const step = this.steps[i].updateOpts({
-      //   ...(num > overhead ? getColorByTarget(target) : uiConfig.frameWhite),
-      //   centerOnOrigin: false,
-      // });
-      // this.steps.push(step);
     }
 
     // update bg
     if (isOverhead) {
       this.bg.updateOpts({ ...uiConfig.frameRed, zIndex: 2 });
+    } else {
+      this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });
     }
 
     // update label

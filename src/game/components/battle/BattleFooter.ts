@@ -20,29 +20,29 @@ export default class BattleFooter {
     const screen = getScreenDimensions();
 
     this.container = new View({
+      backgroundColor: 'rgba(0, 255, 255, 0.5)',
       ...props,
-      // backgroundColor: 'red',
       width: screen.width,
-      height: 75,
-      y: screen.height - 75,
+      height: 80,
+      y: screen.height - 80,
     });
 
     const buttonCards = new ButtonCards({
       superview: this.container,
       x: 35,
-      y: 35,
+      y: 40,
     });
 
     const buttonAction = new ButtonAction({
       superview: this.container,
       x: this.container.style.width - 35,
-      y: 35,
+      y: 40,
     });
 
     const barHP = new ProgressBar({
       superview: this.container,
       x: this.container.style.width / 2 + 5,
-      y: 20,
+      y: 25,
       width: 170,
       height: 25,
       target: 'hero',
@@ -52,7 +52,7 @@ export default class BattleFooter {
     const barEP = new ProgressBar({
       superview: this.container,
       x: this.container.style.width / 2 + 5,
-      y: 50,
+      y: 55,
       width: 170,
       height: 25,
       target: 'hero',
