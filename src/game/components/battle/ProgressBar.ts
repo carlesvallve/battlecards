@@ -1,5 +1,4 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
@@ -8,16 +7,31 @@ import ImageView from 'ui/ImageView';
 import View from 'ui/View';
 import StateObserver from 'src/redux/StateObserver';
 import Label from './Label';
+import { Target } from 'src/types/custom';
+
+type Props = {
+  superview: View;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  target: Target,
+  type: string,
+};
 
 const animDuration = 150;
 
-export default class ProgressBar extends Basic {
+export default class ProgressBar {
   bar: ImageScaleView;
   barTip: View;
   labelDamage: Label;
 
-  constructor(props: BasicProps) {
-    super(props);
+  private props: Props;
+  private container: View;
+
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
     this.createSelectors();
   }
 
@@ -35,14 +49,8 @@ export default class ProgressBar extends Basic {
     });
   }
 
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
-    this.container.updateOpts({});
+  protected createViews(props: Props) {
+    this.container = new View({ ...props });
 
     const box = new ImageScaleView({
       superview: this.container,
@@ -136,13 +144,6 @@ export default class ProgressBar extends Basic {
     //   localeText: () => '+0',
     // });
   }
-
-  // setDamage(damage: number) {
-  //   this.labelDamage.setProps({ y: 0, localeText: () => `+${damage}` });
-  //   animate(this.labelDamage).then({ y: -40 }, animDuration, animate.easeInOut);
-
-  //   // this.setProgress()
-  // }
 
   setProgress(value: number, maxValue: number) {
     const percent = (1 * value) / maxValue;

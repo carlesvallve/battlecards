@@ -34,8 +34,8 @@ export default class BattleHeader {
       y: 17,
       width: 100,
       height: 20,
-      type: 'hp',
       target: 'monster',
+      type: 'hp',
     });
 
     const barEP = new ProgressBar({
@@ -45,8 +45,8 @@ export default class BattleHeader {
 
       width: 100,
       height: 20,
-      type: 'ep',
       target: 'monster',
+      type: 'ep',
     });
 
     const mosnterInfo = new MonsterInfo({

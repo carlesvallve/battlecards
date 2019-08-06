@@ -5,7 +5,6 @@ import ProgressBar from './ProgressBar';
 import ButtonCards from './ButtonCards';
 import ButtonAction from './ButtonAction';
 
-
 type Props = { superview: View };
 
 export default class BattleFooter {
@@ -46,8 +45,8 @@ export default class BattleFooter {
       y: 20,
       width: 170,
       height: 25,
-      type: 'hp',
       target: 'hero',
+      type: 'hp',
     });
 
     const barEP = new ProgressBar({
@@ -56,8 +55,8 @@ export default class BattleFooter {
       y: 50,
       width: 170,
       height: 25,
-      type: 'ep',
       target: 'hero',
+      type: 'ep',
     });
   }
 }

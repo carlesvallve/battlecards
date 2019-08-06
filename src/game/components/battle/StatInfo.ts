@@ -7,12 +7,28 @@ import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
 import Label from '../battle/Label';
 import StateObserver from 'src/redux/StateObserver';
+import View from 'ui/View';
+import { Target } from 'src/types/custom';
 
-export default class StatInfo extends Basic {
+type Props = {
+  superview: View;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  target: Target;
+  type: string;
+};
+
+export default class StatInfo {
   label: LangBitmapFontTextView;
 
-  constructor(props: BasicProps) {
-    super(props);
+  private props: Props;
+  private container: View;
+
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
     // this.createSelectors();
   }
 
@@ -28,14 +44,8 @@ export default class StatInfo extends Basic {
     });
   }
 
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
-    this.container.updateOpts({});
+  private createViews(props: Props) {
+    this.container = new View({ ...props });
 
     const box = new ImageScaleView({
       superview: this.container,

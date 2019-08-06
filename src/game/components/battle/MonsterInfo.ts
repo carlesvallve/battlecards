@@ -1,23 +1,33 @@
 import animate from 'animate';
-import Basic, { BasicProps } from '../basic/Basic';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
+import View from 'ui/View';
 
-export default class MonsterInfo extends Basic {
-  constructor(props: BasicProps) {
-    super(props);
+type Props = {
+  superview: View;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  data: {
+    name: string;
+    description: string;
+  };
+};
+
+export default class MonsterInfo {
+  private props: Props;
+  private container: View;
+
+  constructor(props: Props) {
+    this.props = props;
+    this.createViews(props);
   }
 
-  protected update(props: BasicProps) {
-    super.update(props);
-  }
-
-  protected createViews(props: BasicProps) {
-    super.createViews(props);
-
-    this.container.updateOpts({});
+  private createViews(props: Props) {
+    this.container = new View({ ...props });
 
     const box = new ImageScaleView({
       superview: this.container,
