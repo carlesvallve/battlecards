@@ -20,6 +20,7 @@ export default class BattleHeader {
     const screen = getScreenDimensions();
 
     this.container = new View({
+      // backgroundColor: 'green',
       ...props,
       width: screen.width,
       height: 80,
@@ -42,7 +43,6 @@ export default class BattleHeader {
       superview: this.container,
       x: this.container.style.width / 2 + dBars,
       y: 17,
-
       width: 100,
       height: 20,
       target: 'monster',

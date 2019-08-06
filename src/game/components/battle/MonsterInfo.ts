@@ -27,7 +27,7 @@ export default class MonsterInfo {
   }
 
   private createViews(props: Props) {
-    this.container = new View({ ...props });
+    this.container = new View({ ...props, centerOnOrigin: true });
 
     const box = new ImageScaleView({
       superview: this.container,

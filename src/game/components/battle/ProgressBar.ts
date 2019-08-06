@@ -15,8 +15,8 @@ type Props = {
   y: number;
   width: number;
   height: number;
-  target: Target,
-  type: string,
+  target: Target;
+  type: string;
 };
 
 const animDuration = 150;
@@ -50,7 +50,7 @@ export default class ProgressBar {
   }
 
   protected createViews(props: Props) {
-    this.container = new View({ ...props });
+    this.container = new View({ ...props, centerOnOrigin: true });
 
     const box = new ImageScaleView({
       superview: this.container,
