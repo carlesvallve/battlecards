@@ -27,7 +27,7 @@ export default class BattleCardHand {
       width: screen.width - 0,
       height: 80,
       x: 0,
-      y: screen.height - 80 * 2,
+      y: screen.height - 75 * 2,
     });
   }
 

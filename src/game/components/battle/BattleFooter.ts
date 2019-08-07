@@ -20,7 +20,7 @@ export default class BattleFooter {
     const screen = getScreenDimensions();
 
     this.container = new View({
-      backgroundColor: 'rgba(0, 255, 255, 0.5)',
+      // backgroundColor: 'rgba(0, 255, 255, 0.5)',
       ...props,
       width: screen.width,
       height: 80,

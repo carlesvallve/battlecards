@@ -62,8 +62,8 @@ export default class AttackIcons {
     const icon = new ImageScaleView({
       superview: this.container,
       image: 'resources/images/ui/icons/sword.png',
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
       x: x + iconDisplacement,
       y,
       centerOnOrigin: true,
@@ -83,7 +83,7 @@ export default class AttackIcons {
     const icon = this.icons.shift();
 
     const d = iconSeparation;
-    const t = animDuration;
+    const t = animDuration / 2;
     const x = icon.style.x + d / 2;
     const x2 = this.container.style.x - d / 2;
 
@@ -94,7 +94,7 @@ export default class AttackIcons {
 
   animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
     animate(icon)
-      .then({ x, scale: 1.5 }, t * 1, animate.easeInOut)
+      .then({ x, scale: 1.2 }, t * 1, animate.easeInOut)
       .then({ x, scale: 1 }, t * 0.5, animate.easeInOut);
 
     animate(this.container)

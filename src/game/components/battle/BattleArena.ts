@@ -67,7 +67,22 @@ export default class BattleArena {
 
       console.log('------ Phase 2. Resolve:', result);
       this.resolveMeters(result);
-      this.createAttackIcons(result);
+
+      if (result.winner) {
+        // someone won, so generate attack icons
+        console.log(
+          '>>>',
+          result.winner,
+          'won this turn for',
+          result.attacks,
+          'attacks',
+        );
+        this.createAttackIcons(result);
+      } else {
+        // was a draw, so just end the turn
+        console.log('>>> combat turn was a draw');
+        endTurn();
+      }
     });
 
     // phase 3: Attack.
@@ -83,6 +98,7 @@ export default class BattleArena {
       if (!result) return;
 
       console.log('------ Phase 3. Attack:', result);
+      console.log('>>>', result.winner, 'is attacking:');
       // start attacking sequence
       const t = 350;
       for (let i = 0; i < result.attacks; i++) {
@@ -107,8 +123,8 @@ export default class BattleArena {
       if (!isTurnEnding) return;
 
       console.log('------ Phase 4. End Turn:', isTurnEnding);
-      this.components.hero.meter.reset(0);
-      this.components.monster.meter.reset(0);
+      this.components.hero.meter.reset();
+      this.components.monster.meter.reset();
     });
   }
 
@@ -170,8 +186,8 @@ export default class BattleArena {
 
     // update meters, both in redux and ui
     const enemy = getTargetEnemy(target);
-    this.components[target].meter.reset(true);
-    this.components[enemy].meter.resolveTo(overhead, true);
+    this.components[target].meter.reset({ isOverhead: true });
+    this.components[enemy].meter.resolveTo(overhead);
     setMeter(target, 0);
     setMeter(enemy, overhead);
 
@@ -183,23 +199,21 @@ export default class BattleArena {
 
   resolveMeters(result: CombatResult) {
     const { winner, loser, attacks } = result;
+
     if (winner && loser) {
       if (!result.isOverhead) {
+        // someone won, without overhead
         this.components[winner].meter.resolveTo(attacks);
         this.components[loser].meter.resolveTo(0);
         updateMeter(winner, attacks);
         updateMeter(loser, 0);
       }
-    } else {
-      this.components.hero.meter.resolveTo(0, false);
-      this.components.monster.meter.resolveTo(0, false);
-      updateMeter('hero', 0);
-      updateMeter('monster', 0);
     }
   }
 
   createAttackIcons(result: CombatResult) {
     const { winner, attacks } = result;
+    if (!winner) return;
     this.components[winner].attackIcons.addIcons(attacks, 300, () => {
       executeAttacks(); // redux: set attacking flag
     });
@@ -212,7 +226,7 @@ export default class BattleArena {
     const { winner, loser, attacks } = result;
     const combat = StateObserver.getState().combat;
     const damage = combat[winner].damage - combat[loser].armour;
-    console.log('>>>', winner, 'is attacking for', damage, 'damage');
+    console.log('  >>> attack', index + 1, ':', damage, 'damage');
 
     // remove icon
     this.components[winner].attackIcons.removeIcon();
@@ -223,8 +237,9 @@ export default class BattleArena {
     // animate screen effect
     animate(this.container)
       .clear()
-      .wait(100)
-      .then({ scale: 1.1 }, 50, animate.easeInOut)
+      .wait(50)
+      .then({ scale: 1.05 }, 50, animate.easeInOut)
+      .then({ scale: 0.95 }, 100, animate.easeInOut)
       .then({ scale: 1 }, 50, animate.easeInOut);
 
     // create damage label
@@ -264,11 +279,11 @@ export default class BattleArena {
 
     this.container = new View({
       ...props,
-      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      width: screen.width - 20,
-      height: screen.height * 0.69,
-      x: screen.width / 2,
-      y: screen.height * 0.493,
+      backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      width: screen.width - 0, //20,
+      height: screen.height * 1, //0.69,
+      x: screen.width * 0.5,
+      y: screen.height * 0.5, //0.493,
       centerOnOrigin: true,
       centerAnchor: true,
     });
@@ -282,12 +297,14 @@ export default class BattleArena {
       y: this.container.style.height * 0.5,
     });
 
+    const y = this.container.style.height * 0.45;
+
     this.components = {
       hero: {
         meter: new ProgressMeter({
           superview: this.container,
           x: this.container.style.width * 0.5,
-          y: this.container.style.height * 0.5 + 35,
+          y: y + 30,
           width: 220,
           height: 50,
           target: 'hero',
@@ -297,7 +314,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.container,
           x: this.container.style.width * 0.5,
-          y: this.container.style.height * 0.5 + 105,
+          y: y + 85,
           target: 'hero',
         }) as AttackIcons,
       },
@@ -306,7 +323,7 @@ export default class BattleArena {
         meter: new ProgressMeter({
           superview: this.container,
           x: this.container.style.width * 0.5,
-          y: this.container.style.height * 0.5 - 35,
+          y: y - 30,
           width: 220,
           height: 50,
           target: 'monster',
@@ -315,7 +332,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.container,
           x: this.container.style.width * 0.5,
-          y: this.container.style.height * 0.5 - 110,
+          y: y - 80,
           target: 'monster',
         }) as AttackIcons,
       },

@@ -119,7 +119,7 @@ export default class ProgressMeter {
     }
   }
 
-  resolveTo(value: number, animatedLabel: boolean = true) {
+  resolveTo(value: number, animated: boolean = true, animatedLabel: boolean = true) {
     const current = getCurrentMeter(this.props.target);
 
     if (!animatedLabel) {
@@ -141,11 +141,11 @@ export default class ProgressMeter {
             this.label.setProps({ localeText: () => num.toString() });
           }
         }
-      }, i * animDuration);
+      }, animated ? (i * animDuration) : 0);
     }
   }
 
-  reset(isOverhead: boolean = false) {
+  reset(opts?: { isOverhead: boolean }) {
     const target = this.props.target;
 
     // update steps
@@ -158,7 +158,7 @@ export default class ProgressMeter {
     }
 
     // update bg
-    if (isOverhead) {
+    if (opts && opts.isOverhead) {
       this.bg.updateOpts({ ...uiConfig.frameRed, zIndex: 2 });
     } else {
       this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });
