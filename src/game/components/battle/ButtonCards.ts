@@ -44,7 +44,7 @@ export default class ButtonCards {
         y: -1,
       },
       onClick: () => {
-        updateTurn();
+        // updateTurn();
       },
     });
   }

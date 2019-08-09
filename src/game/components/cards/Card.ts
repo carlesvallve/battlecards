@@ -5,60 +5,50 @@ import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
 
 import bitmapFonts from 'src/lib/bitmapFonts';
-// import CardBadge from './CardBadge';
 import CardStars from './CardStars';
 import i18n from 'src/lib/i18n/i18n';
 import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { format } from 'url';
-import { animDuration } from 'src/lib/uiConfig';
+import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
-// import { CardSetID } from 'src/replicant/ruleset/cardSets';
-// import {
-//   getCardInstancesOwned,
-//   isCardLocked,
-// } from 'src/replicant/getters/cards';
 
-export type CardOpts = {
-  superview: View;
-  id: CardID;
-  side?: 'front' | 'back';
+export type CardMode = 'mini' | 'full';
+export type CardSide = 'front' | 'back';
+
+export type Props = {
+  superview?: View;
   x?: number;
   y?: number;
   scale?: number;
   onClick?: (id: CardID) => void;
-};
 
-export type Props = {
-  id: CardID;
-  side: 'front' | 'back';
-  fakeRarity?: number;
+  id?: CardID;
+  mode?: CardMode;
+  side?: CardSide;
 };
 
 export default class Card {
-  private props: Props = { id: null, side: 'back' };
+  private props: Props = {
+    superview: null,
+    id: null,
+    side: 'back',
+    mode: 'mini',
+  };
   private container: View;
-  private imageMask: View;
-  private pic: ImageView;
-  private ribbon: ImageScaleView;
-  private title: LangBitmapFontTextView;
-  // private badge: CardBadge;
-  private stars: CardStars;
-  private lock: LangBitmapFontTextView;
+  private backImage: View;
+  private image: ImageView;
   private button: ButtonView;
+  private infoDetails: View;
+  private infoHand: View;
 
-  constructor(opts: CardOpts) {
-    this.props.id = opts.id;
-    this.props.side = opts.side || 'back';
+  constructor(props: Props) {
+    // this.props.id = props.id;
+    // this.props.side = props.side || 'back';
 
-    this.createViews(opts);
-    this.createSelectors();
-
-    this.setProps({
-      id: opts.id,
-      side: opts.side || 'back',
-    });
+    this.createViews(props);
+    this.setProps(props);
   }
 
   destroy() {
@@ -75,124 +65,96 @@ export default class Card {
     return this.props.id;
   }
 
-  getSide(): 'front' | 'back' {
+  getSide(): CardSide {
     return this.props.side;
   }
 
+  getMode(): CardMode {
+    return this.props.mode;
+  }
+
   setProps(props: Props) {
+    if (props === this.props) return;
     this.update(props);
     this.props = props;
   }
 
   private update(props: Props) {
-    if (props !== this.props) {
-      // const owned = getCardInstancesOwned(
-      //   StateObserver.getState().user,
-      //   props.id,
-      // );
+    const { mode, side } = props;
 
-      // title
-      this.title.localeText = () => i18n(`cardNames.${props.id}`);
+    this.getView().updateOpts({
+      zIndex: mode === 'full' ? 9 : 0,
+    });
 
-      // ribbon
-      this.ribbon.updateOpts({
-        visible: props.side === 'front',
-        image: 'resources/images/ui/cards/card_title_bg.png',
-      });
+    this.backImage.updateOpts({
+      visible: side === 'back',
+    });
 
-      // image
-      const image = ruleset.cards[props.id].image;
-      this.pic.updateOpts({
-        image:
-          props.side === 'front'
-            ? `resources/images/ui/cards/sets/${image}`
-            : 'resources/images/ui/cards/card_blank.png',
-      });
+    this.infoHand.updateOpts({
+      visible: mode === 'mini' && side === 'front',
+    });
+    this.infoDetails.updateOpts({
+      visible: mode === 'full' && side === 'front',
+    });
+    this.image.updateOpts({
+      visible: side === 'front',
+    });
 
-      this.pic.updateOpts({
-        x: this.imageMask.style.width * 0.5 - 0,
-        y: this.imageMask.style.height * 0.5 - 4,
-        centerOnOrigin: true,
-        centerAnchor: true,
-      });
-
-      // badge
-      // this.badge.setProps({
-      //   visible: props.side === 'front' && owned > 0,
-      //   owned,
-      // });
-
-      // stars
-      this.stars.setProps({
-        level: ruleset.cards[props.id].rarity,
-        visible: props.side === 'front',
-        active: true, // owned > 0,
-        scale: 1,
-      });
-
-      // lock
-      const unlockLevel = ruleset.cards[props.id].unlockLevel;
-      // const isLocked = isCardLocked(StateObserver.getState().user, props.id);
-      // this.lock.updateOpts({ visible: isLocked && !owned });
-      // this.lock.localeText = () => i18n('cards.unlock', { value: unlockLevel });
-      // this.button.canHandleEvents(!isLocked, false);
-
-      // fake rarity for icon cards
-      // if (props.fakeRarity) {
-      //   this.stars.setProps({
-      //     level: props.fakeRarity,
-      //     visible: true,
-      //     active: true,
-      //     scale: 2,
-      //   });
-      // }
-    }
+    // this.props.mode = props.mode;
+    // this.props.side = props.side;
   }
 
   private createSelectors() {}
 
-  private createViews({ superview, id, x, y, scale, onClick }: CardOpts) {
+  private createViews(props: Props) {
     // 120 x 170
 
     this.container = new View({
-      superview,
-      x: x,
-      y: y,
+      superview: props.superview,
+      x: props.x,
+      y: props.y,
       width: 120 * 2,
       height: 170 * 2,
       centerOnOrigin: true,
       centerAnchor: true,
-      scale: scale || 1,
+      scale: props.scale || 1,
     });
 
     // image-bg
     const imageBg = new View({
       superview: this.container,
       backgroundColor: '#333',
-      x: 5 * 2,
-      y: 8,
-      width: 111 * 2,
-      height: 136 * 2,
+      x: 10,
+      y: 10,
+      width: 222,
+      height: 222, // 136 * 2,
     });
 
-    // image-mask
-    this.imageMask = new View({
+    const imageMask = new View({
       superview: this.container,
       backgroundColor: '#333',
-      x: 5 * 2,
-      y: 8,
-      width: 111 * 2,
-      height: 136 * 2,
+      x: 10,
+      y: 10,
+      width: 222,
+      height: 222, // 136 * 2,
       clip: true,
     });
 
-    this.pic = new ImageScaleView({
-      superview: this.imageMask,
-      x: this.imageMask.style.width * 0.5 - 0,
-      y: this.imageMask.style.height * 0.5 - 4,
-      autoSize: true,
+    // image
+    const image = ruleset.cards[props.id].image;
+    this.image = new ImageView({
+      superview: imageMask,
+      x: 111, // 5 * 2,
+      y: 111, // 8,
+      width: 222,
+      height: 222, // 136 * 2,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      image:
+        props.side === 'front'
+          ? `resources/images/ui/cards/sets/${image}`
+          : 'resources/images/ui/cards/card_blank.png',
     });
-    this.pic.updateOpts({ centerOnOrigin: true, centerAnchor: true });
 
     const frame = new ImageScaleView({
       superview: this.container,
@@ -206,83 +168,126 @@ export default class Card {
       },
     });
 
-    this.ribbon = new ImageScaleView({
+    this.backImage = new View({
       superview: this.container,
-      visible: this.props.side === 'front',
-      x: this.container.style.width / 2,
-      y: this.container.style.height - 26 * 2,
-      width: this.container.style.width * 1.075,
-      height: this.container.style.width * 0.2,
-      image: 'resources/images/ui/cards/card_title_bg.png',
-      centerOnOrigin: true,
-      centerAnchor: true,
-      scaleMethod: '9slice',
-      sourceSlices: {
-        horizontal: { left: 60, right: 60 },
-        vertical: { top: 25, bottom: 25 },
-      },
+      backgroundColor: 'white',
+      x: 10,
+      y: 10,
+      width: 120 * 2 - 20,
+      height: 170 * 2 - 20,
     });
 
-    this.title = new LangBitmapFontTextView({
-      superview: this.ribbon,
-      // backgroundColor: 'rgba(255,0,0,0.5)',
-      y: 12,
-      x: 17,
-      width: this.container.style.width - 20,
-      localeText: () => i18n(`cardNames.${id}`),
-      size: 20,
-      font: bitmapFonts('TitleStroke'),
-      align: 'center',
-      verticalAlign: 'center',
-    });
-
-    // this.badge = new CardBadge({
-    //   superview: this.container,
-    //   visible: true,
-    //   x: this.container.style.width - 14 * 2,
-    //   y: this.container.style.height - 52 * 2,
-    // });
-
-    this.stars = new CardStars({
+    const bottom = new View({
       superview: this.container,
-      visible: this.props.side === 'front',
-      level: ruleset.cards[this.props.id].rarity,
+      backgroundColor: 'white',
+      x: 5,
+      y: 222,
+      width: 230,
+      height: 90,
     });
 
-    // locked
-    // this.lock = new BitmapFontTextView({
-    //   superview: this.container,
-    //   backgroundColor: 'rgba(255, 0, 0 ,0.5)',
-    //   centerOnOrigin: true,
-    //   x: this.container.style.width * 0.5,
-    //   y: this.container.style.height * 0.45,
-    //   width: this.container.style.width - 20,
-    //   size: 12 * 2,
-    //   font: bitmapFonts('TitleStroke'),
-    //   align: 'center',
-    //   verticalAlign: 'center',
-    //   wordWrap: true,
-    // });
-
-    // const lockIcon = new ImageView({
-    //   superview: this.lock,
-    //   image: 'resources/images/ui/cards/icon_lock.png',
-    //   centerOnOrigin: true,
-    //   x: this.lock.style.width * 0.5,
-    //   y: -25 * 2,
-    //   width: 22 * 2,
-    //   height: 28 * 2,
-    // });
+    this.createInfoHand();
+    this.createInfoDetails();
 
     this.button = new ButtonView({
       superview: this.container,
+      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: 120 * 2,
       height: 170 * 2,
-      onClick: () => onClick && onClick(this.props.id),
+      onClick: () => props.onClick && props.onClick(this.props.id),
     });
   }
 
-  spawnCard(
+  createInfoDetails() {
+    this.infoDetails = new View({
+      superview: this.container,
+      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      x: 18,
+      y: 222 + 5,
+      width: 120 * 2 - 36,
+      height: 90,
+    });
+
+    this.createInfoParagraph(
+      3,
+      () => 'PROS',
+      () => 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
+    );
+    this.createInfoParagraph(
+      53,
+      () => 'CONS',
+      () => 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
+    );
+  }
+
+  createInfoParagraph(y: number, name: () => string, desc: () => string) {
+    const nameLabel = new LangBitmapFontTextView({
+      superview: this.infoDetails,
+      font: bitmapFonts('TitleStroke'),
+      size: 13,
+      color: 'cyan',
+      align: 'left',
+      verticalAlign: 'top',
+      x: 0,
+      y,
+      width: this.infoHand.style.width - 0,
+      height: this.infoHand.style.height - 10,
+      localeText: name,
+    });
+
+    const descLabel = new LangBitmapFontTextView({
+      superview: this.infoDetails,
+      font: bitmapFonts('Title'),
+      size: 11,
+      color: 'black',
+      align: 'left',
+      wordWrap: true,
+      verticalAlign: 'top',
+      x: 0,
+      y: y + 20,
+      width: this.infoHand.style.width - 0,
+      height: this.infoHand.style.height - 10,
+      localeText: desc,
+    });
+  }
+
+  createInfoHand() {
+    this.infoHand = new View({
+      superview: this.container,
+      backgroundColor: 'white', //'rgba(255, 0, 0, 0.5)',
+      x: 5,
+      y: 222 + 5,
+      width: 120 * 2 - 10,
+      height: 170 * 2 - 250,
+    });
+
+    const label = new LangBitmapFontTextView({
+      superview: this.infoHand,
+      font: bitmapFonts('TitleStroke'),
+      size: 60,
+      color: 'white',
+      align: 'right',
+      verticalAlign: 'center',
+      x: 0,
+      y: 5,
+      width: this.infoHand.style.width - 30,
+      height: this.infoHand.style.height - 10,
+      localeText: () => '0',
+    });
+
+    const icon = new ImageView({
+      superview: this.infoHand,
+      x: 52,
+      y: 52,
+      width: 64,
+      height: 64,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      image: 'resources/images/ui/icons/diamond2.png',
+    });
+  }
+
+  spawn(
     from: { x: number; y: number; scale: number },
     to: { x: number; y: number; scale: number },
     delay: number,
@@ -307,12 +312,34 @@ export default class Card {
       .clear()
       .then({ scaleX: 0 }, t, animate.easeInOut)
       .then(() => {
-        this.setProps({ id: this.props.id, side: this.toggleSide() });
+        this.setProps({ mode: this.props.mode, side: this.toggleSide() });
       })
       .then({ scaleX: 1 }, t, animate.easeInOut);
   }
 
   private toggleSide() {
     return this.props.side === 'front' ? 'back' : 'front';
+  }
+
+  transform(opts: {
+    mode: CardMode;
+    x: number;
+    y: number;
+    scale: number;
+    cb?: () => void;
+  }) {
+    const { mode, x, y, scale, cb } = opts;
+
+    console.log('>>>', mode);
+
+    this.update({ mode, side: 'front' });
+
+    const t = animDuration;
+    animate(this.getView())
+      .clear()
+      .wait(0)
+      .then({ x, y, scale: scale * 1.1 }, t, animate.easeInOut)
+      .then({ x, y, scale }, t, animate.easeOutBounce)
+      .then(() => cb && cb());
   }
 }

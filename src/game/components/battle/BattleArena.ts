@@ -10,7 +10,7 @@ import ProgressMeter from './ProgressMeter';
 import AttackIcons from './AttackIcons';
 
 import StateObserver from 'src/redux/StateObserver';
-import { Target, CombatResult } from 'src/types/custom';
+import { Target, CombatResult, CombatTurn } from 'src/types/custom';
 import {
   getCurrentMeter,
   addHp,
@@ -51,7 +51,7 @@ export default class BattleArena {
       if (!turn) return;
 
       console.log('------ Phase 1. Dice:', turn);
-      this.throwDice(turn.target);
+      this.throwDice(turn);
     });
 
     // phase 2: Resolve.
@@ -131,12 +131,13 @@ export default class BattleArena {
   // ============================================================
   // Phase 1: Dice
 
-  throwDice(target: Target) {
+  throwDice(turn: CombatTurn) {
+    const  { target, dice } = turn;
     // get last meter position
     const lastMeter = getCurrentMeter(target);
 
     // throw dice
-    const dice = getRandomInt(1, 6);
+    // const dice = getRandomInt(1, 6);
 
     // calucate and resolve possible overhead
     if (this.checkAndResolveOverhead(target, lastMeter, dice)) return;

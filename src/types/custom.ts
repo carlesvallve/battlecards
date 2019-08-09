@@ -1,3 +1,5 @@
+import { CardNum } from "src/game/components/cards/CardNumber";
+
 // utility types
 
 export const tuple = <T extends string[]>(...args: T) => args;
@@ -39,6 +41,7 @@ export type CombatResult = {
 export type CombatTurn = {
   target: Target;
   index: number;
+  dice: CardNum;
 };
 
 export type CombatStats = {

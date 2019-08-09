@@ -4,6 +4,7 @@ import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import ButtonCards from './ButtonCards';
 import ButtonAction from './ButtonAction';
+import BattleCardNumbers from './BattleCardNumbers';
 
 type Props = { superview: View };
 
@@ -58,5 +59,7 @@ export default class BattleFooter {
       target: 'hero',
       type: 'ep',
     });
+
+    
   }
 }

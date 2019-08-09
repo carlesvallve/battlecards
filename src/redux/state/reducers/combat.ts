@@ -5,6 +5,7 @@ import {
   CombatTurn,
   CombatStats,
 } from 'src/types/custom';
+import { CardNum } from 'src/game/components/cards/CardNumber';
 
 const slice = createSlice({
   initialState: {
@@ -13,6 +14,7 @@ const slice = createSlice({
     turn: {
       target: null as Target,
       index: null as number,
+      dice: null as CardNum,
     } as CombatTurn,
 
     // todo: grab this from ruleset
@@ -41,11 +43,12 @@ const slice = createSlice({
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
 
-    action_updateTurn: (state) => {
+    action_updateTurn: (state, { payload }: PayloadAction<{ value: CardNum }>) => {
       const target = state.turn.target === 'hero' ? 'monster' : 'hero';
       state.turn = {
         target,
         index: state.turn.index + 1,
+        dice: payload.value,
       };
     },
 

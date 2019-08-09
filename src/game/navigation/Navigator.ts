@@ -27,8 +27,8 @@ export default class Navigator {
       backgroundColor: '#010101',
       x: 0,
       y: 0,
-      width: screen.width,
-      height: screen.height,
+      width: device.width * 2,
+      height: device.height * 2,
       clip: false,
       scale: device.width / 320,
     });
@@ -44,13 +44,6 @@ export default class Navigator {
         id: 'popupPause',
       }),
     };
-
-    // this.popups = {
-    //   pause: new PopupPause({
-    //     id: 'popupPause',
-    //     superview: this.rootView,
-    //   }),
-    // };
 
     // check for scene navigation
     StateObserver.createSelector((state) => state.ui.scene).addListener(
