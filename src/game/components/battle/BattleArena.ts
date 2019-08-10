@@ -1,9 +1,5 @@
 import animate from 'animate';
 import View from 'ui/View';
-import ImageScaleView from 'ui/ImageScaleView';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
-import bitmapFonts from 'src/lib/bitmapFonts';
-import uiConfig from 'src/lib/uiConfig';
 import {
   getScreenDimensions,
   waitForIt,
@@ -18,7 +14,6 @@ import {
   setResolved,
   resetCombat,
   addStat,
-  // addHp,
 } from 'src/redux/shortcuts/combat';
 
 import ProgressMeter from './ProgressMeter';
@@ -28,20 +23,22 @@ import MonsterImage from './MonsterImage';
 import { Monster } from 'src/redux/ruleset/monsters';
 import { CardNum } from '../cards/CardNumber';
 import { Target } from 'src/types/custom';
+import BattleOverlay from './BattleOverlay';
 
-type Props = { superview: View; monsterData: Monster };
+type Props = { superview: View; monsterData: Monster; overlay: BattleOverlay };
 
 export default class BattleArena {
   private props: Props;
   private container: View;
-  private components;
+  private components: {
+    hero: { meter: ProgressMeter; attackIcons: AttackIcons };
+    monster: { meter: ProgressMeter; attackIcons: AttackIcons };
+  };
 
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
     this.createSelectors();
-
-    // changeTarget();
   }
 
   private createSelectors() {
@@ -241,33 +238,7 @@ export default class BattleArena {
       .then({ scale: 1, r: 0 }, 50, animate.easeInOut);
 
     // create damage label
-    const d = loser === 'hero' ? 1 : -1;
-    const labelDamage = new LangBitmapFontTextView({
-      ...uiConfig.bitmapFontText,
-      superview: this.container,
-      font: bitmapFonts('TitleStroke'),
-      localeText: () => `${damage}`,
-      x: this.container.style.width / 2,
-      y: this.container.style.height / 2 - 20 + d * 85,
-      size: 24,
-      color: 'yellow',
-      scale: 0,
-      zIndex: 100,
-      centerOnOrigin: true,
-      centerAnchor: true,
-    });
-
-    // animate damage label
-    const y = this.container.style.height / 2 - 20 + d * 160;
-    animate(labelDamage)
-      .clear()
-      .wait(150)
-      .then({ scale: 1 }, 100, animate.easeInOut)
-      .then({ y, opacity: 0 }, 600, animate.linear)
-      .then({ scale: 0 }, 100, animate.easeInOut)
-      .then(() => {
-        labelDamage.removeFromSuperview();
-      });
+    this.props.overlay.createDamageLabel(loser, damage);
   }
 
   // ============================================================
@@ -277,22 +248,15 @@ export default class BattleArena {
 
     this.container = new View({
       ...props,
-      backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
       width: screen.width,
       height: screen.height * 1,
       x: screen.width * 0.5,
       y: screen.height * 0.5,
       centerOnOrigin: true,
       centerAnchor: true,
-    });
-
-    const bg = new ImageScaleView({
-      superview: this.container,
-      ...uiConfig.frameBlack,
-      width: this.container.style.width,
-      height: this.container.style.height,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5,
+      infinite: true,
+      canHandleEvents: false,
     });
 
     const monsterImage = new MonsterImage({

@@ -8,6 +8,7 @@ import BattleHeader from '../components/battle/BattleHeader';
 import BattleArena from '../components/battle/BattleArena';
 import BattleCardHand from '../components/battle/BattleCardHand';
 import { getRandomMonster } from 'src/redux/shortcuts/combat';
+import BattleOverlay from '../components/battle/BattleOverlay';
 
 export default class SceneGame extends SceneBasic {
   constructor() {
@@ -33,9 +34,15 @@ export default class SceneGame extends SceneBasic {
 
     const monsterData = getRandomMonster();
 
-    const battleArea = new BattleArena({
+    const overlay = new BattleOverlay({
+      superview: this.container,
+      zIndex: 10,
+    });
+
+    const battleArena = new BattleArena({
       superview: this.container,
       monsterData,
+      overlay,
     });
 
     const header = new BattleHeader({
