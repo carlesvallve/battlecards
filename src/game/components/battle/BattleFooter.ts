@@ -28,11 +28,11 @@ export default class BattleFooter {
       y: screen.height - 80,
     });
 
-    const buttonCards = new ButtonCards({
-      superview: this.container,
-      x: 35,
-      y: 40,
-    });
+    // const buttonCards = new ButtonCards({
+    //   superview: this.container,
+    //   x: 35,
+    //   y: 40,
+    // });
 
     const buttonAction = new ButtonAction({
       superview: this.container,

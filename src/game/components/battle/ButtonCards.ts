@@ -37,12 +37,12 @@ export default class ButtonCards {
       localeText: () => '',
       size: 16,
       font: bitmapFonts('TitleStroke'),
-      iconData: {
-        url: 'resources/images/ui/icons/cards.png',
-        size: 0.6,
-        x: 0,
-        y: -1,
-      },
+      // iconData: {
+      //   url: 'resources/images/ui/icons/cards.png',
+      //   size: 0.6,
+      //   x: 0,
+      //   y: -1,
+      // },
       onClick: () => {
         // updateTurn();
       },

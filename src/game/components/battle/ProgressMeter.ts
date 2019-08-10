@@ -3,9 +3,10 @@ import uiConfig from 'src/lib/uiConfig';
 import ImageScaleView from 'ui/ImageScaleView';
 import Label from './Label';
 import { waitForIt } from 'src/lib/utils';
-import { getCurrentMeter, getColorByTarget } from 'src/redux/shortcuts/combat';
+import { getCurrentMeter, getColorByTarget, getTargetEnemy } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import { Target } from 'src/types/custom';
+import StateObserver from 'src/redux/StateObserver';
 
 type Props = {
   superview: View;
@@ -31,6 +32,28 @@ export default class ProgressMeter {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
+    // this.createSelectors();
+  }
+
+  // private createSelectors() {
+  //   StateObserver.createSelector(({ combat }) => {
+  //     if (combat.target !== this.props.target) return;
+  //     return combat[combat.target].meter;
+  //   }).addListener((meter) => {
+  //     const enemyMeter = getTargetEnemy()
+  //     console.log('>>> combat', combat);
+  //   });
+  // }
+
+  getView() {
+    return this.container;
+  }
+
+  getStepGlobalPos() {
+    return {
+      x: this.container.style.x,
+      y: this.container.style.y
+    }
   }
 
   protected createViews(props: Props) {
@@ -95,9 +118,11 @@ export default class ProgressMeter {
     }
   }
 
-  refresh(enemyMeter: number, updateLabel: boolean) {
+  refresh(updateLabel: boolean) {
     const currentMeter = getCurrentMeter(this.props.target);
     if (currentMeter === 0) return;
+
+    const enemyMeter = getCurrentMeter(getTargetEnemy(this.props.target))
 
     // update bg
     this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });

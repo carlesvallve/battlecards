@@ -1,6 +1,7 @@
 
 import cards from './cards';
 import { getRandomItemFromArray } from 'src/lib/utils';
+import monsters from './monsters';
 
 
 export default {
@@ -10,4 +11,5 @@ export default {
   maxHand: 5,
 
   ...cards,
+  ...monsters,
 };

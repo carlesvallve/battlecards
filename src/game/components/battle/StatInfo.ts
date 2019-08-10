@@ -38,7 +38,7 @@ export default class StatInfo {
     StateObserver.createSelector(
       ({ combat }) => combat[target][type],
     ).addListener((value) => {
-      console.log('stat changed:', target, type, value);
+      // console.log('stat changed:', target, type, value);
       this.label.localeText = () => value;
     });
   }

@@ -7,6 +7,7 @@ import BattleFooter from '../components/battle/BattleFooter';
 import BattleHeader from '../components/battle/BattleHeader';
 import BattleArena from '../components/battle/BattleArena';
 import BattleCardHand from '../components/battle/BattleCardHand';
+import { getRandomMonster } from 'src/redux/shortcuts/combat';
 
 export default class SceneGame extends SceneBasic {
   constructor() {
@@ -30,12 +31,16 @@ export default class SceneGame extends SceneBasic {
       onClick: () => navigateToScene('title'),
     });
 
+    const monsterData = getRandomMonster();
+
     const battleArea = new BattleArena({
       superview: this.container,
+      monsterData,
     });
 
     const header = new BattleHeader({
       superview: this.container,
+      monsterData,
     });
 
     const footer = new BattleFooter({
@@ -45,12 +50,5 @@ export default class SceneGame extends SceneBasic {
     const cards = new BattleCardHand({
       superview: this.container,
     });
-
-    // const card = new Card({
-    //   superview: this.container,
-    //   id: 'airForce',
-    //   x: screen.width / 2,
-    //   y: screen.height / 2,
-    // });
   }
 }

@@ -62,8 +62,8 @@ export default class AttackIcons {
     const icon = new ImageScaleView({
       superview: this.container,
       image: 'resources/images/ui/icons/sword.png',
-      width: 20,
-      height: 20,
+      width: 28,
+      height: 28,
       x: x + iconDisplacement,
       y,
       centerOnOrigin: true,

@@ -36,6 +36,8 @@ export const getRandomFloat = (min: number, max: number): number => {
   return min + Math.random() * (max - min);
 };
 
+
+
 export const getRandomInt = (min: number, max: number): number => {
   min = Math.ceil(min);
   max = Math.floor(max);

@@ -2,16 +2,7 @@ import animate from 'animate';
 import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageScaleView from 'ui/ImageScaleView';
-import ImageView from 'ui/ImageView';
-
 import bitmapFonts from 'src/lib/bitmapFonts';
-import CardStars from './CardStars';
-import i18n from 'src/lib/i18n/i18n';
-import StateObserver from 'src/redux/StateObserver';
-import ruleset from 'src/redux/ruleset';
-import { CardID } from 'src/redux/ruleset/cards';
-import { format } from 'url';
-import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 
 export type CardNum = 1 | 2 | 3 | 4 | 5 | 6;
@@ -79,6 +70,7 @@ export default class CardNumber {
       centerOnOrigin: true,
       centerAnchor: true,
       scale: props.scale || 1,
+      r: -0.1 + Math.random() *  0.2,
     });
 
     // image-bg

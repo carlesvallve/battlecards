@@ -4,8 +4,14 @@ import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import StatInfo from './StatInfo';
 import MonsterInfo from './MonsterInfo';
+import MonsterImage from './MonsterImage';
+import {
+  getRandomMonsterID,
+  getRandomMonster,
+} from 'src/redux/shortcuts/combat';
+import { Monster } from 'src/redux/ruleset/monsters';
 
-type Props = { superview: View };
+type Props = { superview: View, monsterData: Monster };
 
 export default class BattleHeader {
   private props: Props;
@@ -56,8 +62,8 @@ export default class BattleHeader {
       width: 140,
       height: 30,
       data: {
-        name: 'Monster',
-        description: 'Vicious skavenger',
+        name: props.monsterData.name, // 'Monster',
+        description: props.monsterData.desc, // 'Vicious skavenger',
       },
     });
 

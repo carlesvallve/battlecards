@@ -4,7 +4,7 @@ import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import StateObserver from 'src/redux/StateObserver';
-import { resolveCombat } from 'src/redux/shortcuts/combat';
+import { setResolved } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 
 type ButtonActionState = 'hold' | 'attack' | 'defend';
@@ -87,7 +87,8 @@ export default class ButtonAction {
         y: -2,
       },
       onClick: () => {
-        resolveCombat();
+        // resolveCombat();
+        setResolved('hero');
       },
     });
   }
