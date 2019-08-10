@@ -1,4 +1,3 @@
-import { CardNum } from 'src/game/components/cards/CardNumber';
 
 // utility types
 

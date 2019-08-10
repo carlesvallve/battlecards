@@ -102,8 +102,8 @@ export default class BattleArena {
 
       this.createAttackIcons({ winner, loser, attacks });
 
-      waitForIt(() => resetCombat(), attacks * 350 + 600);
-    }, 600);
+      waitForIt(() => resetCombat(), attacks * 600 + 600);
+    }, 350);
 
     return true;
   }
@@ -116,12 +116,14 @@ export default class BattleArena {
       console.log('>>>', target, 'OVERHEAD!', overhead);
       this.components[target].meter.reset({ isOverhead: true });
       this.components[enemy].meter.resolveTo(overhead);
-      this.createAttackIcons({
-        winner: enemy,
-        loser: target,
-        attacks: overhead,
-      });
-      waitForIt(() => resetCombat(), overhead * 350 + 600);
+      waitForIt(() => {
+        this.createAttackIcons({
+          winner: enemy,
+          loser: target,
+          attacks: overhead,
+        });
+        waitForIt(() => resetCombat(), overhead * 600 + 600);
+      }, 350);
       return true;
     }
 
@@ -130,12 +132,14 @@ export default class BattleArena {
       console.log('>>>', enemy, 'OVERHEAD!', overhead);
       this.components[enemy].meter.reset({ isOverhead: true });
       this.components[target].meter.resolveTo(overhead);
-      this.createAttackIcons({
-        winner: target,
-        loser: enemy,
-        attacks: overhead,
-      });
-      waitForIt(() => resetCombat(), overhead * 350 + 600);
+      waitForIt(() => {
+        this.createAttackIcons({
+          winner: target,
+          loser: enemy,
+          attacks: overhead,
+        });
+        waitForIt(() => resetCombat(), overhead * 600 + 600);
+      }, 350);
       return true;
     }
 
@@ -218,7 +222,7 @@ export default class BattleArena {
     const combat = StateObserver.getState().combat;
     const atk = combat[winner].stats.attack.current;
     const def = combat[loser].stats.defense.current;
-    const damage = atk - def; //combat[winner].stats.attack - combat[loser].stats.defense;
+    const damage = atk - def;
     console.log('  >>> attack', index + 1, '->', damage, 'damage');
 
     // remove loser's HP
@@ -274,10 +278,10 @@ export default class BattleArena {
     this.container = new View({
       ...props,
       backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      width: screen.width - 0, //20,
-      height: screen.height * 1, //0.69,
+      width: screen.width,
+      height: screen.height * 1,
       x: screen.width * 0.5,
-      y: screen.height * 0.5, //0.493,
+      y: screen.height * 0.5,
       centerOnOrigin: true,
       centerAnchor: true,
     });
