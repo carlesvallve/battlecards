@@ -80,11 +80,7 @@ export default class BattleArena {
 
     // if it's a draw, reset both meters to 0 and call it  day
     if (combat[target].meter === combat[enemy].meter) {
-      waitForIt(() => {
-        this.components[target].meter.reset({ isOverhead: false });
-        this.components[enemy].meter.reset({ isOverhead: false });
-        waitForIt(() => resetCombat(), 600);
-      }, 600);
+      waitForIt(() => resetCombat(), 350);
       return true;
     }
 
