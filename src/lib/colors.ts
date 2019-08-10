@@ -1,4 +1,4 @@
-import { getRandomItemFromArray } from "./utils";
+import { getRandomItemFromArray } from './utils';
 
 export const getRandomColor = () => {
   const colors = [

@@ -3,16 +3,11 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
-
+import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
-import CardStars from './CardStars';
-import i18n from 'src/lib/i18n/i18n';
-import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
-import { format } from 'url';
-import uiConfig, { animDuration } from 'src/lib/uiConfig';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
+import { animDuration } from 'src/lib/uiConfig';
 
 export type CardMode = 'mini' | 'full';
 export type CardSide = 'front' | 'back';
@@ -22,6 +17,7 @@ export type Props = {
   x?: number;
   y?: number;
   scale?: number;
+  r?: number;
   onClick?: (id: CardID) => void;
 
   id?: CardID;
@@ -118,7 +114,10 @@ export default class Card {
       centerOnOrigin: true,
       centerAnchor: true,
       scale: props.scale || 1,
+      r: props.r,
     });
+
+    console.log('>>> r', props.r);
 
     // image-bg
     const imageBg = new View({

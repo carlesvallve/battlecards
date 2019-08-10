@@ -95,8 +95,8 @@ export default class BattleArena {
 
       this.createAttackIcons({ winner, loser, attacks });
 
-      waitForIt(() => resetCombat(), attacks * 600 + 600);
-    }, 350);
+      waitForIt(() => resetCombat(), (attacks + 1) * 600 + 600);
+    }, 100);
 
     return true;
   }
@@ -115,8 +115,8 @@ export default class BattleArena {
           loser: target,
           attacks: overhead,
         });
-        waitForIt(() => resetCombat(), overhead * 600 + 600);
-      }, 350);
+        waitForIt(() => resetCombat(), (overhead + 0) * 600 + 600);
+      }, 100);
       return true;
     }
 
@@ -131,8 +131,8 @@ export default class BattleArena {
           loser: enemy,
           attacks: overhead,
         });
-        waitForIt(() => resetCombat(), overhead * 600 + 600);
-      }, 350);
+        waitForIt(() => resetCombat(), (overhead + 0) * 600 + 600);
+      }, 100);
       return true;
     }
 
@@ -258,7 +258,7 @@ export default class BattleArena {
     const monsterImage = new MonsterImage({
       superview: this.container,
       x: this.container.style.width / 2,
-      y: 128 + 40,
+      y: 128 + 55,
       width: 72,
       height: 72,
       image: props.monsterData.image,
@@ -279,7 +279,7 @@ export default class BattleArena {
         }) as ProgressMeter,
 
         attackIcons: new AttackIcons({
-          superview: this.container,
+          superview: this.props.overlay.getView(), // this.container,
           x: this.container.style.width * 0.5,
           y: y + 80,
           target: 'hero',
@@ -296,8 +296,9 @@ export default class BattleArena {
           target: 'monster',
           stepLimit: 12,
         }) as ProgressMeter,
+
         attackIcons: new AttackIcons({
-          superview: this.container,
+          superview: this.props.overlay.getView(), // this.container,
           x: this.container.style.width * 0.5,
           y: y - 170,
           target: 'monster',

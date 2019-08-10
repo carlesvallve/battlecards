@@ -235,4 +235,3 @@ export default {
 export const getCardsArray = (): string[] => {
   return Object.keys(cards);
 };
-

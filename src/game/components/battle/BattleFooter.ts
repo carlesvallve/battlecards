@@ -2,9 +2,7 @@ import animate from 'animate';
 import View from 'ui/View';
 import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
-import ButtonCards from './ButtonCards';
 import ButtonAction from './ButtonAction';
-import BattleCardNumbers from './BattleCardNumbers';
 
 type Props = { superview: View };
 
@@ -27,12 +25,6 @@ export default class BattleFooter {
       height: 80,
       y: screen.height - 80,
     });
-
-    // const buttonCards = new ButtonCards({
-    //   superview: this.container,
-    //   x: 35,
-    //   y: 40,
-    // });
 
     const buttonAction = new ButtonAction({
       superview: this.container,
@@ -59,7 +51,5 @@ export default class BattleFooter {
       target: 'hero',
       type: 'ep',
     });
-
-    
   }
 }

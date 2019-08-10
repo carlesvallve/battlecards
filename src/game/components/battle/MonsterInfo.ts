@@ -68,5 +68,12 @@ export default class MonsterInfo {
       y: this.container.style.height * 0.56,
       localeText: () => props.data.description,
     });
+
+    if (!props.data.description) {
+      labelName.updateOpts({
+        size: 14,
+        y: this.container.style.height * 0.28,
+      })
+    }
   }
 }

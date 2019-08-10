@@ -1,11 +1,6 @@
 import animate from 'animate';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
-import uiConfig from 'src/lib/uiConfig';
-import bitmapFonts from 'src/lib/bitmapFonts';
-import ImageScaleView from 'ui/ImageScaleView';
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
-import { MonsterID } from 'src/redux/ruleset/monsters';
 
 type Props = {
   superview: View;

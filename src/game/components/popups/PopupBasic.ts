@@ -14,7 +14,7 @@ export default class PopupBasic {
   protected bg: View;
   protected box: View;
 
-  constructor(opts: { superview: View, id: PopupID }) {
+  constructor(opts: { superview: View; id: PopupID }) {
     this.id = opts.id;
     this.closeableWithBg = true;
     this.container.canHandleEvents(false, false);

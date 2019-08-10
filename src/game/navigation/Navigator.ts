@@ -55,7 +55,6 @@ export default class Navigator {
   }
 
   gotoScene(name: SceneID) {
-
     const scene = this.scenes[name].getView();
     const fromScene = this.rootView.stack[this.rootView.stack.length - 1];
     // console.log(fromScene, '->', scene);
@@ -72,7 +71,6 @@ export default class Navigator {
       this.fadeIn(scene, duration);
       return;
     }
-
 
     this.fadeOut(fromScene, duration, () => {
       this.rootView.pop(true);

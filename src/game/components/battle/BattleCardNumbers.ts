@@ -4,7 +4,7 @@ import { getScreenDimensions, waitForIt, getRandomFloat } from 'src/lib/utils';
 import Card from '../cards/Card';
 import { animDuration } from 'src/lib/uiConfig';
 import CardNumber, { CardNum } from '../cards/CardNumber';
-import { getTarget, throwDice } from 'src/redux/shortcuts/combat'; // updateTurn, 
+import { getTarget, throwDice } from 'src/redux/shortcuts/combat'; // updateTurn,
 import StateObserver from 'src/redux/StateObserver';
 
 type Props = { superview: View };
@@ -34,6 +34,7 @@ export default class BattleCardNumbers {
       y: 0,
       infinite: true,
       canHandleEvents: false,
+      zIndex: 100,
     });
   }
 
@@ -55,7 +56,7 @@ export default class BattleCardNumbers {
           num: i as CardNum,
           x: 31 + j * 2,
           y: screen.height - 48 + j * 2,
-          scale: 0.175,
+          scale: 0.15,
           onClick: () => this.spawnCard(card),
         });
         this.cards.push(card);
@@ -96,7 +97,7 @@ export default class BattleCardNumbers {
       .then({ scale: 0.35, scaleY: 1 }, t * 0.5, animate.easeInOut)
       .then(() => {
         waitForIt(() => {
-          throwDice('hero', card.getNum())
+          throwDice('hero', card.getNum());
           // updateTurn(card.getNum()), t * 0.5;
         }, t * 0.5);
       })

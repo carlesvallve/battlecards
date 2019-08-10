@@ -23,9 +23,11 @@ export const getTileAtPixel = (px: number, py: number): Tile => {
 };
 export const getTileTypeAtPixel = (px: number, py: number): number => {
   const tile = getTileAtPixel(px, py);
-  if (tile) { return tile.data.type; }
+  if (tile) {
+    return tile.data.type;
+  }
   return null;
-}
+};
 
 export const getTile = (x: number, y: number): Tile => {
   return level.map[y][x] || null;

@@ -67,6 +67,9 @@ export default class BattleCardHand {
   createCards(props: Props) {
     const screen = getScreenDimensions();
 
+    const rotations = [-0.25, -0.125, 0, 0.125, 0.25];
+    const ys = [0, -12, -15, -12, 0];
+
     this.cards = [];
     for (let i = 0; i < maxCards; i++) {
       const card = new Card({
@@ -74,9 +77,11 @@ export default class BattleCardHand {
         id: 'ak47',
         side: 'front',
         mode: 'mini',
-        x: 35 + i * 62,
-        y: screen.height - 120,
+        // x: 35 + i * 62,
+        x: 40 + i * 60,
+        y: screen.height - 120 + ys[i],
         scale: 0.22,
+        r: rotations[i],
         onClick: () => this.showCardDetails(card),
       });
       this.cards.push(card);

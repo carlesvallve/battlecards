@@ -1,4 +1,4 @@
-import StateObserver from "../StateObserver";
+import StateObserver from '../StateObserver';
 
 export const getGameSate = () => {
   return StateObserver.getState().game.gameState;
@@ -11,4 +11,3 @@ export const isGamePaused = () => {
 export const isGameOver = () => {
   return StateObserver.getState().game.gameState === 'GameOver';
 };
-

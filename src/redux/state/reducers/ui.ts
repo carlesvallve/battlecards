@@ -23,7 +23,7 @@ const slice = createSlice({
       state.previousScene = state.scene;
       state.scene = payload;
     },
-   
+
     togglePopup: (state, { payload }: PayloadAction<PopupOpts>) => {
       state.togglePopup = payload;
     },
