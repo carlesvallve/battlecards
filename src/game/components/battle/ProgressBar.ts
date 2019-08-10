@@ -7,7 +7,7 @@ import ImageView from 'ui/ImageView';
 import View from 'ui/View';
 import StateObserver from 'src/redux/StateObserver';
 import Label from './Label';
-import { Target } from 'src/types/custom';
+import { Target, TargetStat } from 'src/types/custom';
 
 type Props = {
   superview: View;
@@ -39,13 +39,12 @@ export default class ProgressBar {
     const target = this.props.target;
     const type = this.props.type;
 
-    StateObserver.createSelector(({ combat }) => {
-      return {
-        value: combat[target][type],
-        valueMax: combat[target][`${type}Max`],
-      };
-    }).addListener(({ value, valueMax }) => {
-      this.setProgress(value, valueMax);
+    StateObserver.createSelector(
+      ({ combat }) => combat[target].stats[type],
+    ).addListener((value: TargetStat) => {
+      if (!value) return;
+      // console.log('### value:', value);
+      this.setProgress(value);
     });
   }
 
@@ -84,7 +83,6 @@ export default class ProgressBar {
 
     this.barTip = new View({
       superview: this.bar,
-      // backgroundColor: props.type === 'hp' ? 'red' : 'blue',
       backgroundColor:
         props.type === 'hp' ? uiConfig.colors.red : uiConfig.colors.blue,
       width: 5,
@@ -132,23 +130,11 @@ export default class ProgressBar {
       localeText: () => '/0',
       opacity: 0.5,
     });
-
-    // this.labelDamage = new Label({
-    //   ...uiConfig.bitmapFontText,
-    //   superview: this.container,
-    //   font: bitmapFonts('TitleStroke'),
-    //   size: 12,
-    //   x: this.container.style.width / 2,
-    //   y: 0, // this.container.style.height / 2,
-    //   // height: this.container.style.height,
-    //   localeText: () => '+0',
-    // });
   }
 
-  setProgress(value: number, maxValue: number) {
-    const percent = (1 * value) / maxValue;
+  setProgress(value: TargetStat) {
+    const percent = (1 * value.current) / value.max;
     const width = (this.container.style.width - 5) * percent;
-
     const tipVisible = percent > 0 && percent < 1;
 
     animate(this.bar)

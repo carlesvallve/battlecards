@@ -36,10 +36,11 @@ export default class StatInfo {
     const type = this.props.type;
 
     StateObserver.createSelector(
-      ({ combat }) => combat[target][type],
-    ).addListener((value) => {
+      ({ combat }) => combat[target].stats[type],
+    ).addListener((stat) => {
+      if (!stat) return;
       // console.log('stat changed:', target, type, value);
-      this.label.localeText = () => value;
+      this.label.localeText = () => stat.current;
     });
   }
 
@@ -75,7 +76,7 @@ export default class StatInfo {
       centerOnOrigin: true,
       centerAnchor: true,
       image: `resources/images/ui/icons/${
-        props.type === 'damage' ? 'sword' : 'helmet'
+        props.type === 'attack' ? 'sword' : 'helmet'
       }.png`,
     });
 

@@ -1,9 +1,12 @@
 import StateObserver from 'src/redux/StateObserver';
-import { Target } from 'src/types/custom';
+import { Target, TargetStat } from 'src/types/custom';
 import {
   action_changeTarget,
   action_throwDice,
   action_setResolved,
+  action_resetCombat,
+  action_addStat,
+  action_setStat,
 } from 'src/redux/state/reducers/combat';
 import uiConfig from 'src/lib/uiConfig';
 import { CardNum } from 'src/game/components/cards/CardNumber';
@@ -54,6 +57,10 @@ export const getColorByDiff = (target: Target, currentMeter: number) => {
 
 // setters
 
+export const resetCombat = () => {
+  StateObserver.dispatch(action_resetCombat());
+};
+
 export const changeTarget = (newTarget?: Target) => {
   StateObserver.dispatch(action_changeTarget({ newTarget }));
   return StateObserver.getState().combat.target;
@@ -65,6 +72,14 @@ export const throwDice = (target: Target, value: CardNum) => {
 
 export const setResolved = (target: Target) => {
   StateObserver.dispatch(action_setResolved({ target }));
+};
+
+export const addStat = (target: Target, type: string, value: TargetStat) => {
+  StateObserver.dispatch(action_addStat({ target, type, value }));
+};
+
+export const setStat = (target: Target, type: string, value: TargetStat) => {
+  StateObserver.dispatch(action_setStat({ target, type, value }));
 };
 
 // ======================================================

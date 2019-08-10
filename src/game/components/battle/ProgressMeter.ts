@@ -3,7 +3,11 @@ import uiConfig from 'src/lib/uiConfig';
 import ImageScaleView from 'ui/ImageScaleView';
 import Label from './Label';
 import { waitForIt } from 'src/lib/utils';
-import { getCurrentMeter, getColorByTarget, getTargetEnemy } from 'src/redux/shortcuts/combat';
+import {
+  getCurrentMeter,
+  getColorByTarget,
+  getTargetEnemy,
+} from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import { Target } from 'src/types/custom';
 import StateObserver from 'src/redux/StateObserver';
@@ -32,29 +36,18 @@ export default class ProgressMeter {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
-    // this.createSelectors();
   }
-
-  // private createSelectors() {
-  //   StateObserver.createSelector(({ combat }) => {
-  //     if (combat.target !== this.props.target) return;
-  //     return combat[combat.target].meter;
-  //   }).addListener((meter) => {
-  //     const enemyMeter = getTargetEnemy()
-  //     console.log('>>> combat', combat);
-  //   });
-  // }
 
   getView() {
     return this.container;
   }
 
-  getStepGlobalPos() {
-    return {
-      x: this.container.style.x,
-      y: this.container.style.y
-    }
-  }
+  // getStepGlobalPos() {
+  //   return {
+  //     x: this.container.style.x,
+  //     y: this.container.style.y
+  //   }
+  // }
 
   protected createViews(props: Props) {
     this.container = new View({
@@ -122,7 +115,7 @@ export default class ProgressMeter {
     const currentMeter = getCurrentMeter(this.props.target);
     if (currentMeter === 0) return;
 
-    const enemyMeter = getCurrentMeter(getTargetEnemy(this.props.target))
+    const enemyMeter = getCurrentMeter(getTargetEnemy(this.props.target));
 
     // update bg
     this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });
@@ -144,7 +137,11 @@ export default class ProgressMeter {
     }
   }
 
-  resolveTo(value: number, animated: boolean = true, animatedLabel: boolean = true) {
+  resolveTo(
+    value: number,
+    animated: boolean = true,
+    animatedLabel: boolean = true,
+  ) {
     const current = getCurrentMeter(this.props.target);
 
     if (!animatedLabel) {
@@ -153,20 +150,23 @@ export default class ProgressMeter {
 
     // update steps
     for (let i = 0; i < current; i++) {
-      waitForIt(() => {
-        const num = current - i - 1;
-        const step = this.steps[num];
-        let color = getColorByTarget(this.props.target);
-        if (num < value) color = uiConfig.frameYellow;
-        if (step) step.updateOpts({ ...color, centerOnOrigin: false });
+      waitForIt(
+        () => {
+          const num = current - i - 1;
+          const step = this.steps[num];
+          let color = getColorByTarget(this.props.target);
+          if (num < value) color = uiConfig.frameYellow;
+          if (step) step.updateOpts({ ...color, centerOnOrigin: false });
 
-        // update label
-        if (animatedLabel) {
-          if (num >= value) {
-            this.label.setProps({ localeText: () => num.toString() });
+          // update label
+          if (animatedLabel) {
+            if (num >= value) {
+              this.label.setProps({ localeText: () => num.toString() });
+            }
           }
-        }
-      }, animated ? (i * animDuration) : 0);
+        },
+        animated ? i * animDuration : 0,
+      );
     }
   }
 

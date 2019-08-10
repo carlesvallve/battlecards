@@ -11,7 +11,7 @@ import {
 } from 'src/redux/shortcuts/combat';
 import { Monster } from 'src/redux/ruleset/monsters';
 
-type Props = { superview: View, monsterData: Monster };
+type Props = { superview: View; monsterData: Monster };
 
 export default class BattleHeader {
   private props: Props;
@@ -76,7 +76,7 @@ export default class BattleHeader {
       width: 30,
       height: 30,
       target: 'monster',
-      type: 'armour',
+      type: 'attack',
     });
 
     const statDefense = new StatInfo({
@@ -86,7 +86,7 @@ export default class BattleHeader {
       width: 30,
       height: 30,
       target: 'monster',
-      type: 'damage',
+      type: 'defense',
     });
   }
 }
