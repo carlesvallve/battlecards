@@ -1,7 +1,11 @@
 import StateObserver from '../StateObserver';
 import { NavState, PopupID, SceneID } from 'src/types/custom';
-import { togglePopup, selectScene, selectNavState } from '../state/reducers/ui';
-import { State } from '../state';
+import {
+  togglePopup,
+  selectScene,
+  selectNavState,
+  action_blockUi,
+} from '../state/reducers/ui';
 
 export const getScene = () => {
   return StateObserver.getState().ui.scene;
@@ -9,6 +13,10 @@ export const getScene = () => {
 
 export const isLoading = () => {
   return StateObserver.getState().ui.isLoading;
+};
+
+export const blockUi = (blocked: boolean) => {
+  return StateObserver.dispatch(action_blockUi({ blocked }));
 };
 
 export const openPopup = (id: PopupID) => {

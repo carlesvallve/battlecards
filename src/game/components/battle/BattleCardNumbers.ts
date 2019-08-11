@@ -11,6 +11,7 @@ import { animDuration } from 'src/lib/uiConfig';
 import CardNumber, { CardNum } from '../cards/CardNumber';
 import { getTarget, throwDice } from 'src/redux/shortcuts/combat'; // updateTurn,
 import StateObserver from 'src/redux/StateObserver';
+import { blockUi } from 'src/redux/shortcuts/ui';
 
 type Props = { superview: View };
 
@@ -107,6 +108,9 @@ export default class BattleCardNumbers {
   }
 
   spawnCard(card: CardNumber) {
+    // block the combat ui
+    blockUi(true);
+
     this.updateCardLabels(card);
 
     const screen = getScreenDimensions();

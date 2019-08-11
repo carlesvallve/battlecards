@@ -24,6 +24,7 @@ import { Monster } from 'src/redux/ruleset/monsters';
 import { CardNum } from '../cards/CardNumber';
 import { Target } from 'src/types/custom';
 import BattleOverlay from './BattleOverlay';
+import { blockUi } from 'src/redux/shortcuts/ui';
 
 type Props = { superview: View; monsterData: Monster; overlay: BattleOverlay };
 
@@ -152,16 +153,26 @@ export default class BattleArena {
         combat[enemy].meter
       })`,
     );
+
+    // unblock ui in case monster resolved
+    // and hero can keep playing
+    waitForIt(() => {
+      if (target === 'hero' && combat[enemy].resolved) {
+        blockUi(false);
+      }
+    }, 350);
   }
 
   updateTurn(combat) {
-    const { target, enemy } = combat;
+    let { target, enemy } = combat;
 
     waitForIt(() => {
       if (target === 'hero' || combat['hero'].resolved) {
         if (!combat['monster'].resolved) this.executeAi(combat);
       } else {
-        if (!combat[enemy].resolved) changeTarget();
+        if (!combat[enemy].resolved) target = changeTarget();
+        // unblock ui when turn is done
+        blockUi(target !== 'hero');
       }
     }, 600);
   }
@@ -236,6 +247,11 @@ export default class BattleArena {
     // create damage label
     this.props.overlay.createDamageLabel(loser, damage);
   }
+
+  // endTurn(target: Target) {
+  //   // unblock the combat ui
+  //   blockUi(target !== 'hero');
+  // }
 
   // ============================================================
 

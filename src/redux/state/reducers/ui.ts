@@ -5,6 +5,7 @@ const slice = createSlice({
   initialState: {
     locale: 'en',
     isLoading: false,
+    isBlocked: false,
     previousScene: null,
     scene: 'title' as SceneID,
     navState: null,
@@ -33,6 +34,13 @@ const slice = createSlice({
     hideLoading: (state) => {
       state.isLoading = false;
     },
+
+    action_blockUi: (
+      state,
+      { payload }: PayloadAction<{ blocked: boolean }>,
+    ) => {
+      state.isBlocked = payload.blocked;
+    },
   },
 });
 
@@ -42,5 +50,6 @@ export const {
   togglePopup,
   showLoading,
   hideLoading,
+  action_blockUi,
 } = slice.actions;
 export default slice.reducer;

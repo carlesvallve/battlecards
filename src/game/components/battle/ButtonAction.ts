@@ -6,6 +6,7 @@ import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import StateObserver from 'src/redux/StateObserver';
 import { setResolved } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
+import { blockUi } from 'src/redux/shortcuts/ui';
 
 type ButtonActionState = 'hold' | 'attack' | 'defend';
 type Props = { superview: View; x: number; y: number };
@@ -87,7 +88,7 @@ export default class ButtonAction {
         y: -2,
       },
       onClick: () => {
-        // resolveCombat();
+        blockUi(true);
         setResolved('hero');
       },
     });

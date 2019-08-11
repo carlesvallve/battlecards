@@ -6,6 +6,7 @@ import { Target } from 'src/types/custom';
 import uiConfig from 'src/lib/uiConfig';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
+import StateObserver from 'src/redux/StateObserver';
 
 type Props = { superview: View; zIndex: number };
 
@@ -16,6 +17,18 @@ export default class BattleOverlay {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
+    this.createSelectors();
+  }
+
+  private createSelectors() {
+    StateObserver.createSelector(({ ui }) => {
+      return ui.isBlocked;
+    }).addListener((isBlocked) => {
+      this.container.updateOpts({
+        backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.5)' : '',
+        canHandleEvents: isBlocked,
+      });
+    });
   }
 
   getView() {
