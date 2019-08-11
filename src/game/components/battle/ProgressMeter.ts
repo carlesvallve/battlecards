@@ -11,6 +11,7 @@ import {
 import View from 'ui/View';
 import { Target } from 'src/types/custom';
 import StateObserver from 'src/redux/StateObserver';
+import sounds from 'src/lib/sounds';
 
 type Props = {
   superview: View;
@@ -33,6 +34,8 @@ export default class ProgressMeter {
   private label: Label;
   private steps: ImageScaleView[];
 
+  private active: boolean;
+
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
@@ -40,6 +43,10 @@ export default class ProgressMeter {
 
   getView() {
     return this.container;
+  }
+
+  getActive() {
+    return this.active;
   }
 
   protected createViews(props: Props) {
@@ -84,6 +91,7 @@ export default class ProgressMeter {
   }
 
   hideMeter() {
+    this.active = false;
     animate(this.container).then(
       { scale: 0, opacity: 0 },
       250,
@@ -92,11 +100,9 @@ export default class ProgressMeter {
   }
 
   showMeter() {
-    animate(this.container).then(
-      { scale: 0.75, opacity: 1 },
-      250,
-      animate.easeInOut,
-    );
+    animate(this.container)
+      .then({ scale: 0.75, opacity: 1 }, 250, animate.easeInOut)
+      .then(() => (this.active = true));
   }
 
   createSteps(props: Props) {
@@ -120,7 +126,7 @@ export default class ProgressMeter {
     }
   }
 
-  refresh(updateLabel: boolean) {
+  refresh(updateLabel: boolean, updateSound: boolean = false) {
     const currentMeter = getCurrentMeter(this.props.target);
     if (currentMeter === 0) return;
 
@@ -138,10 +144,18 @@ export default class ProgressMeter {
     for (let i = 0; i < currentMeter; i++) {
       waitForIt(() => {
         const num = i + 1;
+
         const step = this.steps[num - 1];
-        let color =
-          enemyMeter < num ? uiConfig.frameYellow : uiConfig.frameOrange;
-        if (step) step.updateOpts({ ...color, centerOnOrigin: false });
+
+        if (step) {
+          let color =
+            enemyMeter < num ? uiConfig.frameYellow : uiConfig.frameOrange;
+          step.updateOpts({ ...color, centerOnOrigin: false });
+        }
+
+        if (i === currentMeter - 1) {
+          if (updateSound) sounds.playSound('tick1', 0.2);
+        }
       }, i * animDuration);
     }
   }
@@ -158,20 +172,29 @@ export default class ProgressMeter {
     }
 
     // update steps
+    // sounds.playSound('tick2', 0.2);
     for (let i = 0; i < current; i++) {
       waitForIt(
         () => {
           const num = current - i - 1;
+
           const step = this.steps[num];
-          let color = getColorByTarget(this.props.target);
-          if (num < value) color = uiConfig.frameYellow;
-          if (step) step.updateOpts({ ...color, centerOnOrigin: false });
+
+          if (step) {
+            let color = getColorByTarget(this.props.target);
+            if (num < value) color = uiConfig.frameYellow;
+            step.updateOpts({ ...color, centerOnOrigin: false });
+          }
 
           // update label
           if (animatedLabel) {
             if (num >= value) {
               this.label.setProps({ localeText: () => num.toString() });
             }
+          }
+
+          if (i === current - 1) {
+            sounds.playSound('tick2', 0.2);
           }
         },
         animated ? i * animDuration : 0,

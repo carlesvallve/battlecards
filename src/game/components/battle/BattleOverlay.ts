@@ -7,6 +7,7 @@ import uiConfig from 'src/lib/uiConfig';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import StateObserver from 'src/redux/StateObserver';
+import ruleset from 'src/redux/ruleset';
 
 type Props = { superview: View; zIndex: number };
 
@@ -52,7 +53,7 @@ export default class BattleOverlay {
     const xx = this.container.style.width / 2 + getRandomInt(-25, 25);
     let yy = this.container.style.height / 2 + 205;
     if (loser === 'monster') {
-      yy = this.container.style.height / 2 - 100;
+      yy = this.container.style.height * ruleset.baselineY - 60;
     }
 
     const labelDamage = new LangBitmapFontTextView({

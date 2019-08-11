@@ -3,6 +3,7 @@ import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
 import { waitForIt } from 'src/lib/utils';
 import { Target } from 'src/types/custom';
+import sounds from 'src/lib/sounds';
 
 type Props = {
   superview: View;
@@ -93,6 +94,8 @@ export default class AttackIcons {
   // animations
 
   animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
+    sounds.playSound('swoosh3', 0.2);
+
     animate(icon)
       .then({ x, scale: 0.8 }, t * 1, animate.easeOut)
       .then({ x, scale: 1.25 }, t * 0.5, animate.easeInOut)
@@ -104,10 +107,19 @@ export default class AttackIcons {
   }
 
   animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
+    sounds.playRandomSound(['swoosh1', 'swoosh3', 'swoosh5'], 0.4); // 'swoosh2',
+
     animate(icon).then({ x, scale: 0 }, t * 1, animate.easeInOut);
 
     animate(this.container)
       .then({ x: x2 }, t * 1, animate.easeInOut)
-      .then(() => cb && cb());
+      .then(() => {
+        cb && cb();
+      });
+
+    // waitForIt(() => {
+    //   sounds.playRandomSound(['punch1', 'punch2'], 1);
+    //   sounds.playRandomSound(['break1'], 0.25);
+    // }, t * 2.5);
   }
 }

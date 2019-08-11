@@ -11,6 +11,8 @@ import CardNumber, { CardNum } from '../cards/CardNumber';
 import { getTarget, throwDice } from 'src/redux/shortcuts/combat';
 import StateObserver from 'src/redux/StateObserver';
 import { blockUi } from 'src/redux/shortcuts/ui';
+import sounds from 'src/lib/sounds';
+import ruleset from 'src/redux/ruleset';
 
 type Props = { superview: View };
 
@@ -100,6 +102,7 @@ export default class BattleCardNumbers {
   spawnCard(card: CardNumber) {
     // block the combat ui
     blockUi(true);
+    sounds.playSound('swoosh1', 0.4);
 
     this.updateCardLabels(card);
 
@@ -108,7 +111,7 @@ export default class BattleCardNumbers {
     const t = animDuration * 1;
 
     const xx = screen.width / 2;
-    const yy = screen.height * 0.58; // baseline
+    const yy = screen.height * ruleset.baselineY;
     const dx = 2;
     const dy = target === 'hero' ? -25 : 25;
 
@@ -126,13 +129,17 @@ export default class BattleCardNumbers {
         t * 0.5,
         animate.easeInOut,
       )
+      // .then(() => sounds.playSound('swoosh3', 1))
       .then({ scale: 0.4, scaleY: 1 }, t * 0.5, animate.easeInOut)
+      // .then(() => sounds.playSound('swoosh3', 1))
       .then({ scale: 0.35, scaleY: 1 }, t * 0.5, animate.easeInOut)
+      // .then(() => sounds.playSound('swoosh3', 1))
       .then(() => {
         waitForIt(() => {
           throwDice('hero', card.getNum()); // use the card with redux
         }, t * 0.5);
       })
+      .then(() => sounds.playSound('swoosh3', 0.3))
       .then(
         {
           scale: 0,
@@ -144,7 +151,9 @@ export default class BattleCardNumbers {
         t * 1,
         animate.easeInOut,
       )
+
       .then(() => {
+        sounds.playSound('click5', 0.5);
         this.usedCards.push(this.cards.pop());
         if (this.cards.length === 0) {
           this.cards = this.usedCards;

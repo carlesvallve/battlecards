@@ -1,5 +1,6 @@
 import AudioManager from 'AudioManager';
 import soundConfig from 'src/conf/soundConfig';
+import { getRandomItemFromArray } from './utils';
 
 class Sounds {
   playingSong: string;
@@ -31,6 +32,15 @@ class Sounds {
 
   playSound(name: string, volume: number = 1) {
     if (this.sfxMuted) return;
+    this.sfx.setVolume(name, this._sfxVolume * volume);
+    this.sfx.play(name);
+  }
+
+  playRandomSound(names: string[], volume: number = 1) {
+    if (this.sfxMuted) return;
+
+    const name = getRandomItemFromArray(names);
+
     this.sfx.setVolume(name, this._sfxVolume * volume);
     this.sfx.play(name);
   }

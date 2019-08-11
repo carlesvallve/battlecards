@@ -27,6 +27,8 @@ import BattleOverlay from './BattleOverlay';
 import { blockUi } from 'src/redux/shortcuts/ui';
 import BattleCardHand from './BattleCardHand';
 import { animDuration } from 'src/lib/uiConfig';
+import sounds from 'src/lib/sounds';
+import ruleset from 'src/redux/ruleset';
 
 type Props = {
   superview: View;
@@ -38,6 +40,7 @@ type Props = {
 export default class BattleArena {
   private props: Props;
   private container: View;
+  private monsterImage: MonsterImage;
   private components: {
     hero: { meter: ProgressMeter; attackIcons: AttackIcons };
     monster: { meter: ProgressMeter; attackIcons: AttackIcons };
@@ -105,7 +108,10 @@ export default class BattleArena {
 
     // if it's a draw, reset both meters to 0 and call it  day
     if (combat[target].meter === combat[enemy].meter) {
-      waitForIt(() => resetCombat(), 350);
+      waitForIt(() => {
+        sounds.playSound('item2', 1);
+        resetCombat();
+      }, 350);
       return true;
     }
 
@@ -120,8 +126,8 @@ export default class BattleArena {
       const loser = winner === 'hero' ? 'monster' : 'hero';
       const attacks = combat[winner].meter - combat[loser].meter;
 
-      this.components[winner].meter.resolveTo(attacks);
-      this.components[loser].meter.resolveTo(0);
+      this.components[winner].meter.resolveTo(attacks, true);
+      this.components[loser].meter.resolveTo(0, false);
 
       this.createAttackIcons({ winner, loser, attacks });
 
@@ -138,7 +144,7 @@ export default class BattleArena {
       const overhead = combat[target].overhead;
       console.log('>>>', target, 'OVERHEAD!', overhead);
       this.components[target].meter.reset({ isOverhead: true });
-      this.components[enemy].meter.resolveTo(overhead);
+      this.components[enemy].meter.resolveTo(overhead, true);
 
       // hide the user's card hand
       this.props.cardHand.hideHand();
@@ -158,7 +164,7 @@ export default class BattleArena {
       const overhead = combat[enemy].overhead;
       console.log('>>>', enemy, 'OVERHEAD!', overhead);
       this.components[enemy].meter.reset({ isOverhead: true });
-      this.components[target].meter.resolveTo(overhead);
+      this.components[target].meter.resolveTo(overhead, true);
 
       // hide the user's card hand
       this.props.cardHand.hideHand();
@@ -178,12 +184,24 @@ export default class BattleArena {
   }
 
   displayMeters(value: boolean) {
+    const y = this.container.style.height * ruleset.baselineY;
+
     if (value) {
       this.components['hero'].meter.showMeter();
       this.components['monster'].meter.showMeter();
+
+      // sounds.playSound('swoosh4', 0.15);
+      animate(this.monsterImage.getView())
+        .clear()
+        .then({ y: y - 115 }, animDuration, animate.easeInOut);
     } else {
       this.components['hero'].meter.hideMeter();
       this.components['monster'].meter.hideMeter();
+
+      sounds.playSound('swoosh4', 0.15);
+      animate(this.monsterImage.getView())
+        .clear()
+        .then({ y: y - 45 }, animDuration, animate.easeInOut);
     }
   }
 
@@ -191,8 +209,8 @@ export default class BattleArena {
     const { target, enemy } = combat;
 
     // refresh both meters
-    this.components[target].meter.refresh(true);
-    this.components[enemy].meter.refresh(false);
+    this.components[target].meter.refresh(true, !combat[target].resolved);
+    this.components[enemy].meter.refresh(false, false);
 
     console.log(
       '>>>',
@@ -211,39 +229,51 @@ export default class BattleArena {
 
   updateTurn(combat) {
     let { target, enemy } = combat;
+    console.log('UPDATE TURN!');
 
     waitForIt(() => {
       if (target === 'hero' || combat['hero'].resolved) {
         if (!combat['monster'].resolved) this.executeAi(combat);
       } else {
+        this.displayMeters(true);
+
         if (!combat[enemy].resolved) target = changeTarget();
         // unblock ui when turn is done
         blockUi(target !== 'hero');
-        this.displayMeters(true);
+
         this.props.cardHand.showHand();
       }
     }, 600);
   }
 
   executeAi(combat) {
-    const target = changeTarget('monster');
-    console.log('>>> executing monster AI');
+    this.displayMeters(true);
 
-    // decide if we throw another dice or we resolve
-    const currentMeter = combat[target].meter;
-    const left = 12 - currentMeter;
+    // if we are in attackig phase,
+    // we need a delay to trigger ai after meters have re-appeared
+    const delay = this.components.hero.meter.getActive() ? 0 : 350;
 
-    const precaucious = 1.5;
-    const r = getRandomInt(1, 6) * precaucious;
+    waitForIt(() => {
+      const target = changeTarget('monster');
+      console.log('>>> executing monster AI');
 
-    if (r <= left) {
-      const dice = getRandomInt(1, 6) as CardNum;
-      console.log('>>> monster throws another dice (+', dice, ')');
-      throwDice(target, dice);
-    } else {
-      console.log('>>> monster resolves combat');
-      setResolved(target);
-    }
+      // decide if we throw another dice or we resolve
+      const currentMeter = combat[target].meter;
+      const left = 12 - currentMeter;
+
+      const precaucious = 1.5;
+      const r = getRandomInt(1, 6) * precaucious;
+
+      if (r <= left) {
+        const dice = getRandomInt(1, 6) as CardNum;
+        console.log('>>> monster throws another dice (+', dice, ')');
+        throwDice(target, dice);
+      } else {
+        console.log('>>> monster resolves combat');
+        sounds.playSound('unlock', 1);
+        setResolved(target);
+      }
+    }, delay);
   }
 
   createAttackIcons(result: {
@@ -292,19 +322,19 @@ export default class BattleArena {
     const r = getRandomFloat(-0.1, 0.1);
     animate(this.container)
       .clear()
-      .wait(50)
-      .then({ scale: 1.25, r }, 50, animate.easeInOut)
+      .wait(250)
+      .then(() => {
+        sounds.playRandomSound(['punch1', 'punch2'], 1);
+        sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.02);
+        sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
+      })
+      .then({ scale: 1.3, r }, 50, animate.easeInOut)
       .then({ scale: 0.95 }, 100, animate.easeInOut)
       .then({ scale: 1, r: 0 }, 50, animate.easeInOut);
 
     // create damage label
     this.props.overlay.createDamageLabel(loser, damage);
   }
-
-  // endTurn(target: Target) {
-  //   // unblock the combat ui
-  //   blockUi(target !== 'hero');
-  // }
 
   // ============================================================
 
@@ -324,10 +354,9 @@ export default class BattleArena {
       canHandleEvents: false,
     });
 
-    // baseline
-    const y = this.container.style.height * 0.58;
+    const y = this.container.style.height * ruleset.baselineY;
 
-    const monsterImage = new MonsterImage({
+    this.monsterImage = new MonsterImage({
       superview: this.container,
       x: this.container.style.width / 2,
       y: y - 115,

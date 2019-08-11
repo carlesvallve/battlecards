@@ -5,8 +5,9 @@ import Card from '../cards/Card';
 import { animDuration } from 'src/lib/uiConfig';
 import ButtonView from 'ui/widget/ButtonView';
 import BattleCardNumbers from './BattleCardNumbers';
+import sounds from 'src/lib/sounds';
 
-type Props = { superview: View, zIndex: number };
+type Props = { superview: View; zIndex: number };
 
 const maxCards = 5;
 
@@ -94,7 +95,7 @@ export default class BattleCardHand {
         // x: 35 + i * 62,
         x: 40 + i * 60,
         y: screen.height - 120 + ys[i],
-        scale: 0.20,
+        scale: 0.2,
         r: rotations[i],
         onClick: () => this.showCardDetails(card),
       });
@@ -103,6 +104,9 @@ export default class BattleCardHand {
   }
 
   showHand() {
+    if (this.cardBox.style.y === 0) return;
+
+    sounds.playSound('swoosh4', 0.2);
     this.cardBox.show();
     animate(this.cardBox).then(
       { y: 0, opacity: 1 },
@@ -112,6 +116,9 @@ export default class BattleCardHand {
   }
 
   hideHand() {
+    if (this.cardBox.style.y !== 0) return;
+
+    sounds.playSound('swoosh4', 0.2);
     animate(this.cardBox)
       .then({ y: 40, opacity: 0 }, animDuration, animate.easeInOut)
       .then(() => this.cardBox.hide());

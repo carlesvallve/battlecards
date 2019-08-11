@@ -21,6 +21,10 @@ export default class MonsterImage {
     this.createViews(props);
   }
 
+  getView() {
+    return this.container;
+  }
+
   private createViews(props: Props) {
     this.container = new View({ ...props, centerOnOrigin: true });
 

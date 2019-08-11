@@ -7,6 +7,7 @@ import StateObserver from 'src/redux/StateObserver';
 import { setResolved } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import { blockUi } from 'src/redux/shortcuts/ui';
+import sounds from 'src/lib/sounds';
 
 type ButtonActionState = 'hold' | 'attack' | 'defend';
 type Props = { superview: View; x: number; y: number };
@@ -88,10 +89,16 @@ export default class ButtonAction {
         y: -2,
       },
       onClick: () => {
+        // sounds.playSound('unlock', 1);
         // block the combat ui
         blockUi(true);
         setResolved('hero');
+        sounds.playSound('unlock', 1);
       },
     });
   }
+
+  // playActionsound() {
+  //   // sounds.playSound('click2', 1);
+  // }
 }
