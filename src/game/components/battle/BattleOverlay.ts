@@ -25,7 +25,7 @@ export default class BattleOverlay {
       return ui.isBlocked;
     }).addListener((isBlocked) => {
       this.container.updateOpts({
-        backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.5)' : '',
+        // backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.5)' : '',
         canHandleEvents: isBlocked,
       });
     });
@@ -52,7 +52,7 @@ export default class BattleOverlay {
     const xx = this.container.style.width / 2 + getRandomInt(-25, 25);
     let yy = this.container.style.height / 2 + 205;
     if (loser === 'monster') {
-      yy = this.container.style.height / 2 - 160;
+      yy = this.container.style.height / 2 - 100;
     }
 
     const labelDamage = new LangBitmapFontTextView({

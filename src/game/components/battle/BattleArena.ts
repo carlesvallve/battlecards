@@ -294,16 +294,17 @@ export default class BattleArena {
       canHandleEvents: false,
     });
 
+    // baseline
+    const y = this.container.style.height * 0.58;
+
     const monsterImage = new MonsterImage({
       superview: this.container,
       x: this.container.style.width / 2,
-      y: 128 + 55,
-      width: 72,
-      height: 72,
+      y: y - 115,
+      width: 100,
+      height: 100,
       image: props.monsterData.image,
     });
-
-    const y = this.container.style.height * 0.5;
 
     this.components = {
       hero: {
@@ -312,7 +313,7 @@ export default class BattleArena {
           x: this.container.style.width * 0.5,
           y: y + 25,
           width: 220,
-          height: 45,
+          height: 40,
           target: 'hero',
           stepLimit: 12,
         }) as ProgressMeter,
@@ -320,7 +321,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.props.overlay.getView(), // this.container,
           x: this.container.style.width * 0.5,
-          y: y + 80,
+          y: y + 110,
           target: 'hero',
         }) as AttackIcons,
       },
@@ -331,7 +332,7 @@ export default class BattleArena {
           x: this.container.style.width * 0.5,
           y: y - 25,
           width: 220,
-          height: 45,
+          height: 40,
           target: 'monster',
           stepLimit: 12,
         }) as ProgressMeter,
@@ -339,7 +340,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.props.overlay.getView(), // this.container,
           x: this.container.style.width * 0.5,
-          y: y - 170,
+          y: y - 210,
           target: 'monster',
         }) as AttackIcons,
       },

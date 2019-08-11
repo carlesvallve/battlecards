@@ -108,7 +108,7 @@ export default class BattleCardNumbers {
     const t = animDuration * 1;
 
     const xx = screen.width / 2;
-    const yy = screen.height * 0.5;
+    const yy = screen.height * 0.58; // baseline
     const dx = 2;
     const dy = target === 'hero' ? -25 : 25;
 
@@ -135,7 +135,7 @@ export default class BattleCardNumbers {
       })
       .then(
         {
-          scale: 0.0,
+          scale: 0,
           scaleY: 0.75,
           x: xx + dx,
           y: yy + dy - 15,
