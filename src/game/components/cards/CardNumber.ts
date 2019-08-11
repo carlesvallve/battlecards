@@ -45,6 +45,10 @@ export default class CardNumber {
     return this.props.num;
   }
 
+  updateLabel(str: string) {
+    this.label.localeText = () => str;
+  }
+
   setProps(props: Props) {
     if (props === this.props) return;
     this.update(props);
@@ -55,8 +59,6 @@ export default class CardNumber {
     const { num } = props;
     this.label.localeText = () => num.toString();
   }
-
-  private createSelectors() {}
 
   private createViews(props: Props) {
     // 120 x 170

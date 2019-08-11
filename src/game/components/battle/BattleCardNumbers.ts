@@ -1,6 +1,11 @@
 import animate from 'animate';
 import View from 'ui/View';
-import { getScreenDimensions, waitForIt, getRandomFloat } from 'src/lib/utils';
+import {
+  getScreenDimensions,
+  waitForIt,
+  getRandomFloat,
+  getRandomInt,
+} from 'src/lib/utils';
 import Card from '../cards/Card';
 import { animDuration } from 'src/lib/uiConfig';
 import CardNumber, { CardNum } from '../cards/CardNumber';
@@ -9,12 +14,12 @@ import StateObserver from 'src/redux/StateObserver';
 
 type Props = { superview: View };
 
-const maxCards = 6 * 4;
-
 export default class BattleCardNumbers {
   private props: Props;
   private container: View;
-  private cards: Card[];
+  private cards: CardNumber[];
+  private usedCards: CardNumber[];
+  // private cardsLeftInDeck: number;
 
   constructor(props: Props) {
     this.props = props;
@@ -48,7 +53,9 @@ export default class BattleCardNumbers {
   createCards(props: Props) {
     const screen = getScreenDimensions();
 
+    this.usedCards = [];
     this.cards = [];
+
     for (let i = 1; i <= 6; i++) {
       for (let j = 1; j <= 4; j++) {
         const card = new CardNumber({
@@ -63,17 +70,49 @@ export default class BattleCardNumbers {
       }
     }
 
+    // this.cardsLeftInDeck = this.cards.length;
+
+    this.shuffleCards();
+
+    // const shuffled = this.cards.sort(() => 0.5 - Math.random());
+    // shuffled.forEach((card, index) => {
+    //   card.getView().updateOpts({
+    //     zIndex: index * 0.1 ,
+    //     x: 31 + getRandomInt(-2, 2) * 2,
+    //     y: screen.height - 48 + getRandomInt(-2, 2) * 2,
+    //     scale: 0.15,
+    //   });
+    // });
+    this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
+  }
+
+  shuffleCards() {
+    const screen = getScreenDimensions();
+
     const shuffled = this.cards.sort(() => 0.5 - Math.random());
+
     shuffled.forEach((card, index) => {
-      card.getView().updateOpts({ zIndex: index * 0.1 });
+      card.getView().updateOpts({
+        zIndex: index * 0.1,
+        x: 31 + getRandomInt(-2, 2) * 2,
+        y: screen.height - 48 + getRandomInt(-2, 2) * 2,
+        scale: 0.15,
+        scaleY: 1,
+        opacity: 1,
+        visible: true,
+      });
     });
+
+    this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 
   spawnCard(card: CardNumber) {
+    this.updateCardLabels(card);
+
     const screen = getScreenDimensions();
+    const target = getTarget(StateObserver.getState());
     const t = animDuration * 1;
 
-    const target = getTarget(StateObserver.getState());
     const xx = screen.width / 2;
     const yy = screen.height * 0.5;
     const dx = 2;
@@ -97,8 +136,7 @@ export default class BattleCardNumbers {
       .then({ scale: 0.35, scaleY: 1 }, t * 0.5, animate.easeInOut)
       .then(() => {
         waitForIt(() => {
-          throwDice('hero', card.getNum());
-          // updateTurn(card.getNum()), t * 0.5;
+          throwDice('hero', card.getNum()); // use the card with redux
         }, t * 0.5);
       })
       .then(
@@ -111,6 +149,24 @@ export default class BattleCardNumbers {
         },
         t * 1,
         animate.easeInOut,
+      )
+      .then(() => {
+        this.usedCards.push(this.cards.pop());
+        if (this.cards.length === 0) {
+          this.cards = this.usedCards;
+          this.usedCards = [];
+          this.shuffleCards();
+        }
+      });
+  }
+
+  updateCardLabels(card?: CardNumber) {
+    if (this.cards.length > 1) {
+      this.cards[this.cards.length - 2].updateLabel(
+        (this.cards.length - 1).toString(),
       );
+    }
+
+    card.updateLabel(card.getNum().toString());
   }
 }
