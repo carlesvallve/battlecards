@@ -102,7 +102,7 @@ export default class BattleCardNumbers {
   spawnCard(card: CardNumber) {
     // block the combat ui
     blockUi(true);
-    sounds.playSound('swoosh1', 0.4);
+    sounds.playSound('swoosh1', 0.2);
 
     this.updateCardLabels(card);
 
@@ -129,11 +129,8 @@ export default class BattleCardNumbers {
         t * 0.5,
         animate.easeInOut,
       )
-      // .then(() => sounds.playSound('swoosh3', 1))
       .then({ scale: 0.4, scaleY: 1 }, t * 0.5, animate.easeInOut)
-      // .then(() => sounds.playSound('swoosh3', 1))
       .then({ scale: 0.35, scaleY: 1 }, t * 0.5, animate.easeInOut)
-      // .then(() => sounds.playSound('swoosh3', 1))
       .then(() => {
         waitForIt(() => {
           throwDice('hero', card.getNum()); // use the card with redux

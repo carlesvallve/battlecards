@@ -106,7 +106,7 @@ export default class BattleCardHand {
   showHand() {
     if (this.cardBox.style.y === 0) return;
 
-    sounds.playSound('swoosh4', 0.2);
+    sounds.playSound('swoosh4', 0.1);
     this.cardBox.show();
     animate(this.cardBox).then(
       { y: 0, opacity: 1 },
@@ -118,7 +118,7 @@ export default class BattleCardHand {
   hideHand() {
     if (this.cardBox.style.y !== 0) return;
 
-    sounds.playSound('swoosh4', 0.2);
+    sounds.playSound('swoosh4', 0.1);
     animate(this.cardBox)
       .then({ y: 40, opacity: 0 }, animDuration, animate.easeInOut)
       .then(() => this.cardBox.hide());

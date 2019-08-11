@@ -84,9 +84,9 @@ export default class StatInfo {
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
-      size: 11,
-      x: this.container.style.width * 0.46,
-      y: this.container.style.height * 0.5 + 8,
+      size: 14,
+      x: this.container.style.width * 0.46 + 1,
+      y: this.container.style.height * 0.5 + 5,
       localeText: () => '0',
     });
   }

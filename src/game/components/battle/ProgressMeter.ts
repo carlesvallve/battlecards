@@ -154,7 +154,7 @@ export default class ProgressMeter {
         }
 
         if (i === currentMeter - 1) {
-          if (updateSound) sounds.playSound('tick1', 0.2);
+          if (updateSound) sounds.playSound('tick2', 0.2);
         }
       }, i * animDuration);
     }

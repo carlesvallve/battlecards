@@ -107,7 +107,7 @@ export default class AttackIcons {
   }
 
   animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
-    sounds.playRandomSound(['swoosh1', 'swoosh3', 'swoosh5'], 0.4); // 'swoosh2',
+    sounds.playRandomSound(['swoosh1', 'swoosh3', 'swoosh5'], 0.3); // 'swoosh2',
 
     animate(icon).then({ x, scale: 0 }, t * 1, animate.easeInOut);
 
