@@ -42,13 +42,6 @@ export default class ProgressMeter {
     return this.container;
   }
 
-  // getStepGlobalPos() {
-  //   return {
-  //     x: this.container.style.x,
-  //     y: this.container.style.y
-  //   }
-  // }
-
   protected createViews(props: Props) {
     this.container = new View({
       // backgroundColor: 'rgba(255, 0, 0, 0.5)',
@@ -88,6 +81,22 @@ export default class ProgressMeter {
       size: 30,
       zIndex: 9,
     });
+  }
+
+  hideMeter() {
+    animate(this.container).then(
+      { scale: 0, opacity: 0 },
+      250,
+      animate.easeInOut,
+    );
+  }
+
+  showMeter() {
+    animate(this.container).then(
+      { scale: 0.75, opacity: 1 },
+      250,
+      animate.easeInOut,
+    );
   }
 
   createSteps(props: Props) {

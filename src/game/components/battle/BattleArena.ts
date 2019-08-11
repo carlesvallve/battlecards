@@ -177,6 +177,16 @@ export default class BattleArena {
     return false;
   }
 
+  displayMeters(value: boolean) {
+    if (value) {
+      this.components['hero'].meter.showMeter();
+      this.components['monster'].meter.showMeter();
+    } else {
+      this.components['hero'].meter.hideMeter();
+      this.components['monster'].meter.hideMeter();
+    }
+  }
+
   refreshMeters(combat) {
     const { target, enemy } = combat;
 
@@ -191,8 +201,7 @@ export default class BattleArena {
       })`,
     );
 
-    // unblock ui in case monster resolved
-    // and hero can keep playing
+    // unblock ui in case monster resolved and hero can keep playing
     waitForIt(() => {
       if (target === 'hero' && combat[enemy].resolved) {
         blockUi(false);
@@ -210,6 +219,7 @@ export default class BattleArena {
         if (!combat[enemy].resolved) target = changeTarget();
         // unblock ui when turn is done
         blockUi(target !== 'hero');
+        this.displayMeters(true);
         this.props.cardHand.showHand();
       }
     }, 600);
@@ -241,9 +251,12 @@ export default class BattleArena {
     loser: Target;
     attacks: number;
   }) {
-    const { winner, attacks } = result;
+    const { winner, loser, attacks } = result;
     if (!winner) return;
     this.components[winner].attackIcons.addIcons(attacks, 300, () => {
+      // hide meters
+      this.displayMeters(false);
+
       // start attacking sequence
       const t = 350;
       for (let i = 0; i < result.attacks; i++) {
