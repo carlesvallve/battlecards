@@ -258,12 +258,14 @@ export default class BattleArena {
       this.displayMeters(false);
 
       // start attacking sequence
-      const t = 350;
-      for (let i = 0; i < result.attacks; i++) {
-        waitForIt(() => {
-          this.attack(i, result);
-        }, i * t);
-      }
+      waitForIt(() => {
+        const t = 350;
+        for (let i = 0; i < result.attacks; i++) {
+          waitForIt(() => {
+            this.attack(i, result);
+          }, i * t);
+        }
+      }, 300);
     });
   }
 

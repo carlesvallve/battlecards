@@ -11,8 +11,8 @@ type Props = {
   target: Target;
 };
 
-const iconSeparation = 36;
-const iconDisplacement = 24;
+const iconSeparation = 40;
+const iconDisplacement = 32;
 const animDuration = 180;
 
 export default class AttackIcons {
@@ -50,7 +50,7 @@ export default class AttackIcons {
     }, delay);
 
     // wait and return callback
-    const callbackDelay = delay + maxAttacks * animDuration * 2;
+    const callbackDelay = delay + maxAttacks * animDuration * 2.5;
     waitForIt(() => cb && cb(), callbackDelay);
   }
 
@@ -94,19 +94,20 @@ export default class AttackIcons {
 
   animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
     animate(icon)
-      .then({ x, scale: 1.2 }, t * 1, animate.easeInOut)
+      .then({ x, scale: 0.8 }, t * 1, animate.easeOut)
+      .then({ x, scale: 1.25 }, t * 0.5, animate.easeInOut)
       .then({ x, scale: 1 }, t * 0.5, animate.easeInOut);
 
-    animate(this.container)
-      .then({ x: x2 }, t, animate.easeInOut)
-      .then(() => cb && cb());
+    animate(this.container).then({ x: x2 }, t * 1, animate.easeInOut);
+
+    waitForIt(() => cb && cb(), t * 4);
   }
 
   animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
-    animate(icon).then({ x, scale: 0, opacity: 0 }, t * 0.5, animate.easeInOut);
+    animate(icon).then({ x, scale: 0 }, t * 1, animate.easeInOut);
 
     animate(this.container)
-      .then({ x: x2 }, t * 0.5, animate.easeInOut)
+      .then({ x: x2 }, t * 1, animate.easeInOut)
       .then(() => cb && cb());
   }
 }
