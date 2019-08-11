@@ -103,6 +103,7 @@ export default class BattleArena {
       return true;
     }
 
+    // hide the user's card hand
     this.props.cardHand.hideHand();
 
     waitForIt(() => {
@@ -132,6 +133,10 @@ export default class BattleArena {
       console.log('>>>', target, 'OVERHEAD!', overhead);
       this.components[target].meter.reset({ isOverhead: true });
       this.components[enemy].meter.resolveTo(overhead);
+
+      // hide the user's card hand
+      this.props.cardHand.hideHand();
+
       waitForIt(() => {
         this.createAttackIcons({
           winner: enemy,
@@ -139,7 +144,7 @@ export default class BattleArena {
           attacks: overhead,
         });
         waitForIt(() => resetCombat(), (overhead + 0) * 600 + 600);
-      }, 100);
+      }, animDuration * 1);
       return true;
     }
 
@@ -148,6 +153,10 @@ export default class BattleArena {
       console.log('>>>', enemy, 'OVERHEAD!', overhead);
       this.components[enemy].meter.reset({ isOverhead: true });
       this.components[target].meter.resolveTo(overhead);
+
+      // hide the user's card hand
+      this.props.cardHand.hideHand();
+
       waitForIt(() => {
         this.createAttackIcons({
           winner: target,
@@ -155,7 +164,7 @@ export default class BattleArena {
           attacks: overhead,
         });
         waitForIt(() => resetCombat(), (overhead + 0) * 600 + 600);
-      }, 100);
+      }, animDuration * 1);
       return true;
     }
 
