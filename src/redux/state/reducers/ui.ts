@@ -8,7 +8,7 @@ const slice = createSlice({
     isBlocked: false,
     previousScene: null,
     scene: 'title' as SceneID,
-    navState: null,
+    navState: null as NavState,
     togglePopup: { id: '', enabled: false },
   },
 

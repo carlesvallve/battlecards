@@ -88,6 +88,7 @@ export default class ButtonAction {
         y: -2,
       },
       onClick: () => {
+        // block the combat ui
         blockUi(true);
         setResolved('hero');
       },

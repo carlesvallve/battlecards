@@ -6,10 +6,9 @@ import {
   getRandomFloat,
   getRandomInt,
 } from 'src/lib/utils';
-import Card from '../cards/Card';
 import { animDuration } from 'src/lib/uiConfig';
 import CardNumber, { CardNum } from '../cards/CardNumber';
-import { getTarget, throwDice } from 'src/redux/shortcuts/combat'; // updateTurn,
+import { getTarget, throwDice } from 'src/redux/shortcuts/combat';
 import StateObserver from 'src/redux/StateObserver';
 import { blockUi } from 'src/redux/shortcuts/ui';
 
@@ -20,7 +19,6 @@ export default class BattleCardNumbers {
   private container: View;
   private cards: CardNumber[];
   private usedCards: CardNumber[];
-  // private cardsLeftInDeck: number;
 
   constructor(props: Props) {
     this.props = props;
@@ -71,19 +69,10 @@ export default class BattleCardNumbers {
       }
     }
 
-    // this.cardsLeftInDeck = this.cards.length;
-
+    // shuffle the card deck
     this.shuffleCards();
 
-    // const shuffled = this.cards.sort(() => 0.5 - Math.random());
-    // shuffled.forEach((card, index) => {
-    //   card.getView().updateOpts({
-    //     zIndex: index * 0.1 ,
-    //     x: 31 + getRandomInt(-2, 2) * 2,
-    //     y: screen.height - 48 + getRandomInt(-2, 2) * 2,
-    //     scale: 0.15,
-    //   });
-    // });
+    // display remaining cards
     this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 
@@ -95,8 +84,8 @@ export default class BattleCardNumbers {
     shuffled.forEach((card, index) => {
       card.getView().updateOpts({
         zIndex: index * 0.1,
-        x: 31 + getRandomInt(-2, 2) * 2,
-        y: screen.height - 48 + getRandomInt(-2, 2) * 2,
+        x: 35 + getRandomInt(-2, 2) * 1,
+        y: screen.height - 40 + getRandomInt(-2, 2) * 1,
         scale: 0.15,
         scaleY: 1,
         opacity: 1,
@@ -104,6 +93,7 @@ export default class BattleCardNumbers {
       });
     });
 
+    // display remaining cards
     this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 

@@ -25,8 +25,15 @@ import { CardNum } from '../cards/CardNumber';
 import { Target } from 'src/types/custom';
 import BattleOverlay from './BattleOverlay';
 import { blockUi } from 'src/redux/shortcuts/ui';
+import BattleCardHand from './BattleCardHand';
+import { animDuration } from 'src/lib/uiConfig';
 
-type Props = { superview: View; monsterData: Monster; overlay: BattleOverlay };
+type Props = {
+  superview: View;
+  monsterData: Monster;
+  overlay: BattleOverlay;
+  cardHand: BattleCardHand;
+};
 
 export default class BattleArena {
   private props: Props;
@@ -43,6 +50,17 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    StateObserver.createSelector(({ ui }) => {
+      return ui.scene === 'game' && ui.navState === 'entered';
+    }).addListener((init) => {
+      if (!init) return;
+      blockUi(true);
+      waitForIt(() => {
+        this.props.cardHand.showHand();
+        waitForIt(() => blockUi(false), animDuration);
+      }, 1000);
+    });
+
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
     }).addListener((index) => {
@@ -85,7 +103,11 @@ export default class BattleArena {
       return true;
     }
 
+    this.props.cardHand.hideHand();
+
     waitForIt(() => {
+      // this.props.cardHand.hideHand();
+
       const winner =
         combat[target].meter > combat[enemy].meter ? target : enemy;
       const loser = winner === 'hero' ? 'monster' : 'hero';
@@ -97,7 +119,7 @@ export default class BattleArena {
       this.createAttackIcons({ winner, loser, attacks });
 
       waitForIt(() => resetCombat(), (attacks + 1) * 600 + 600);
-    }, 100);
+    }, animDuration * 2);
 
     return true;
   }
@@ -173,6 +195,7 @@ export default class BattleArena {
         if (!combat[enemy].resolved) target = changeTarget();
         // unblock ui when turn is done
         blockUi(target !== 'hero');
+        this.props.cardHand.showHand();
       }
     }, 600);
   }

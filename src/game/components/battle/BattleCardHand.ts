@@ -6,7 +6,7 @@ import { animDuration } from 'src/lib/uiConfig';
 import ButtonView from 'ui/widget/ButtonView';
 import BattleCardNumbers from './BattleCardNumbers';
 
-type Props = { superview: View };
+type Props = { superview: View, zIndex: number };
 
 const maxCards = 5;
 
@@ -14,6 +14,7 @@ export default class BattleCardHand {
   private props: Props;
   private container: View;
   private overlay: View;
+  private cardBox: View;
   private cards: Card[];
   private selectedCardData: {
     card: Card;
@@ -40,6 +41,7 @@ export default class BattleCardHand {
       y: 0, //screen.height - 75 * 2,
       infinite: true,
       canHandleEvents: false,
+      zIndex: props.zIndex,
     });
 
     const cardNumbers = new BattleCardNumbers({
@@ -70,22 +72,49 @@ export default class BattleCardHand {
     const rotations = [-0.25, -0.125, 0, 0.125, 0.25];
     const ys = [0, -12, -15, -12, 0];
 
+    this.cardBox = new View({
+      superview: this.container,
+      // backgroundColor: 'rgba(255, 255, 0, 0.5)',
+      width: screen.width,
+      height: screen.height,
+      y: 40,
+      opacity: 0,
+      visible: false,
+      infinite: true,
+      canHandleEvents: false,
+    });
+
     this.cards = [];
     for (let i = 0; i < maxCards; i++) {
       const card = new Card({
-        superview: this.container,
+        superview: this.cardBox,
         id: 'ak47',
         side: 'front',
         mode: 'mini',
         // x: 35 + i * 62,
         x: 40 + i * 60,
         y: screen.height - 120 + ys[i],
-        scale: 0.22,
+        scale: 0.20,
         r: rotations[i],
         onClick: () => this.showCardDetails(card),
       });
       this.cards.push(card);
     }
+  }
+
+  showHand() {
+    this.cardBox.show();
+    animate(this.cardBox).then(
+      { y: 0, opacity: 1 },
+      animDuration,
+      animate.easeInOut,
+    );
+  }
+
+  hideHand() {
+    animate(this.cardBox)
+      .then({ y: 40, opacity: 0 }, animDuration, animate.easeInOut)
+      .then(() => this.cardBox.hide());
   }
 
   showCardDetails(card: Card) {

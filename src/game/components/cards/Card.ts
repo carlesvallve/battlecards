@@ -117,8 +117,6 @@ export default class Card {
       r: props.r,
     });
 
-    console.log('>>> r', props.r);
-
     // image-bg
     const imageBg = new View({
       superview: this.container,
@@ -126,7 +124,7 @@ export default class Card {
       x: 10,
       y: 10,
       width: 222,
-      height: 222, // 136 * 2,
+      height: 222,
     });
 
     const imageMask = new View({
@@ -135,7 +133,7 @@ export default class Card {
       x: 10,
       y: 10,
       width: 222,
-      height: 222, // 136 * 2,
+      height: 222,
       clip: true,
     });
 
@@ -143,10 +141,10 @@ export default class Card {
     const image = ruleset.cards[props.id].image;
     this.image = new ImageView({
       superview: imageMask,
-      x: 111, // 5 * 2,
-      y: 111, // 8,
+      x: 111,
+      y: 111,
       width: 222,
-      height: 222, // 136 * 2,
+      height: 222,
       centerOnOrigin: true,
       centerAnchor: true,
       image:
@@ -328,8 +326,6 @@ export default class Card {
     cb?: () => void;
   }) {
     const { mode, x, y, scale, cb } = opts;
-
-    console.log('>>>', mode);
 
     this.update({ mode, side: 'front' });
 

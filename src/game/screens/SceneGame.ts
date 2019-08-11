@@ -39,10 +39,16 @@ export default class SceneGame extends SceneBasic {
       zIndex: 10,
     });
 
+    const cards = new BattleCardHand({
+      superview: this.container,
+      zIndex: 9,
+    });
+
     const battleArena = new BattleArena({
       superview: this.container,
       monsterData,
       overlay,
+      cardHand: cards,
     });
 
     const header = new BattleHeader({
@@ -51,10 +57,6 @@ export default class SceneGame extends SceneBasic {
     });
 
     const footer = new BattleFooter({
-      superview: this.container,
-    });
-
-    const cards = new BattleCardHand({
       superview: this.container,
     });
   }
