@@ -202,6 +202,18 @@ export default {
 
   // general buttons
 
+  buttonWhite: {
+    image: 'resources/images/ui/buttons/btn_white.png',
+    imagePressed: 'resources/images/ui/buttons/btn_white_down.png',
+    imageDisabled: 'resources/images/ui/buttons/btn_white.png',
+    scaleMethod: '9slice',
+    sourceSlices: {
+      horizontal: { left: 22, right: 22 },
+      vertical: { top: 22, bottom: 22 },
+    },
+    pressedOffsetY: 7,
+  },
+
   buttonBlue: {
     image: 'resources/images/ui/buttons/btn_blue.png',
     imagePressed: 'resources/images/ui/buttons/btn_blue_down.png',

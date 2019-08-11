@@ -73,7 +73,7 @@ export default class ButtonAction {
     });
 
     this.button = new ButtonScaleViewWithText({
-      ...uiConfig.buttonMenu,
+      ...uiConfig.buttonWhite,
       superview: this.container,
       width: 60,
       height: 70,

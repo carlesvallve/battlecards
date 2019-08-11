@@ -50,16 +50,22 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    // combat start
+
     StateObserver.createSelector(({ ui }) => {
       return ui.scene === 'game' && ui.navState === 'entered';
     }).addListener((init) => {
       if (!init) return;
+
       blockUi(true);
       waitForIt(() => {
+        changeTarget('hero');
         this.props.cardHand.showHand();
         waitForIt(() => blockUi(false), animDuration);
       }, 1000);
     });
+
+    // combat flow
 
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
