@@ -19,7 +19,20 @@ export default class SceneBasic {
     StateObserver.createSelector((state: State) =>
       getSceneNavState(scene),
     ).addListener((navState: NavState) => {
-      if (navState === 'entering') this.init();
+      if (navState === 'entering') this.onEntering();
+      else if (navState === 'entered') this.onEntered();
+      else if (navState === 'leaving') this.onLeaving();
+      else if (navState === 'left') this.onLeft();
     });
   }
+
+  protected onEntering() {
+    this.init();
+  }
+
+  protected onEntered() {}
+
+  protected onLeaving() {}
+
+  protected onLeft() {}
 }

@@ -39,6 +39,21 @@ export type TargetData = {
   };
 };
 
+export type Combat = {
+  index: number;
+  target: Target;
+  enemy: Target;
+  hero: TargetData;
+  monster: TargetData;
+};
+
+export type CombatResult = {
+  winner: Target;
+  loser: Target;
+  attacks: number;
+  isOverhead?: boolean;
+};
+
 // custom types
 
 export type Screen = { width: number; height: number };

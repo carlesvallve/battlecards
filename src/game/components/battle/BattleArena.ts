@@ -22,7 +22,7 @@ import MonsterImage from './MonsterImage';
 
 import { Monster } from 'src/redux/ruleset/monsters';
 import { CardNum } from '../cards/CardNumber';
-import { Target } from 'src/types/custom';
+import { Target, CombatResult, Combat } from 'src/types/custom';
 import BattleOverlay from './BattleOverlay';
 import { blockUi } from 'src/redux/shortcuts/ui';
 import BattleCardHand from './BattleCardHand';
@@ -52,54 +52,61 @@ export default class BattleArena {
     this.createSelectors();
   }
 
+  init() {
+    blockUi(true);
+    waitForIt(() => {
+      //changeTarget('hero');
+      this.props.cardHand.showHand();
+      waitForIt(() => blockUi(false), animDuration);
+    }, 1000);
+  }
+
   private createSelectors() {
-    // combat start
-
-    StateObserver.createSelector(({ ui }) => {
-      return ui.scene === 'game' && ui.navState === 'entered';
-    }).addListener((init) => {
-      if (!init) return;
-
-      blockUi(true);
-      waitForIt(() => {
-        changeTarget('hero');
-        this.props.cardHand.showHand();
-        waitForIt(() => blockUi(false), animDuration);
-      }, 1000);
-    });
-
     // combat flow
 
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
     }).addListener((index) => {
-      const { combat } = StateObserver.getState();
-
       console.log('---------');
-
-      // check for combat reset
-      if (index === 0) {
-        const { target, enemy } = combat;
-        if (target && enemy) {
-          this.components[target].meter.reset({ isOverhead: false });
-          this.components[enemy].meter.reset({ isOverhead: false });
-          this.updateTurn(combat);
-        }
-        return;
-      }
-
-      if (this.resolveCombat(combat)) return;
-      if (this.resolveOverheads(combat)) return;
-
+      const { combat } = StateObserver.getState();
+      if (this.checkCombatReset(index, combat)) return;
+      if (this.checkCombatResult(combat)) return;
       this.refreshMeters(combat);
-
       this.updateTurn(combat);
     });
   }
 
-  resolveCombat(combat) {
+  checkCombatReset(index: number, combat: Combat) {
+    // check for combat reset
+    if (index === 0) {
+      const { target, enemy } = combat;
+      if (target && enemy) {
+        this.components[target].meter.reset({ isOverhead: false });
+        this.components[enemy].meter.reset({ isOverhead: false });
+        this.updateTurn(combat);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  checkCombatResult(combat: Combat) {
     const { target, enemy } = combat;
 
+    // if someone overheaded, resolve the combat
+    if (combat[target].overhead > 0 || combat[enemy].overhead > 0) {
+      const overhead = combat[target].overhead;
+      console.log('>>>', 'OVERHEAD!', overhead);
+      this.resolveCombat({
+        winner: combat[target].overhead > 0 ? enemy : target,
+        loser: combat[target].overhead > 0 ? target : enemy,
+        attacks: overhead,
+        isOverhead: true,
+      });
+      return true;
+    }
+
+    // otherwise, only resolve if both hero and monster has resolved their turns
     if (!combat[target].resolved || !combat[enemy].resolved) {
       return false;
     }
@@ -115,72 +122,40 @@ export default class BattleArena {
       return true;
     }
 
-    // hide the user's card hand
-    this.props.cardHand.hideHand();
-
-    waitForIt(() => {
-      // this.props.cardHand.hideHand();
-
-      const winner =
-        combat[target].meter > combat[enemy].meter ? target : enemy;
-      const loser = winner === 'hero' ? 'monster' : 'hero';
-      const attacks = combat[winner].meter - combat[loser].meter;
-
-      this.components[winner].meter.resolveTo(attacks, true);
-      this.components[loser].meter.resolveTo(0, false);
-
-      this.createAttackIcons({ winner, loser, attacks });
-
-      waitForIt(() => resetCombat(), (attacks + 1) * 600 + 600);
-    }, animDuration * 2);
+    // if someone won, resolve the combat
+    const winner = combat[target].meter > combat[enemy].meter ? target : enemy;
+    const loser = winner === 'hero' ? 'monster' : 'hero';
+    const attacks = combat[winner].meter - combat[loser].meter;
+    this.resolveCombat({
+      winner,
+      loser,
+      attacks,
+      isOverhead: false,
+    });
 
     return true;
   }
 
-  resolveOverheads(combat) {
-    const { target, enemy } = combat;
+  resolveCombat(result: CombatResult) {
+    const { winner, loser, attacks, isOverhead } = result;
 
-    if (combat[target].overhead > 0) {
-      const overhead = combat[target].overhead;
-      console.log('>>>', target, 'OVERHEAD!', overhead);
-      this.components[target].meter.reset({ isOverhead: true });
-      this.components[enemy].meter.resolveTo(overhead, true);
-
-      // hide the user's card hand
-      this.props.cardHand.hideHand();
-
-      waitForIt(() => {
-        this.createAttackIcons({
-          winner: enemy,
-          loser: target,
-          attacks: overhead,
-        });
-        waitForIt(() => resetCombat(), (overhead + 0) * 600 + 600);
-      }, animDuration * 1);
-      return true;
+    // set meters
+    this.components[winner].meter.resolveTo(attacks, true);
+    if (isOverhead) {
+      this.components[loser].meter.reset({ isOverhead: true });
+    } else {
+      this.components[loser].meter.resolveTo(0, false);
     }
 
-    if (combat[enemy].overhead > 0) {
-      const overhead = combat[enemy].overhead;
-      console.log('>>>', enemy, 'OVERHEAD!', overhead);
-      this.components[enemy].meter.reset({ isOverhead: true });
-      this.components[target].meter.resolveTo(overhead, true);
+    // hide the user's card hand
+    this.props.cardHand.hideHand();
 
-      // hide the user's card hand
-      this.props.cardHand.hideHand();
-
-      waitForIt(() => {
-        this.createAttackIcons({
-          winner: target,
-          loser: enemy,
-          attacks: overhead,
-        });
-        waitForIt(() => resetCombat(), (overhead + 0) * 600 + 600);
-      }, animDuration * 1);
-      return true;
-    }
-
-    return false;
+    // create attack icons
+    waitForIt(() => {
+      this.createAttackIcons({ winner, loser, attacks }, () => {
+        waitForIt(() => resetCombat(), 150);
+      });
+    }, animDuration * 1);
   }
 
   displayMeters(value: boolean) {
@@ -205,7 +180,7 @@ export default class BattleArena {
     }
   }
 
-  refreshMeters(combat) {
+  refreshMeters(combat: Combat) {
     const { target, enemy } = combat;
 
     // refresh both meters
@@ -227,63 +202,10 @@ export default class BattleArena {
     }, 350);
   }
 
-  updateTurn(combat) {
-    let { target, enemy } = combat;
-    console.log('UPDATE TURN!');
-
-    waitForIt(() => {
-      if (target === 'hero' || combat['hero'].resolved) {
-        if (!combat['monster'].resolved) this.executeAi(combat);
-      } else {
-        this.displayMeters(true);
-
-        if (!combat[enemy].resolved) target = changeTarget();
-        // unblock ui when turn is done
-        blockUi(target !== 'hero');
-
-        this.props.cardHand.showHand();
-      }
-    }, 600);
-  }
-
-  executeAi(combat) {
-    this.displayMeters(true);
-
-    // if we are in attackig phase,
-    // we need a delay to trigger ai after meters have re-appeared
-    const delay = this.components.hero.meter.getActive() ? 0 : 350;
-
-    waitForIt(() => {
-      const target = changeTarget('monster');
-      console.log('>>> executing monster AI');
-
-      // decide if we throw another dice or we resolve
-      const currentMeter = combat[target].meter;
-      const left = 12 - currentMeter;
-
-      const precaucious = 1.5;
-      const r = getRandomInt(1, 6) * precaucious;
-
-      if (r <= left) {
-        const dice = getRandomInt(1, 6) as CardNum;
-        console.log('>>> monster throws another dice (+', dice, ')');
-        throwDice(target, dice);
-      } else {
-        console.log('>>> monster resolves combat');
-        sounds.playSound('unlock', 1);
-        setResolved(target);
-      }
-    }, delay);
-  }
-
-  createAttackIcons(result: {
-    winner: Target;
-    loser: Target;
-    attacks: number;
-  }) {
+  createAttackIcons(result: CombatResult, cb: () => void) {
     const { winner, loser, attacks } = result;
     if (!winner) return;
-    this.components[winner].attackIcons.addIcons(attacks, 300, () => {
+    this.components[winner].attackIcons.addIcons(attacks, () => {
       // hide meters
       this.displayMeters(false);
 
@@ -292,17 +214,16 @@ export default class BattleArena {
         const t = 350;
         for (let i = 0; i < result.attacks; i++) {
           waitForIt(() => {
-            this.attack(i, result);
+            this.attack(i, result, () => {
+              if (i === result.attacks - 1) cb && cb();
+            });
           }, i * t);
         }
       }, 300);
     });
   }
 
-  private attack(
-    index: number,
-    result: { winner: Target; loser: Target; attacks: number },
-  ) {
+  private attack(index: number, result: CombatResult, cb: () => void) {
     const { winner, loser } = result;
 
     // calculate damage
@@ -322,7 +243,7 @@ export default class BattleArena {
     const r = getRandomFloat(-0.1, 0.1);
     animate(this.container)
       .clear()
-      .wait(250)
+      .wait(150)
       .then(() => {
         sounds.playRandomSound(['punch1', 'punch2'], 1);
         sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.02);
@@ -330,10 +251,54 @@ export default class BattleArena {
       })
       .then({ scale: 1.3, r }, 50, animate.easeInOut)
       .then({ scale: 0.95 }, 100, animate.easeInOut)
-      .then({ scale: 1, r: 0 }, 50, animate.easeInOut);
+      .then({ scale: 1, r: 0 }, 50, animate.easeInOut)
+      .then(() => cb && cb());
 
     // create damage label
     this.props.overlay.createDamageLabel(loser, damage);
+  }
+
+  executeAi(combat: Combat) {
+    const target = changeTarget('monster');
+    console.log('>>> executing monster AI');
+
+    // decide if we throw another dice or we resolve
+    const currentMeter = combat[target].meter;
+    const left = 12 - currentMeter;
+
+    const precaucious = 1.5;
+    const r = getRandomInt(1, 6) * precaucious;
+
+    if (r <= left) {
+      const dice = getRandomInt(1, 6) as CardNum;
+      console.log('>>> monster throws another dice (+', dice, ')');
+      throwDice(target, dice);
+    } else {
+      console.log('>>> monster resolves combat');
+      sounds.playSound('unlock', 1);
+      setResolved(target);
+    }
+  }
+
+  updateTurn(combat: Combat) {
+    console.log('UPDATE TURN!');
+
+    let { target, enemy } = combat;
+    this.displayMeters(true);
+
+    if (target === 'hero' || combat['hero'].resolved) {
+      // is monster turn
+      if (!combat['monster'].resolved) {
+        waitForIt(() => this.executeAi(combat), 500);
+      }
+    } else {
+      // turn is done
+      waitForIt(() => {
+        if (!combat[enemy].resolved) target = changeTarget();
+        this.props.cardHand.showHand();
+        blockUi(target !== 'hero');
+      }, 350);
+    }
   }
 
   // ============================================================

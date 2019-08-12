@@ -11,6 +11,8 @@ import { getRandomMonster } from 'src/redux/shortcuts/combat';
 import BattleOverlay from '../components/battle/BattleOverlay';
 
 export default class SceneGame extends SceneBasic {
+  private battleArena: BattleArena;
+
   constructor() {
     super();
     this.createViews();
@@ -19,6 +21,7 @@ export default class SceneGame extends SceneBasic {
 
   protected init() {
     console.log('Init game');
+    this.battleArena.init();
   }
 
   private createViews() {
@@ -29,7 +32,7 @@ export default class SceneGame extends SceneBasic {
       width: screen.width,
       height: screen.height,
       backgroundColor: '#222',
-      onClick: () => navigateToScene('title'),
+      // onClick: () => navigateToScene('title'),
     });
 
     const monsterData = getRandomMonster();
@@ -44,7 +47,7 @@ export default class SceneGame extends SceneBasic {
       zIndex: 9,
     });
 
-    const battleArena = new BattleArena({
+    this.battleArena = new BattleArena({
       superview: this.container,
       monsterData,
       overlay,

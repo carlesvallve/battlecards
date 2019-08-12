@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
-import { Target, TargetData, TargetStat } from 'src/types/custom';
+import { Target, TargetData, TargetStat, Combat } from 'src/types/custom';
 import { CardNum } from 'src/game/components/cards/CardNumber';
 // import ruleset from 'src/redux/ruleset';
 
@@ -7,8 +7,8 @@ const slice = createSlice({
   initialState: {
     index: 0,
 
-    target: null as Target,
-    enemy: null as Target,
+    target: null,
+    enemy: null,
 
     hero: {
       meter: 0,
@@ -20,7 +20,7 @@ const slice = createSlice({
         attack: { current: 3, max: 5 },
         defense: { current: 1, max: 5 },
       },
-    } as TargetData,
+    },
 
     monster: {
       meter: 0,
@@ -32,8 +32,8 @@ const slice = createSlice({
         attack: { current: 3, max: 5 },
         defense: { current: 1, max: 5 },
       },
-    } as TargetData,
-  },
+    },
+  } as Combat,
 
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,

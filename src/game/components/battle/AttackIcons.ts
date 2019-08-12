@@ -39,19 +39,19 @@ export default class AttackIcons {
     this.center = this.container.style.x;
   }
 
-  public addIcons(maxAttacks: number, delay: number = 0, cb: () => void) {
+  public addIcons(maxAttacks: number, cb: () => void) {
     this.container.updateOpts({ x: this.center });
 
     // create icon sequence
     this.icons = [];
-    waitForIt(() => {
+    // waitForIt(() => {
       for (let i = 0; i < maxAttacks; i++) {
         waitForIt(() => this.addIcon(i), i * animDuration * 2);
       }
-    }, delay);
+    // }, delay);
 
     // wait and return callback
-    const callbackDelay = delay + maxAttacks * animDuration * 2.5;
+    const callbackDelay = maxAttacks * animDuration * 2.5;
     waitForIt(() => cb && cb(), callbackDelay);
   }
 

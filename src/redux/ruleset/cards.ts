@@ -1,10 +1,34 @@
-import { tuple } from './types';
-import { State } from 'src/redux/state';
-
-// CARD COLLECTIONS
-// https://docs.google.com/document/d/1ZohUI7PfHFQp5NFPDDUdSVMGvyLeM35zFSChzPs6lbo/edit#
 
 // ================ cards =================
+
+/*
+// modifiers
+- +1
+- +2
+- +3
+- 1-3
+- 1-5
+- 1-10
+
+// equipment
+- weapon: add N attacks with bonuses
+- shield: block N attacks
+- helmet
+- boots
+- armour
+
+
+
+// spells
+
+// potions
+- gain hp (15, 30, full, double)
+- gain ep (15, 30, full, double)
+
+// playables
+- reshuffle hand
+- 
+*/
 
 const cardMaxRarity = 5;
 
