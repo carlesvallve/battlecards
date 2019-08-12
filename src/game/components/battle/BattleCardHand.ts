@@ -4,7 +4,6 @@ import { getScreenDimensions } from 'src/lib/utils';
 import Card from '../cards/Card';
 import { animDuration } from 'src/lib/uiConfig';
 import ButtonView from 'ui/widget/ButtonView';
-import BattleCardNumbers from './BattleCardNumbers';
 import sounds from 'src/lib/sounds';
 
 type Props = { superview: View; zIndex: number };

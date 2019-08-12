@@ -223,14 +223,16 @@ export default class BattleArena {
       this.displayMeters(false);
 
       // start attacking sequence
-      const t = 350;
-      for (let i = 0; i < result.attacks; i++) {
-        waitForIt(() => {
-          this.attack(i, result, () => {
-            if (i === result.attacks - 1) cb && cb();
-          });
-        }, i * t);
-      }
+      waitForIt(() => {
+        const t = 350;
+        for (let i = 0; i < result.attacks; i++) {
+          waitForIt(() => {
+            this.attack(i, result, () => {
+              if (i === result.attacks - 1) cb && cb();
+            });
+          }, i * t);
+        }
+      }, 150);
     });
   }
 
@@ -277,13 +279,12 @@ export default class BattleArena {
     const currentMeter = combat[target].meter;
     const left = 12 - currentMeter;
 
-    const precaucious = 1.5;
+    const precaucious = 1.0; // 0: agressive 1: normal 2: coward
     const r = getRandomInt(1, 6) * precaucious;
 
     if (r <= left) {
-      const dice = getRandomInt(1, 6) as CardNum;
-      console.log('>>> monster throws another dice (+', dice, ')');
-      throwDice(target, dice);
+      console.log('>>> monster decides to spawn another card...');
+      this.components[target].cardNumbers.spawnCard();
     } else {
       console.log('>>> monster resolves combat');
       sounds.playSound('unlock', 1);

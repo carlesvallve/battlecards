@@ -65,13 +65,13 @@ export default class CardNumber {
 
     this.container = new View({
       superview: props.superview,
-      x: props.x,
-      y: props.y,
+      x: props.x || 0,
+      y: props.y || 0,
+      scale: props.scale || 1,
       width: 120 * 2,
       height: 170 * 2,
       centerOnOrigin: true,
       centerAnchor: true,
-      scale: props.scale || 1,
       r: -0.1 + Math.random() * 0.2,
     });
 

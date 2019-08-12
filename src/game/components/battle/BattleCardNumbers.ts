@@ -15,7 +15,7 @@ import sounds from 'src/lib/sounds';
 import ruleset from 'src/redux/ruleset';
 import { Target } from 'src/types/custom';
 
-type Props = { superview: View, zIndex: number, target: Target };
+type Props = { superview: View; zIndex: number; target: Target };
 
 export default class BattleCardNumbers {
   private props: Props;
@@ -53,8 +53,6 @@ export default class BattleCardNumbers {
   }
 
   createCards(props: Props) {
-    const screen = getScreenDimensions();
-
     this.usedCards = [];
     this.cards = [];
 
@@ -63,10 +61,7 @@ export default class BattleCardNumbers {
         const card = new CardNumber({
           superview: this.container,
           num: i as CardNum,
-          x: 31 + j * 2,
-          y: screen.height - 48 + j * 2,
-          scale: 0.15,
-          onClick: () => this.spawnCard(card),
+          onClick: () => this.spawnCard(),
         });
         this.cards.push(card);
       }
@@ -75,7 +70,7 @@ export default class BattleCardNumbers {
     // shuffle the card deck
     this.shuffleCards();
 
-    // display remaining cards
+    // display number of remaining cards in deck
     this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 
@@ -85,11 +80,22 @@ export default class BattleCardNumbers {
     const shuffled = this.cards.sort(() => 0.5 - Math.random());
 
     shuffled.forEach((card, index) => {
+      const isHero = this.props.target === 'hero';
+
+      const dx = getRandomInt(-2, 2);
+      const dy = getRandomInt(-2, 2);
+
+      const scale = isHero ? 0.15 : 0;
+      const x = isHero ? 35 + dx : screen.width * 0.5 + dx;
+      const y = isHero
+        ? screen.height - 40 + dy
+        : screen.height * ruleset.baselineY - 128 + 60 + dy;
+
       card.getView().updateOpts({
         zIndex: index * 0.1,
-        x: 35 + getRandomInt(-2, 2) * 1,
-        y: screen.height - 40 + getRandomInt(-2, 2) * 1,
-        scale: 0.15,
+        x,
+        y,
+        scale,
         scaleY: 1,
         opacity: 1,
         visible: true,
@@ -100,7 +106,10 @@ export default class BattleCardNumbers {
     this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 
-  spawnCard(card: CardNumber) {
+  spawnCard() {
+    // get the card on top of the deck
+    const card: CardNumber = this.cards[this.cards.length - 1];
+
     // block the combat ui
     blockUi(true);
     sounds.playSound('swoosh1', 0.2);
@@ -114,7 +123,7 @@ export default class BattleCardNumbers {
     const xx = screen.width / 2;
     const yy = screen.height * ruleset.baselineY;
     const dx = 2;
-    const dy = target === 'hero' ? -25 : 25;
+    const dy = this.props.target === 'hero' ? -25 : 25;
 
     animate(card.getView())
       .clear()
@@ -122,7 +131,7 @@ export default class BattleCardNumbers {
       .then(
         {
           x: xx,
-          y: yy,
+          y: yy - dy,
           scale: 0.3,
           scaleY: 0.75,
           r: 0,
@@ -134,7 +143,7 @@ export default class BattleCardNumbers {
       .then({ scale: 0.35, scaleY: 1 }, t * 0.5, animate.easeInOut)
       .then(() => {
         waitForIt(() => {
-          throwDice('hero', card.getNum()); // use the card with redux
+          throwDice(this.props.target, card.getNum()); // use the card with redux
         }, t * 0.5);
       })
       .then(() => sounds.playSound('swoosh3', 0.3))
