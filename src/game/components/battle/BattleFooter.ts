@@ -24,6 +24,8 @@ export default class BattleFooter {
       width: screen.width,
       height: 80,
       y: screen.height - 80,
+      infinite: false,
+      canHandleEvents: false,
     });
 
     const buttonAction = new ButtonAction({

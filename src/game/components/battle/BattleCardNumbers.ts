@@ -13,8 +13,9 @@ import StateObserver from 'src/redux/StateObserver';
 import { blockUi } from 'src/redux/shortcuts/ui';
 import sounds from 'src/lib/sounds';
 import ruleset from 'src/redux/ruleset';
+import { Target } from 'src/types/custom';
 
-type Props = { superview: View };
+type Props = { superview: View, zIndex: number, target: Target };
 
 export default class BattleCardNumbers {
   private props: Props;
@@ -40,7 +41,7 @@ export default class BattleCardNumbers {
       y: 0,
       infinite: true,
       canHandleEvents: false,
-      zIndex: 100,
+      zIndex: props.zIndex,
     });
   }
 

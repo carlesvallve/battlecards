@@ -39,14 +39,10 @@ export default class BattleCardHand {
       width: screen.width,
       height: screen.height,
       x: 0,
-      y: 0, //screen.height - 75 * 2,
+      y: 0,
       infinite: true,
       canHandleEvents: false,
       zIndex: props.zIndex,
-    });
-
-    const cardNumbers = new BattleCardNumbers({
-      superview: this.container,
     });
 
     this.overlay = new ButtonView({

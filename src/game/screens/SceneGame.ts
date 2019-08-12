@@ -1,14 +1,8 @@
 import SceneBasic from './SceneBasic';
 import ButtonView from 'ui/widget/ButtonView';
 import { getScreenDimensions } from 'src/lib/utils';
-import { navigateToScene } from 'src/redux/shortcuts/ui';
-
-import BattleFooter from '../components/battle/BattleFooter';
-import BattleHeader from '../components/battle/BattleHeader';
-import BattleArena from '../components/battle/BattleArena';
-import BattleCardHand from '../components/battle/BattleCardHand';
 import { getRandomMonster } from 'src/redux/shortcuts/combat';
-import BattleOverlay from '../components/battle/BattleOverlay';
+import BattleArena from '../components/battle/BattleArena';
 
 export default class SceneGame extends SceneBasic {
   private battleArena: BattleArena;
@@ -32,35 +26,13 @@ export default class SceneGame extends SceneBasic {
       width: screen.width,
       height: screen.height,
       backgroundColor: '#222',
-      // onClick: () => navigateToScene('title'),
     });
 
     const monsterData = getRandomMonster();
 
-    const overlay = new BattleOverlay({
-      superview: this.container,
-      zIndex: 10,
-    });
-
-    const cards = new BattleCardHand({
-      superview: this.container,
-      zIndex: 9,
-    });
-
     this.battleArena = new BattleArena({
       superview: this.container,
       monsterData,
-      overlay,
-      cardHand: cards,
-    });
-
-    const header = new BattleHeader({
-      superview: this.container,
-      monsterData,
-    });
-
-    const footer = new BattleFooter({
-      superview: this.container,
     });
   }
 }

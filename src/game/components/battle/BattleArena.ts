@@ -1,5 +1,7 @@
 import animate from 'animate';
+import sounds from 'src/lib/sounds';
 import View from 'ui/View';
+import { animDuration } from 'src/lib/uiConfig';
 import {
   getScreenDimensions,
   waitForIt,
@@ -8,6 +10,8 @@ import {
 } from 'src/lib/utils';
 
 import StateObserver from 'src/redux/StateObserver';
+import ruleset from 'src/redux/ruleset';
+import { blockUi } from 'src/redux/shortcuts/ui';
 import {
   changeTarget,
   throwDice,
@@ -19,31 +23,38 @@ import {
 import ProgressMeter from './ProgressMeter';
 import AttackIcons from './AttackIcons';
 import MonsterImage from './MonsterImage';
+import BattleCardNumbers from './BattleCardNumbers';
+import BattleCardHand from './BattleCardHand';
+import BattleHeader from './BattleHeader';
+import BattleFooter from './BattleFooter';
+import BattleOverlay from './BattleOverlay';
 
 import { Monster } from 'src/redux/ruleset/monsters';
 import { CardNum } from '../cards/CardNumber';
-import { Target, CombatResult, Combat } from 'src/types/custom';
-import BattleOverlay from './BattleOverlay';
-import { blockUi } from 'src/redux/shortcuts/ui';
-import BattleCardHand from './BattleCardHand';
-import { animDuration } from 'src/lib/uiConfig';
-import sounds from 'src/lib/sounds';
-import ruleset from 'src/redux/ruleset';
+import { CombatResult, Combat } from 'src/types/custom';
 
 type Props = {
   superview: View;
   monsterData: Monster;
-  overlay: BattleOverlay;
-  cardHand: BattleCardHand;
 };
 
 export default class BattleArena {
   private props: Props;
   private container: View;
   private monsterImage: MonsterImage;
+  private cardHand: BattleCardHand;
+  private overlay: BattleOverlay;
   private components: {
-    hero: { meter: ProgressMeter; attackIcons: AttackIcons };
-    monster: { meter: ProgressMeter; attackIcons: AttackIcons };
+    hero: {
+      meter: ProgressMeter;
+      attackIcons: AttackIcons;
+      cardNumbers: BattleCardNumbers;
+    };
+    monster: {
+      meter: ProgressMeter;
+      attackIcons: AttackIcons;
+      cardNumbers: BattleCardNumbers;
+    };
   };
 
   constructor(props: Props) {
@@ -55,7 +66,7 @@ export default class BattleArena {
   init() {
     blockUi(true);
     waitForIt(() => {
-      this.props.cardHand.showHand();
+      this.cardHand.showHand();
       waitForIt(() => blockUi(false), animDuration);
     }, animDuration * 1);
   }
@@ -147,7 +158,7 @@ export default class BattleArena {
     }
 
     // hide the user's card hand
-    this.props.cardHand.hideHand();
+    this.cardHand.hideHand();
 
     // create attack icons
     waitForIt(() => {
@@ -255,7 +266,7 @@ export default class BattleArena {
       .then(() => cb && cb());
 
     // create damage label
-    this.props.overlay.createDamageLabel(loser, damage);
+    this.overlay.createDamageLabel(loser, damage);
   }
 
   executeAi(combat: Combat) {
@@ -295,7 +306,7 @@ export default class BattleArena {
       // turn is done
       waitForIt(() => {
         if (!combat[enemy].resolved) target = changeTarget();
-        this.props.cardHand.showHand();
+        this.cardHand.showHand();
         blockUi(target !== 'hero');
       }, 350);
     }
@@ -330,6 +341,11 @@ export default class BattleArena {
       image: props.monsterData.image,
     });
 
+    this.overlay = new BattleOverlay({
+      superview: this.container,
+      zIndex: 10,
+    });
+
     this.components = {
       hero: {
         meter: new ProgressMeter({
@@ -343,11 +359,17 @@ export default class BattleArena {
         }) as ProgressMeter,
 
         attackIcons: new AttackIcons({
-          superview: this.props.overlay.getView(), // this.container,
+          superview: this.overlay.getView(), // this.container,
           x: this.container.style.width * 0.5,
           y: y + 110,
           target: 'hero',
         }) as AttackIcons,
+
+        cardNumbers: new BattleCardNumbers({
+          superview: this.container,
+          target: 'hero',
+          zIndex: 2,
+        }),
       },
 
       monster: {
@@ -362,12 +384,32 @@ export default class BattleArena {
         }) as ProgressMeter,
 
         attackIcons: new AttackIcons({
-          superview: this.props.overlay.getView(), // this.container,
+          superview: this.overlay.getView(),
           x: this.container.style.width * 0.5,
           y: y - 220,
           target: 'monster',
         }) as AttackIcons,
+
+        cardNumbers: new BattleCardNumbers({
+          superview: this.container,
+          target: 'monster',
+          zIndex: 2,
+        }),
       },
     };
+
+    this.cardHand = new BattleCardHand({
+      superview: this.container,
+      zIndex: 1,
+    });
+
+    const header = new BattleHeader({
+      superview: this.container,
+      monsterData: this.props.monsterData,
+    });
+
+    const footer = new BattleFooter({
+      superview: this.container,
+    });
   }
 }
