@@ -154,7 +154,7 @@ export default class BattleArena {
       this.createAttackIcons({ winner, loser, attacks }, () => {
         waitForIt(() => resetCombat(), 150);
       });
-    }, animDuration * 1);
+    }, animDuration * 2);
   }
 
   displayMeters(value: boolean) {
@@ -204,21 +204,22 @@ export default class BattleArena {
   createAttackIcons(result: CombatResult, cb: () => void) {
     const { winner, loser, attacks } = result;
     if (!winner) return;
-    this.components[winner].attackIcons.addIcons(attacks, () => {
+
+    const meter = this.components[winner].meter;
+
+    this.components[winner].attackIcons.addIcons(meter, attacks, () => {
       // hide meters
       this.displayMeters(false);
 
       // start attacking sequence
-      waitForIt(() => {
-        const t = 350;
-        for (let i = 0; i < result.attacks; i++) {
-          waitForIt(() => {
-            this.attack(i, result, () => {
-              if (i === result.attacks - 1) cb && cb();
-            });
-          }, i * t);
-        }
-      }, 300);
+      const t = 350;
+      for (let i = 0; i < result.attacks; i++) {
+        waitForIt(() => {
+          this.attack(i, result, () => {
+            if (i === result.attacks - 1) cb && cb();
+          });
+        }, i * t);
+      }
     });
   }
 

@@ -4,6 +4,8 @@ import ImageScaleView from 'ui/ImageScaleView';
 import { waitForIt } from 'src/lib/utils';
 import { Target } from 'src/types/custom';
 import sounds from 'src/lib/sounds';
+import { getCurrentMeter } from 'src/redux/shortcuts/combat';
+import ProgressMeter from './ProgressMeter';
 
 type Props = {
   superview: View;
@@ -39,23 +41,27 @@ export default class AttackIcons {
     this.center = this.container.style.x;
   }
 
-  public addIcons(maxAttacks: number, cb: () => void) {
+  public addIcons(meter: ProgressMeter, maxAttacks: number, cb: () => void) {
     this.container.updateOpts({ x: this.center });
 
     // create icon sequence
     this.icons = [];
-    // waitForIt(() => {
-      for (let i = 0; i < maxAttacks; i++) {
-        waitForIt(() => this.addIcon(i), i * animDuration * 2);
-      }
-    // }, delay);
+    for (let i = 0; i < maxAttacks; i++) {
+      waitForIt(() => {
+        const current = maxAttacks - this.icons.length - 1;
+        this.addIcon(i, meter, current);
+      }, i * animDuration * 2);
+    }
 
     // wait and return callback
-    const callbackDelay = maxAttacks * animDuration * 2.5;
+    const callbackDelay = maxAttacks * animDuration * 2;
     waitForIt(() => cb && cb(), callbackDelay);
   }
 
-  private addIcon(i: number) {
+  private addIcon(i: number, meter: ProgressMeter, current: number) {
+    // refresh meter
+    waitForIt(() => meter.resolveTo(current, false, true), animDuration / 2);
+
     const d = iconSeparation;
     const x = this.container.style.width / 2 + i * d;
     const y = this.container.style.height / 2;

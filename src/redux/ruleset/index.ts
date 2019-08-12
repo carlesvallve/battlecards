@@ -8,7 +8,7 @@ export default {
   maxCards: 20,
   maxHand: 5,
 
-  baselineY: 0.575,
+  baselineY: 0.59,
 
   ...cards,
   ...monsters,
