@@ -14,10 +14,11 @@ import ruleset from 'src/redux/ruleset';
 import { blockUi } from 'src/redux/shortcuts/ui';
 import {
   changeTarget,
-  throwDice,
   setResolved,
   resetCombat,
   addStat,
+  setMonsterID,
+  getRandomMonsterID,
 } from 'src/redux/shortcuts/combat';
 
 import ProgressMeter from './ProgressMeter';
@@ -29,13 +30,10 @@ import BattleHeader from './BattleHeader';
 import BattleFooter from './BattleFooter';
 import BattleOverlay from './BattleOverlay';
 
-import { Monster } from 'src/redux/ruleset/monsters';
-import { CardNum } from '../cards/CardNumber';
 import { CombatResult, Combat } from 'src/types/custom';
 
 type Props = {
   superview: View;
-  monsterData: Monster;
 };
 
 export default class BattleArena {
@@ -64,6 +62,10 @@ export default class BattleArena {
   }
 
   init() {
+    // choose a random monster
+    const id = setMonsterID(getRandomMonsterID());
+    console.log('A monster has been chosen:', id);
+
     blockUi(true);
     waitForIt(() => {
       this.cardHand.showHand();
@@ -72,6 +74,13 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    // StateObserver.createSelector(({ combat }) => combat.monster.id).addListener(
+    //   (id) => {
+    //     if (!id) return;
+    //     this.monsterImage.setImage(ruleset.monsters[id].image);
+    //   },
+    // );
+
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
     }).addListener((index) => {
@@ -277,7 +286,7 @@ export default class BattleArena {
 
     // decide if we throw another dice or we resolve
     const currentMeter = combat[target].meter;
-    const left = 12 - currentMeter;
+    const left = combat[target].maxSteps - currentMeter;
 
     const precaucious = 1.0; // 0: agressive 1: normal 2: coward
     const r = getRandomInt(1, 6) * precaucious;
@@ -339,7 +348,7 @@ export default class BattleArena {
       y: y - 128,
       width: 128,
       height: 128,
-      image: props.monsterData.image,
+      image: null,
     });
 
     this.overlay = new BattleOverlay({
@@ -356,11 +365,10 @@ export default class BattleArena {
           width: 220,
           height: 40,
           target: 'hero',
-          stepLimit: 12,
         }) as ProgressMeter,
 
         attackIcons: new AttackIcons({
-          superview: this.overlay.getView(), // this.container,
+          superview: this.overlay.getView(),
           x: this.container.style.width * 0.5,
           y: y + 110,
           target: 'hero',
@@ -381,7 +389,6 @@ export default class BattleArena {
           width: 220,
           height: 40,
           target: 'monster',
-          stepLimit: 12,
         }) as ProgressMeter,
 
         attackIcons: new AttackIcons({
@@ -406,7 +413,6 @@ export default class BattleArena {
 
     const header = new BattleHeader({
       superview: this.container,
-      monsterData: this.props.monsterData,
     });
 
     const footer = new BattleFooter({

@@ -4,7 +4,7 @@ import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import StateObserver from 'src/redux/StateObserver';
-import { setResolved } from 'src/redux/shortcuts/combat';
+import { setResolved, getTarget } from 'src/redux/shortcuts/combat';
 import View from 'ui/View';
 import { blockUi } from 'src/redux/shortcuts/ui';
 import sounds from 'src/lib/sounds';
@@ -89,6 +89,7 @@ export default class ButtonAction {
         y: -2,
       },
       onClick: () => {
+        if (!getTarget(StateObserver.getState())) return;
         // sounds.playSound('unlock', 1);
         // block the combat ui
         blockUi(true);

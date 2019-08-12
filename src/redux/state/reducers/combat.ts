@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from 'redux-starter-kit';
 import { Target, TargetData, TargetStat, Combat } from 'src/types/custom';
 import { CardNum } from 'src/game/components/cards/CardNumber';
+import { MonsterID } from 'src/redux/ruleset/monsters';
+import ruleset from 'src/redux/ruleset';
 // import ruleset from 'src/redux/ruleset';
 
 const slice = createSlice({
@@ -11,7 +13,9 @@ const slice = createSlice({
     enemy: null,
 
     hero: {
+      id: 'hero',
       meter: 0,
+      maxSteps: 12,
       overhead: 0,
       resolved: false,
       stats: {
@@ -23,7 +27,9 @@ const slice = createSlice({
     },
 
     monster: {
+      id: null,
       meter: 0,
+      maxSteps: 12,
       overhead: 0,
       resolved: false,
       stats: {
@@ -38,24 +44,27 @@ const slice = createSlice({
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
 
+    action_setMonsterID: (
+      state,
+      { payload }: PayloadAction<{ id: MonsterID }>,
+    ) => {
+      const { id } = payload;
+      state.monster.id = id;
+      state.monster.maxSteps = ruleset.monsters[id].maxSteps;
+    },
+
     action_resetCombat: (state) => {
       console.log('action > resetCombat');
 
       state.index = 0;
 
-      state.hero = {
-        meter: 0,
-        overhead: 0,
-        resolved: false,
-        stats: state.hero.stats,
-      };
+      state.hero.meter = 0;
+      state.hero.overhead = 0;
+      state.hero.resolved = false;
 
-      state.monster = {
-        meter: 0,
-        overhead: 0,
-        resolved: false,
-        stats: state.monster.stats,
-      };
+      state.monster.meter = 0;
+      state.monster.overhead = 0;
+      state.monster.resolved = false;
     },
 
     action_changeTarget: (
@@ -85,8 +94,9 @@ const slice = createSlice({
 
       state[target].overhead = 0;
       state[target].meter += value;
-      if (state[target].meter > 12) {
-        state[target].overhead = state[target].meter - 12;
+
+      if (state[target].meter > state[target].maxSteps) {
+        state[target].overhead = state[target].meter - state[target].maxSteps;
         state[target].meter = 0;
       }
 
@@ -132,6 +142,7 @@ const slice = createSlice({
 });
 
 export const {
+  action_setMonsterID,
   action_resetCombat,
   action_changeTarget,
   action_throwDice,

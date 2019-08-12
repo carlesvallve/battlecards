@@ -1,17 +1,17 @@
 import animate from 'animate';
+import sounds from 'src/lib/sounds';
 import uiConfig from 'src/lib/uiConfig';
+import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
 import Label from './Label';
 import { waitForIt } from 'src/lib/utils';
+import { Target } from 'src/types/custom';
+import StateObserver from 'src/redux/StateObserver';
 import {
   getCurrentMeter,
   getColorByTarget,
   getTargetEnemy,
 } from 'src/redux/shortcuts/combat';
-import View from 'ui/View';
-import { Target } from 'src/types/custom';
-import StateObserver from 'src/redux/StateObserver';
-import sounds from 'src/lib/sounds';
 
 type Props = {
   superview: View;
@@ -20,7 +20,6 @@ type Props = {
   width: number;
   height: number;
   target: Target;
-  stepLimit: number;
 };
 
 const totalSteps = 12;
@@ -39,6 +38,20 @@ export default class ProgressMeter {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
+    this.createSelectors();
+  }
+
+  private createSelectors() {
+    const target = this.props.target;
+
+    StateObserver.createSelector(
+      ({ combat }) => combat[target].maxSteps,
+    ).addListener((maxSteps) => {
+      for (let i = 0; i < totalSteps; i++) {
+        const active = i <= maxSteps - 1;
+        this.steps[i].updateOpts({ opacity: active ? 1 : 0 });
+      }
+    });
   }
 
   getView() {
@@ -51,7 +64,6 @@ export default class ProgressMeter {
 
   protected createViews(props: Props) {
     this.container = new View({
-      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       ...props,
       centerOnOrigin: true,
       centerAnchor: true,
@@ -110,7 +122,7 @@ export default class ProgressMeter {
 
     this.steps = [];
     for (let i = 0; i < totalSteps; i++) {
-      const active = i <= props.stepLimit - 1;
+      const active = false;
 
       const step = new ImageScaleView({
         superview: this.container,
@@ -120,7 +132,7 @@ export default class ProgressMeter {
         height: this.container.style.height - 10,
         x: 6 + i * w,
         y: 5,
-        opacity: active ? 1 : 0.5,
+        opacity: active ? 1 : 0,
       });
       this.steps.push(step);
     }

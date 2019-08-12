@@ -1,3 +1,5 @@
+import { MonsterID } from "src/redux/ruleset/monsters";
+
 // utility types
 
 export const tuple = <T extends string[]>(...args: T) => args;
@@ -28,7 +30,9 @@ export type Target = 'hero' | 'monster';
 export type TargetStat = { current?: number; max?: number };
 
 export type TargetData = {
+  id: MonsterID | 'hero',
   meter: number;
+  maxSteps: number,
   overhead: number;
   resolved: boolean;
   stats: {

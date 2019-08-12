@@ -28,11 +28,10 @@ export default class SceneGame extends SceneBasic {
       backgroundColor: '#222',
     });
 
-    const monsterData = getRandomMonster();
+    
 
     this.battleArena = new BattleArena({
       superview: this.container,
-      monsterData,
     });
   }
 }

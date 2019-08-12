@@ -5,7 +5,6 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
 import View from 'ui/View';
-
 import StateObserver from 'src/redux/StateObserver';
 import { Target } from 'src/types/custom';
 
@@ -38,9 +37,7 @@ export default class StatInfo {
     StateObserver.createSelector(
       ({ combat }) => combat[target].stats[type],
     ).addListener((stat) => {
-      if (!stat) return;
-      // console.log('stat changed:', target, type, value);
-      this.label.localeText = () => stat.current;
+      if (stat) this.label.localeText = () => stat.current;
     });
   }
 

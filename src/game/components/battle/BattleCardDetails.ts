@@ -74,7 +74,7 @@ export default class BattleCardDetails {
       size: 16,
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
-        sounds.playSound('click-3', 1);
+        sounds.playSound('click1', 0.3);
         this.hideCardDetails();
       },
     });
@@ -82,6 +82,8 @@ export default class BattleCardDetails {
 
   showCardDetails(card: Card) {
     if (card.getMode() === 'full') return;
+
+    sounds.playSound('swoosh4', 0.1);
 
     this.props.superview.updateOpts({ zIndex: 3 });
     card.getView().updateOpts({ zIndex: 100 });
@@ -118,6 +120,8 @@ export default class BattleCardDetails {
   }
 
   hideCardDetails() {
+    sounds.playSound('swoosh1', 0.1);
+
     const screen = getScreenDimensions();
 
     const t = animDuration;

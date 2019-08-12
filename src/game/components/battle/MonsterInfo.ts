@@ -4,6 +4,9 @@ import uiConfig from 'src/lib/uiConfig';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import ImageScaleView from 'ui/ImageScaleView';
 import View from 'ui/View';
+import { Target } from 'src/types/custom';
+import StateObserver from 'src/redux/StateObserver';
+import ruleset from 'src/redux/ruleset';
 
 type Props = {
   superview: View;
@@ -11,19 +14,38 @@ type Props = {
   y: number;
   width: number;
   height: number;
-  data: {
-    name: string;
-    description: string;
-  };
+  target: Target;
 };
 
 export default class MonsterInfo {
   private props: Props;
   private container: View;
+  private labelName: LangBitmapFontTextView;
+  private labelDesc: LangBitmapFontTextView;
 
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
+    this.createSelectors();
+  }
+
+  private createSelectors() {
+    const target = this.props.target;
+
+    StateObserver.createSelector(({ combat }) => combat[target].id).addListener(
+      (id) => {
+        if (!id) return;
+
+        this.labelName.localeText = () => ruleset.monsters[id].name;
+        this.labelDesc.localeText = () => ruleset.monsters[id].desc;
+
+        const desc = ruleset.monsters[id].desc;
+        this.labelName.updateOpts({
+          size: desc ? 11 : 14,
+          y: this.container.style.height * desc ? 0.15 : 0.28,
+        });
+      },
+    );
   }
 
   private createViews(props: Props) {
@@ -49,31 +71,24 @@ export default class MonsterInfo {
       scale: 1,
     });
 
-    const labelName = new LangBitmapFontTextView({
+    this.labelName = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('Title'),
       size: 11,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.15,
-      localeText: () => props.data.name,
+      localeText: () => '',
     });
 
-    const labelDescription = new LangBitmapFontTextView({
+    this.labelDesc = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('Body'),
       size: 8,
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.56,
-      localeText: () => props.data.description,
+      localeText: () => '',
     });
-
-    if (!props.data.description) {
-      labelName.updateOpts({
-        size: 14,
-        y: this.container.style.height * 0.28,
-      })
-    }
   }
 }

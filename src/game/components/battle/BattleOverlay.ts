@@ -1,7 +1,6 @@
 import animate from 'animate';
 import View from 'ui/View';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
-import { Monster } from 'src/redux/ruleset/monsters';
 import { Target } from 'src/types/custom';
 import uiConfig from 'src/lib/uiConfig';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
@@ -26,7 +25,7 @@ export default class BattleOverlay {
       return ui.isBlocked;
     }).addListener((isBlocked) => {
       this.container.updateOpts({
-        backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.25)' : '',
+        // backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.25)' : '',
         canHandleEvents: isBlocked,
       });
     });

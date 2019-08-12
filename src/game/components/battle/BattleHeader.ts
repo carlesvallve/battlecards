@@ -4,9 +4,9 @@ import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import StatInfo from './StatInfo';
 import MonsterInfo from './MonsterInfo';
-import { Monster } from 'src/redux/ruleset/monsters';
 
-type Props = { superview: View; monsterData: Monster };
+
+type Props = { superview: View; } 
 
 export default class BattleHeader {
   private props: Props;
@@ -49,16 +49,13 @@ export default class BattleHeader {
       type: 'ep',
     });
 
-    const mosnterInfo = new MonsterInfo({
+    const monsterInfo = new MonsterInfo({
       superview: this.container,
       x: this.container.style.width / 2,
       y: 48,
       width: 140,
       height: 30,
-      data: {
-        name: props.monsterData.name,
-        description: props.monsterData.desc,
-      },
+      target: 'monster',
     });
 
     const dStats = 91;
