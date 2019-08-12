@@ -55,22 +55,21 @@ export default class BattleArena {
   init() {
     blockUi(true);
     waitForIt(() => {
-      //changeTarget('hero');
       this.props.cardHand.showHand();
       waitForIt(() => blockUi(false), animDuration);
-    }, 1000);
+    }, animDuration * 1);
   }
 
   private createSelectors() {
-    // combat flow
-
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
     }).addListener((index) => {
       console.log('---------');
       const { combat } = StateObserver.getState();
+
       if (this.checkCombatReset(index, combat)) return;
       if (this.checkCombatResult(combat)) return;
+
       this.refreshMeters(combat);
       this.updateTurn(combat);
     });
