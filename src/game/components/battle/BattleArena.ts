@@ -167,7 +167,7 @@ export default class BattleArena {
       // sounds.playSound('swoosh4', 0.15);
       animate(this.monsterImage.getView())
         .clear()
-        .then({ y: y - 115 }, animDuration, animate.easeInOut);
+        .then({ y: y - 128 }, animDuration, animate.easeInOut);
     } else {
       this.components['hero'].meter.hideMeter();
       this.components['monster'].meter.hideMeter();
@@ -175,7 +175,7 @@ export default class BattleArena {
       sounds.playSound('swoosh4', 0.15);
       animate(this.monsterImage.getView())
         .clear()
-        .then({ y: y - 45 }, animDuration, animate.easeInOut);
+        .then({ y: y - 64 }, animDuration, animate.easeInOut);
     }
   }
 
@@ -323,9 +323,9 @@ export default class BattleArena {
     this.monsterImage = new MonsterImage({
       superview: this.container,
       x: this.container.style.width / 2,
-      y: y - 115,
-      width: 100,
-      height: 100,
+      y: y - 128,
+      width: 128,
+      height: 128,
       image: props.monsterData.image,
     });
 
@@ -363,7 +363,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.props.overlay.getView(), // this.container,
           x: this.container.style.width * 0.5,
-          y: y - 210,
+          y: y - 220,
           target: 'monster',
         }) as AttackIcons,
       },
