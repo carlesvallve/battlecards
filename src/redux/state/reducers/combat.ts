@@ -1,45 +1,51 @@
-import { createSlice, PayloadAction } from 'redux-starter-kit';
+import {
+  createSlice,
+  PayloadAction,
+  createSerializableStateInvariantMiddleware,
+} from 'redux-starter-kit';
 import { Target, TargetData, TargetStat, Combat } from 'src/types/custom';
 import { CardNum } from 'src/game/components/cards/CardNumber';
 import { MonsterID } from 'src/redux/ruleset/monsters';
 import ruleset from 'src/redux/ruleset';
 // import ruleset from 'src/redux/ruleset';
 
+const initialState = {
+  index: 0,
+
+  target: null,
+  enemy: null,
+
+  hero: {
+    id: 'hero',
+    meter: 0,
+    maxSteps: 12,
+    overhead: 0,
+    resolved: false,
+    stats: {
+      hp: { current: 20, max: 20 },
+      ep: { current: 20, max: 20 },
+      attack: { current: 5, max: 5 },
+      defense: { current: 2, max: 5 },
+    },
+  },
+
+  monster: {
+    id: null,
+    meter: 0,
+    maxSteps: 12,
+    overhead: 0,
+    resolved: false,
+    stats: {
+      hp: { current: 20, max: 20 },
+      ep: { current: 20, max: 20 },
+      attack: { current: 3, max: 5 },
+      defense: { current: 1, max: 5 },
+    },
+  },
+} as Combat;
+
 const slice = createSlice({
-  initialState: {
-    index: 0,
-
-    target: null,
-    enemy: null,
-
-    hero: {
-      id: 'hero',
-      meter: 0,
-      maxSteps: 12,
-      overhead: 0,
-      resolved: false,
-      stats: {
-        hp: { current: 20, max: 20 },
-        ep: { current: 20, max: 20 },
-        attack: { current: 3, max: 5 },
-        defense: { current: 1, max: 5 },
-      },
-    },
-
-    monster: {
-      id: null,
-      meter: 0,
-      maxSteps: 12,
-      overhead: 0,
-      resolved: false,
-      stats: {
-        hp: { current: 20, max: 20 },
-        ep: { current: 20, max: 20 },
-        attack: { current: 3, max: 5 },
-        defense: { current: 1, max: 5 },
-      },
-    },
-  } as Combat,
+  initialState,
 
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
@@ -53,8 +59,47 @@ const slice = createSlice({
       state.monster.maxSteps = ruleset.monsters[id].maxSteps;
     },
 
-    action_resetCombat: (state) => {
-      console.log('action > resetCombat');
+    action_newCombat: (
+      state,
+      { payload }: PayloadAction<{ monsterID: MonsterID }>,
+    ) => {
+      const { monsterID } = payload;
+
+      state.index = 1;
+
+      state.target = 'hero';
+      state.enemy = 'monster';
+
+      state.hero.meter = 0;
+      state.hero.overhead = 0;
+      state.hero.resolved = false;
+
+      state.monster.id = monsterID;
+      state.monster.meter = 0;
+      state.monster.maxSteps = ruleset.monsters[monsterID].maxSteps;
+      state.monster.overhead = 0;
+      state.monster.resolved = false;
+
+      // state.hero.stats = {
+      //   hp: { current: 20, max: 20 },
+      //   ep: { current: 20, max: 20 },
+      //   attack: { current: 3, max: 5 },
+      //   defense: { current: 1, max: 5 },
+      // };
+
+      state.monster.stats = {
+        hp: { current: 20, max: 20 },
+        ep: { current: 20, max: 20 },
+        attack: { current: 3, max: 5 },
+        defense: { current: 1, max: 5 },
+      };
+
+      console.log('=========================');
+      console.log('action > newCombat', state);
+    },
+
+    action_resetCombatTurn: (state) => {
+      console.log('action > resetCombatTurn');
 
       state.index = 0;
 
@@ -143,7 +188,8 @@ const slice = createSlice({
 
 export const {
   action_setMonsterID,
-  action_resetCombat,
+  action_newCombat,
+  action_resetCombatTurn,
   action_changeTarget,
   action_throwDice,
   action_setResolved,

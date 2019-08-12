@@ -13,9 +13,10 @@ import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
 import { blockUi } from 'src/redux/shortcuts/ui';
 import {
+  newCombat,
   changeTarget,
   setResolved,
-  resetCombat,
+  resetCombatTurn,
   addStat,
   setMonsterID,
   getRandomMonsterID,
@@ -31,6 +32,7 @@ import BattleFooter from './BattleFooter';
 import BattleOverlay from './BattleOverlay';
 
 import { CombatResult, Combat } from 'src/types/custom';
+import playExplosion from './Explosion';
 
 type Props = {
   superview: View;
@@ -62,32 +64,25 @@ export default class BattleArena {
   }
 
   init() {
-    // choose a random monster
-    const id = setMonsterID(getRandomMonsterID());
-    console.log('A monster has been chosen:', id);
-
-    blockUi(true);
-    waitForIt(() => {
-      this.cardHand.showHand();
-      waitForIt(() => blockUi(false), animDuration);
-    }, animDuration * 1);
+    // generate a new combat
+    newCombat(getRandomMonsterID());
   }
 
   private createSelectors() {
-    // StateObserver.createSelector(({ combat }) => combat.monster.id).addListener(
-    //   (id) => {
-    //     if (!id) return;
-    //     this.monsterImage.setImage(ruleset.monsters[id].image);
-    //   },
-    // );
-
     StateObserver.createSelector(({ combat }) => {
+      // console.log('####', combat.index);
       return combat.index;
     }).addListener((index) => {
-      console.log('---------');
+      console.log('---------', index);
       const { combat } = StateObserver.getState();
 
-      if (this.checkCombatReset(index, combat)) return;
+      const id = combat.monster.id;
+      if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
+
+      if (this.checkMonsterDeath(combat)) return;
+      if (this.checkHeroDeath(combat)) return;
+
+      if (this.checkCombatReset(combat)) return;
       if (this.checkCombatResult(combat)) return;
 
       this.refreshMeters(combat);
@@ -95,15 +90,41 @@ export default class BattleArena {
     });
   }
 
-  checkCombatReset(index: number, combat: Combat) {
+  checkMonsterDeath(combat: Combat) {
+    const hp = combat.monster.stats.hp.current;
+
+    if (hp <= 0) {
+      this.monsterImage.playDeathAnimation();
+      waitForIt(() => {
+        // generate a new combat
+        newCombat(getRandomMonsterID());
+      }, animDuration * 3);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  checkHeroDeath(combat: Combat) {
+    const hp = combat.hero.stats.hp.current;
+    if (hp <= 0) {
+      // todo: open gameover popup
+      return true;
+    }
+    return false;
+  }
+
+  checkCombatReset(combat: Combat) {
     // check for combat reset
-    if (index === 0) {
+    if (combat.index === 0) {
       const { target, enemy } = combat;
       if (target && enemy) {
         this.components[target].meter.reset({ isOverhead: false });
         this.components[enemy].meter.reset({ isOverhead: false });
         this.updateTurn(combat);
       }
+
       return true;
     }
     return false;
@@ -136,7 +157,7 @@ export default class BattleArena {
     if (combat[target].meter === combat[enemy].meter) {
       waitForIt(() => {
         sounds.playSound('item2', 1);
-        resetCombat();
+        resetCombatTurn();
       }, 350);
       return true;
     }
@@ -172,7 +193,7 @@ export default class BattleArena {
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons({ winner, loser, attacks }, () => {
-        waitForIt(() => resetCombat(), 150);
+        waitForIt(() => resetCombatTurn(), 150);
       });
     }, animDuration * 2);
   }
@@ -288,7 +309,7 @@ export default class BattleArena {
     const currentMeter = combat[target].meter;
     const left = combat[target].maxSteps - currentMeter;
 
-    const precaucious = 1.0; // 0: agressive 1: normal 2: coward
+    const precaucious = 0.5; // 0: agressive 1: normal 2: coward
     const r = getRandomInt(1, 6) * precaucious;
 
     if (r <= left) {
@@ -346,9 +367,8 @@ export default class BattleArena {
       superview: this.container,
       x: this.container.style.width / 2,
       y: y - 128,
-      width: 128,
-      height: 128,
-      image: null,
+      width: 120,
+      height: 120,
     });
 
     this.overlay = new BattleOverlay({

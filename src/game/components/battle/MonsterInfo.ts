@@ -39,10 +39,10 @@ export default class MonsterInfo {
         this.labelName.localeText = () => ruleset.monsters[id].name;
         this.labelDesc.localeText = () => ruleset.monsters[id].desc;
 
-        const desc = ruleset.monsters[id].desc;
+        const desc = !!ruleset.monsters[id].desc;
         this.labelName.updateOpts({
           size: desc ? 11 : 14,
-          y: this.container.style.height * desc ? 0.15 : 0.28,
+          y: this.container.style.height * (desc ? 0.15 : 0.28),
         });
       },
     );

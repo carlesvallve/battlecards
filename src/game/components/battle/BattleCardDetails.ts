@@ -66,7 +66,7 @@ export default class BattleCardDetails {
       superview: this.container,
       zIndex: 3,
       width: screen.width - 40,
-      height: 100,
+      height: 90,
       x: 20,
       y: screen.height + 20,
       labelOffsetY: -3,
@@ -101,7 +101,7 @@ export default class BattleCardDetails {
     animate(this.buttonUse)
       .clear()
       .wait(t * 0.5)
-      .then({ y: screen.height - 120 }, t, animate.easeInOut);
+      .then({ y: screen.height - 110 }, t, animate.easeInOut);
 
     const { x, y, scale, r } = card.getView().style;
     this.selectedCardData = { card, x, y, scale, r };

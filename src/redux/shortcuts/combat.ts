@@ -4,10 +4,11 @@ import {
   action_changeTarget,
   action_throwDice,
   action_setResolved,
-  action_resetCombat,
+  action_resetCombatTurn,
   action_addStat,
   action_setStat,
   action_setMonsterID,
+  action_newCombat,
 } from 'src/redux/state/reducers/combat';
 import uiConfig from 'src/lib/uiConfig';
 import { CardNum } from 'src/game/components/cards/CardNumber';
@@ -59,14 +60,18 @@ export const getColorByDiff = (target: Target, currentMeter: number) => {
 
 // setters
 
-
 export const setMonsterID = (id: MonsterID) => {
   StateObserver.dispatch(action_setMonsterID({ id }));
   return id;
 };
 
-export const resetCombat = () => {
-  StateObserver.dispatch(action_resetCombat());
+export const newCombat = (monsterID: MonsterID) => {
+  StateObserver.dispatch(action_newCombat({ monsterID }));
+  return StateObserver.getState().combat;
+};
+
+export const resetCombatTurn = () => {
+  StateObserver.dispatch(action_resetCombatTurn());
 };
 
 export const changeTarget = (newTarget?: Target) => {

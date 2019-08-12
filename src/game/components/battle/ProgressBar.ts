@@ -6,7 +6,6 @@ import ImageScaleView from 'ui/ImageScaleView';
 import ImageView from 'ui/ImageView';
 import View from 'ui/View';
 import StateObserver from 'src/redux/StateObserver';
-import Label from './Label';
 import { Target, TargetStat } from 'src/types/custom';
 
 type Props = {
@@ -24,7 +23,8 @@ const animDuration = 150;
 export default class ProgressBar {
   bar: ImageScaleView;
   barTip: View;
-  labelDamage: Label;
+  labelStat: LangBitmapFontTextView;
+  labelStatMax: LangBitmapFontTextView;
 
   private props: Props;
   private container: View;
@@ -106,7 +106,7 @@ export default class ProgressBar {
       }.png`,
     });
 
-    const label = new LangBitmapFontTextView({
+    this.labelStat = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
@@ -118,7 +118,7 @@ export default class ProgressBar {
       localeText: () => '0',
     });
 
-    const labelMax = new LangBitmapFontTextView({
+    this.labelStatMax = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
@@ -133,6 +133,9 @@ export default class ProgressBar {
   }
 
   setProgress(value: TargetStat) {
+    this.labelStat.localeText = () => `${Math.max(value.current, 0)}`;
+    this.labelStatMax.localeText = () => `/${Math.max(value.max, 0)}`;
+
     const percent = (1 * value.current) / value.max;
     const width = (this.container.style.width - 5) * percent;
     const tipVisible = percent > 0 && percent < 1;
