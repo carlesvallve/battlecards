@@ -1,5 +1,4 @@
 import cards from './cards';
-import { getRandomItemFromArray } from 'src/lib/utils';
 import monsters from './monsters';
 
 export default {
@@ -8,7 +7,7 @@ export default {
   maxCards: 20,
   maxHand: 5,
 
-  baselineY: 0.59,
+  baselineY: 0.58,
 
   ...cards,
   ...monsters,

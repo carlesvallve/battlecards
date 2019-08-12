@@ -137,7 +137,7 @@ export default class BattleCardNumbers {
           r: 0,
         },
         t * 0.5,
-        animate.easeInOut,
+        animate.easeOut,
       )
       .then({ scale: 0.4, scaleY: 1 }, t * 0.5, animate.easeInOut)
       .then({ scale: 0.35, scaleY: 1 }, t * 0.5, animate.easeInOut)
