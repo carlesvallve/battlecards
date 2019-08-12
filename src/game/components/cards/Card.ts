@@ -8,6 +8,7 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { animDuration } from 'src/lib/uiConfig';
+import { CardType } from 'src/types/custom';
 
 export type CardMode = 'mini' | 'full';
 export type CardSide = 'front' | 'back';
@@ -35,13 +36,13 @@ export default class Card {
   private container: View;
   private backImage: View;
   private image: ImageView;
+  private labelModifier: ImageView;
   private button: ButtonView;
   private infoDetails: View;
   private infoHand: View;
 
   constructor(props: Props) {
-    // this.props.id = props.id;
-    // this.props.side = props.side || 'back';
+    this.props.id = props.id;
 
     this.createViews(props);
     this.setProps(props);
@@ -69,6 +70,10 @@ export default class Card {
     return this.props.mode;
   }
 
+  getType(): CardType {
+    return ruleset.cards[this.props.id].type;
+  }
+
   setProps(props: Props) {
     if (props === this.props) return;
     this.update(props);
@@ -78,9 +83,9 @@ export default class Card {
   private update(props: Props) {
     const { mode, side } = props;
 
-    this.getView().updateOpts({
-      zIndex: mode === 'full' ? 9 : 0,
-    });
+    // this.getView().updateOpts({
+    //   zIndex: mode === 'full' ? 9 : 0,
+    // });
 
     this.backImage.updateOpts({
       visible: side === 'back',
@@ -92,6 +97,7 @@ export default class Card {
     this.infoDetails.updateOpts({
       visible: mode === 'full' && side === 'front',
     });
+
     this.image.updateOpts({
       visible: side === 'front',
     });
@@ -114,22 +120,14 @@ export default class Card {
       centerOnOrigin: true,
       centerAnchor: true,
       scale: props.scale || 1,
+      opacity: 0,
+      visible: false,
       r: props.r,
-    });
-
-    // image-bg
-    const imageBg = new View({
-      superview: this.container,
-      backgroundColor: '#333',
-      x: 10,
-      y: 10,
-      width: 222,
-      height: 222,
     });
 
     const imageMask = new View({
       superview: this.container,
-      backgroundColor: '#333',
+      backgroundColor: '#000',
       x: 10,
       y: 10,
       width: 222,
@@ -137,7 +135,6 @@ export default class Card {
       clip: true,
     });
 
-    // image
     const image = ruleset.cards[props.id].image;
     this.image = new ImageView({
       superview: imageMask,
@@ -149,9 +146,29 @@ export default class Card {
       centerAnchor: true,
       image:
         props.side === 'front'
-          ? `resources/images/ui/cards/sets/${image}`
+          ? image
           : 'resources/images/ui/cards/card_blank.png',
     });
+
+    // modifier text
+    if (this.getType() === 'modifier') {
+      this.labelModifier = new LangBitmapFontTextView({
+        superview: imageMask,
+        backgroundColor: '#fff',
+        font: bitmapFonts('Title'),
+        size: 90,
+        color: 'black',
+        align: 'center',
+        verticalAlign: 'center',
+        centerOnOrigin: true,
+        centerAnchor: true,
+        x: imageMask.style.width / 2,
+        y: imageMask.style.height / 2,
+        width: imageMask.style.width,
+        height: imageMask.style.height,
+        localeText: () => ruleset.cards[props.id].name,
+      });
+    }
 
     const frame = new ImageScaleView({
       superview: this.container,
@@ -260,16 +277,16 @@ export default class Card {
 
     const label = new LangBitmapFontTextView({
       superview: this.infoHand,
-      font: bitmapFonts('TitleStroke'),
+      font: bitmapFonts('Title'),
       size: 60,
-      color: 'white',
+      color: 'black',
       align: 'right',
       verticalAlign: 'center',
       x: 0,
       y: 5,
       width: this.infoHand.style.width - 30,
       height: this.infoHand.style.height - 10,
-      localeText: () => '0',
+      localeText: () => ruleset.cards[this.props.id].ep,
     });
 
     const icon = new ImageView({

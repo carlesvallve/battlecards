@@ -54,6 +54,24 @@ export type CombatResult = {
   isOverhead?: boolean;
 };
 
+// cards
+
+export type CardType =
+  | 'modifier'
+  | 'shield'
+  | 'weapon'
+  | 'potion'
+  | 'playable';
+export type Affliction =
+  | 'bleeding'
+  | 'wounded'
+  | 'blinded'
+  | 'stunned'
+  | 'poisoned'
+  | 'electrocuted'
+  | 'frozen'
+  | 'brokenarmour';
+
 // custom types
 
 export type Screen = { width: number; height: number };
