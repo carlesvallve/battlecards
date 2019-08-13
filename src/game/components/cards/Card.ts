@@ -405,15 +405,17 @@ export default class Card {
     this.infoModifier.show();
     this.labelModifierResult.localeText = () => '?';
 
-    animate(this.infoModifier)
-      .wait(500)
+    animate(this.container)
+      .then({ scale: 0.45, scaleY: 0.8 }, animDuration, animate.easeInOut)
       .then(() => {
-        sounds.playSound('ding1', 0.8);
+        sounds.playSound('blip2', 0.5);
         this.labelModifierResult.localeText = () => result.toString();
       })
-      .wait(350)
-      .then(() => cb && cb()) // apply modifier effect
-      .wait(350)
+      .then({ scale: 0.55, scaleY: 0.9 }, animDuration, animate.easeInOut)
+      .then({ scale: 0.45, scaleY: 0.8 }, animDuration * 0.5, animate.easeInOut)
+      .then(() => {
+        cb && cb(); // apply modifier effect
+      })
       .then(() => this.infoModifier.hide());
   }
 }

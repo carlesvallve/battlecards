@@ -145,7 +145,7 @@ export default class BattleCardDetails {
     animate(card.getView())
       .clear()
       .wait(t * 0.25)
-      .then({ scale: scale * 1.5, r: 0, y: tempY }, t * 0.25, animate.easeOut)
+      .then({ scale: scale * 1.35, r: 0, y: tempY }, t * 0.25, animate.easeOut)
       .then(() => {
         // are we using the card, or putting it back?
         if (usingCard) {
@@ -194,9 +194,10 @@ export default class BattleCardDetails {
     animate(card.getView())
       .clear()
       //.wait(animDuration)
-      .then(() => sounds.playSound('swoosh1', 0.2))
-      .then({ scale: 0.45 }, animDuration * 1, animate.easeInOut)
-      .then(() => sounds.playSound('swoosh1', 0.2))
+      // .then(() => sounds.playSound('swoosh3', 0.1))
+      .then({ scale: 0.45, scaleY: 1 }, animDuration * 1, animate.easeInOut)
+      .then(() => sounds.playSound('swoosh3', 0.1))
+      // .then(() => sounds.playSound('swoosh1', 0.2))
       .then(
         {
           scale: 0,
@@ -205,7 +206,7 @@ export default class BattleCardDetails {
           y: yy + dy - 15,
           r: getRandomFloat(-0.1, 0.1),
         },
-        animDuration * 0.75,
+        animDuration * 1,
         animate.easeInOut,
       )
       .then(() => {
@@ -239,7 +240,7 @@ export default class BattleCardDetails {
     const diceModifier = getRandomInt(data.value.min, data.value.max);
     card.displayModifierResult(diceModifier, () => {
       // consume the card
-      waitForIt(() => sounds.playSound('blip2', 0.8), animDuration);
+      // waitForIt(() => sounds.playSound('blip2', 0.8), animDuration);
       this.consumeCard();
 
       // apply card effect

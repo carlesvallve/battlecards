@@ -21,7 +21,7 @@ export default class SceneTitle extends SceneBasic {
   protected init() {
     console.log('Init title');
 
-    sounds.playSound('bleep4', 1);
+    sounds.playSound('blip4', 1);
     blink(this.startLabel, 350);
   }
 
