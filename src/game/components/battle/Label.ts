@@ -2,7 +2,6 @@ import animate from 'animate';
 import Basic, { BasicProps } from '../basic/Basic';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import uiConfig from 'src/lib/uiConfig';
-import bitmapFonts from 'src/lib/bitmapFonts';
 
 export default class Label extends Basic {
   private text: LangBitmapFontTextView;
@@ -21,7 +20,6 @@ export default class Label extends Basic {
     if (props.localeText) {
       animate(this.text)
         .clear()
-        // .wait(t)
         .then({ scale: 1.5 }, t * 0.5, animate.easeInOut)
         .then(() => (this.text.localeText = props.localeText))
         .then({ scale: 1 }, t * 1, animate.easeInOut);
@@ -43,9 +41,6 @@ export default class Label extends Basic {
       ...uiConfig.bitmapFontText,
       ...props,
       superview: this.container,
-      font: bitmapFonts('TitleStroke'),
-      x: 0,
-      y: -props.size / 2,
     });
   }
 }

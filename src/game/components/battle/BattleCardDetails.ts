@@ -193,11 +193,8 @@ export default class BattleCardDetails {
     // transition the card to final goal position
     animate(card.getView())
       .clear()
-      //.wait(animDuration)
-      // .then(() => sounds.playSound('swoosh3', 0.1))
       .then({ scale: 0.45, scaleY: 1 }, animDuration * 1, animate.easeInOut)
       .then(() => sounds.playSound('swoosh3', 0.1))
-      // .then(() => sounds.playSound('swoosh1', 0.2))
       .then(
         {
           scale: 0,
@@ -210,7 +207,7 @@ export default class BattleCardDetails {
         animate.easeInOut,
       )
       .then(() => {
-        // todo: once the card is consumed we need to
+        // once the card is consumed we need to
         // tell battlecardhand to swith it to used cards
         this.props.cardHasBeenPlayedHandler(card);
       });

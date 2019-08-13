@@ -12,6 +12,7 @@ import {
   getColorByTarget,
   getTargetEnemy,
 } from 'src/redux/shortcuts/combat';
+import bitmapFonts from 'src/lib/bitmapFonts';
 
 type Props = {
   superview: View;
@@ -94,9 +95,11 @@ export default class ProgressMeter {
 
     this.label = new Label({
       superview: this.container,
+      font: bitmapFonts('TitleStroke'),
       localeText: () => '0',
+      width: this.container.style.width,
       x: this.container.style.width / 2,
-      y: -2,
+      y: -9,
       size: 30,
       zIndex: 9,
     });

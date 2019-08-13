@@ -11,6 +11,7 @@ import { animDuration } from 'src/lib/uiConfig';
 import { CardType } from 'src/types/custom';
 import { waitForIt } from 'src/lib/utils';
 import sounds from 'src/lib/sounds';
+import Label from '../battle/Label';
 
 export type CardMode = 'mini' | 'full'; //  | 'modifier';
 export type CardSide = 'front' | 'back';
@@ -43,7 +44,7 @@ export default class Card {
   private infoDetails: View;
   private infoHand: View;
   private infoModifier: View;
-  private labelModifierResult: LangBitmapFontTextView;
+  private labelModifierResult: Label;
 
   constructor(props: Props) {
     this.props.id = props.id;
@@ -240,7 +241,7 @@ export default class Card {
       visible: false,
     });
 
-    this.labelModifierResult = new LangBitmapFontTextView({
+    this.labelModifierResult = new Label({
       superview: this.infoModifier,
       backgroundColor: '#fff',
       font: bitmapFonts('Title'),
@@ -256,6 +257,23 @@ export default class Card {
       height: this.infoModifier.style.height,
       localeText: () => '?',
     });
+
+    // this.labelModifierResult2 = new LangBitmapFontTextView({
+    //   superview: this.infoModifier,
+    //   backgroundColor: '#fff',
+    //   font: bitmapFonts('Title'),
+    //   size: 90,
+    //   color: 'black',
+    //   align: 'center',
+    //   verticalAlign: 'center',
+    //   centerOnOrigin: true,
+    //   centerAnchor: true,
+    //   x: this.infoModifier.style.width / 2,
+    //   y: this.infoModifier.style.height / 2,
+    //   width: this.infoModifier.style.width,
+    //   height: this.infoModifier.style.height,
+    //   localeText: () => '?',
+    // });
   }
 
   createInfoDetails() {
@@ -403,13 +421,15 @@ export default class Card {
 
   displayModifierResult(result: number, cb: () => void) {
     this.infoModifier.show();
-    this.labelModifierResult.localeText = () => '?';
+    // this.labelModifierResult.localeText = () => '?';
+    this.labelModifierResult.setProps({ localeText: () => '?' });
 
     animate(this.container)
       .then({ scale: 0.45, scaleY: 0.8 }, animDuration, animate.easeInOut)
       .then(() => {
         sounds.playSound('blip2', 0.5);
-        this.labelModifierResult.localeText = () => result.toString();
+        // this.labelModifierResult.localeText = () => result.toString();
+        this.labelModifierResult.setProps({ localeText: () => result.toString() });
       })
       .then({ scale: 0.55, scaleY: 0.9 }, animDuration, animate.easeInOut)
       .then({ scale: 0.45, scaleY: 0.8 }, animDuration * 0.5, animate.easeInOut)
