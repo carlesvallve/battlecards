@@ -83,5 +83,25 @@ export default {
     win1: { volume: 1, background: false, sources: ['win-1.mp3'] },
 
     unlock: { volume: 1, background: false, sources: ['unlock.mp3'] },
+
+    // scifi
+
+    beep1: { volume: 0.1, background: false, sources: ['scifi/beep1.mp3'] },
+    beep2: { volume: 0.1, background: false, sources: ['scifi/beep2.mp3'] },
+    beep3: { volume: 0.1, background: false, sources: ['scifi/beep3.mp3'] },
+
+    blip1: { volume: 0.1, background: false, sources: ['scifi/blip1.mp3'] },
+    blip2: { volume: 0.1, background: false, sources: ['scifi/blip2.mp3'] },
+    blip3: { volume: 0.1, background: false, sources: ['scifi/blip3.mp3'] },
+    blip4: { volume: 0.1, background: false, sources: ['scifi/blip4.mp3'] },
+
+    tuck1: { volume: 0.1, background: false, sources: ['scifi/tuck1.mp3'] },
+
+    wong1: {
+      volume: 0.1,
+      background: true,
+      sources: ['scifi/wong1.mp3'],
+      loop: true,
+    },
   },
 };

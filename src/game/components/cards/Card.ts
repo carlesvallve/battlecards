@@ -408,7 +408,7 @@ export default class Card {
     animate(this.infoModifier)
       .wait(500)
       .then(() => {
-        sounds.playSound('click1', 0.2);
+        sounds.playSound('ding1', 0.8);
         this.labelModifierResult.localeText = () => result.toString();
       })
       .wait(350)

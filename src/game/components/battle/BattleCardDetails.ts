@@ -76,9 +76,9 @@ export default class BattleCardDetails {
       ...uiConfig.buttonGreen,
       superview: this.container,
       zIndex: 3,
-      width: screen.width - 40,
-      height: 90,
-      x: 20,
+      width: screen.width - 80,
+      height: 75,
+      x: 40,
       y: screen.height + 20,
       labelOffsetY: -3,
       localeText: () => 'USE',
@@ -112,7 +112,7 @@ export default class BattleCardDetails {
     animate(this.buttonUse)
       .clear()
       .wait(t * 0.5)
-      .then({ y: screen.height - 110 }, t, animate.easeInOut);
+      .then({ y: screen.height - 105 }, t, animate.easeInOut);
 
     const { x, y, scale, r } = card.getView().style;
     this.selectedCardData = { card, x, y, scale, r };
@@ -122,12 +122,12 @@ export default class BattleCardDetails {
       .clear()
       .wait(0)
       .then(
-        { x: screen.width / 2, y: screen.height * 0.425, scale: 0.5, r: r / 2 },
+        { x: screen.width / 2, y: screen.height * 0.45, scale: 0.5, r: r / 2 },
         t * 0.5,
         animate.easeOut,
       )
-      .then({ scale: 1.2, r: 0 }, t * 0.5, animate.easeInOut)
-      .then({ scale: 1.1 }, t * 0.5, animate.easeInOut);
+      .then({ scale: 1.05, r: 0 }, t * 0.5, animate.easeInOut)
+      .then({ scale: 0.95 }, t * 0.5, animate.easeInOut);
   }
 
   hideCardDetails(usingCard: boolean) {
@@ -239,12 +239,12 @@ export default class BattleCardDetails {
     const diceModifier = getRandomInt(data.value.min, data.value.max);
     card.displayModifierResult(diceModifier, () => {
       // consume the card
-      waitForIt(() => sounds.playSound('error2', 0.3), animDuration);
+      waitForIt(() => sounds.playSound('blip2', 0.8), animDuration);
       this.consumeCard();
 
       // apply card effect
       waitForIt(() => {
-        sounds.playSound('click2', 0.2);
+        // sounds.playSound('blip2', 0.8);
         const { target } = StateObserver.getState().combat;
         throwDice(target, diceModifier);
       }, 500);
