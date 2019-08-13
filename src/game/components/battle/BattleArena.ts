@@ -201,13 +201,17 @@ export default class BattleArena {
     const y = this.container.style.height * ruleset.baselineY;
 
     if (value) {
-      this.components['hero'].meter.showMeter();
-      this.components['monster'].meter.showMeter();
-      this.monsterImage.playAttackAnimationEnd();
+      if (!this.components['hero'].meter.getActive()) {
+        this.components['hero'].meter.showMeter();
+        this.components['monster'].meter.showMeter();
+        this.monsterImage.playAttackAnimationEnd();
+      }
     } else {
-      this.components['hero'].meter.hideMeter();
-      this.components['monster'].meter.hideMeter();
-      this.monsterImage.playAttackAnimationStart();
+      if (this.components['hero'].meter.getActive()) {
+        this.components['hero'].meter.hideMeter();
+        this.components['monster'].meter.hideMeter();
+        this.monsterImage.playAttackAnimationStart();
+      }
     }
   }
 

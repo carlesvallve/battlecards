@@ -100,7 +100,7 @@ export default class AttackIcons {
   // animations
 
   animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
-    sounds.playSound('swoosh3', 0.2);
+    // sounds.playSound('swoosh3', 0.2);
 
     animate(icon)
       .then({ x, scale: 0.8 }, t * 1, animate.easeOut)

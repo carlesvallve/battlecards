@@ -112,6 +112,7 @@ export default class BattleCardNumbers {
 
     // block the combat ui
     blockUi(true);
+    
     sounds.playSound('swoosh1', 0.2);
 
     this.updateCardLabels(card);
@@ -161,7 +162,7 @@ export default class BattleCardNumbers {
 
       .then(() => {
         // put card in used deck
-        sounds.playSound('click2', 0.2);
+        // sounds.playSound('click2', 0.2);
         this.usedCards.push(this.cards.pop());
 
         // reshuffle

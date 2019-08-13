@@ -68,7 +68,8 @@ export default class MonsterImage {
     const screen = getScreenDimensions();
     const y = screen.height * ruleset.baselineY;
 
-    sounds.playSound('swoosh4', 0.15);
+    sounds.playSound('swoosh1', 0.15); // this makes sounds so crowded
+
     animate(this.container)
       .clear()
       .then(
@@ -83,6 +84,7 @@ export default class MonsterImage {
     const y = screen.height * ruleset.baselineY;
 
     sounds.playSound('swoosh4', 0.15);
+
     animate(this.container)
       .clear()
       .then({ scale: 1, y: this.baseY }, animDuration, animate.easeInOut);

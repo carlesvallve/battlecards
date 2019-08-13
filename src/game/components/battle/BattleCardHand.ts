@@ -92,7 +92,7 @@ export default class BattleCardHand {
     // const rotations = [-0.25, -0.125, 0, 0.125, 0.25];
     // const ys = [0, -12, -15, -12, 0];
 
-    if (this.active) sounds.playSound('swoosh4', 0.1);
+    // if (this.active) sounds.playSound('swoosh4', 0.1);
 
     const screen = getScreenDimensions();
     const center = screen.width / 2;
@@ -126,7 +126,7 @@ export default class BattleCardHand {
       }
     }
 
-    sounds.playSound('swoosh4', 0.1);
+    sounds.playSound('swoosh1', 0.1);
     this.active = true;
 
     this.cards.forEach((card, index) => {
@@ -141,9 +141,9 @@ export default class BattleCardHand {
 
   hideHand() {
     if (!this.active) return;
-    this.active = false;
 
-    sounds.playSound('swoosh4', 0.1);
+    sounds.playSound('swoosh1', 0.1);
+    this.active = false;
 
     this.cards.forEach((card, index) => {
       animate(card.getView())
