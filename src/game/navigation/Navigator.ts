@@ -24,7 +24,7 @@ export default class Navigator {
 
     this.rootView = new StackView({
       superview: opts.superview,
-      backgroundColor: '#010101',
+      backgroundColor: '#000',
       x: 0,
       y: 0,
       width: device.width * 2,

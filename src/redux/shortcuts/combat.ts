@@ -79,7 +79,7 @@ export const changeTarget = (newTarget?: Target) => {
   return StateObserver.getState().combat.target;
 };
 
-export const throwDice = (target: Target, value: CardNum) => {
+export const throwDice = (target: Target, value: number) => {
   StateObserver.dispatch(action_throwDice({ target, value }));
 };
 

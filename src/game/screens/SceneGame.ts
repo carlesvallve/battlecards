@@ -25,7 +25,7 @@ export default class SceneGame extends SceneBasic {
       superview: this.container,
       width: screen.width,
       height: screen.height,
-      backgroundColor: '#222',
+      // backgroundColor: '#222',
     });
 
     

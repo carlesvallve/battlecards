@@ -70,10 +70,9 @@ export default class BattleArena {
 
   private createSelectors() {
     StateObserver.createSelector(({ combat }) => {
-      // console.log('####', combat.index);
       return combat.index;
     }).addListener((index) => {
-      console.log('---------', index);
+      console.log('combat-flow: ---------', index);
       const { combat } = StateObserver.getState();
 
       const id = combat.monster.id;
@@ -136,7 +135,7 @@ export default class BattleArena {
     // if someone overheaded, resolve the combat
     if (combat[target].overhead > 0 || combat[enemy].overhead > 0) {
       const overhead = combat[target].overhead;
-      console.log('>>>', 'OVERHEAD!', overhead);
+      console.log('combat-flow:', 'OVERHEAD!', overhead);
       this.resolveCombat({
         winner: combat[target].overhead > 0 ? enemy : target,
         loser: combat[target].overhead > 0 ? target : enemy,
@@ -204,19 +203,11 @@ export default class BattleArena {
     if (value) {
       this.components['hero'].meter.showMeter();
       this.components['monster'].meter.showMeter();
-
-      // sounds.playSound('swoosh4', 0.15);
-      animate(this.monsterImage.getView())
-        .clear()
-        .then({ y: y - 128 }, animDuration, animate.easeInOut);
+      this.monsterImage.playAttackAnimationEnd();
     } else {
       this.components['hero'].meter.hideMeter();
       this.components['monster'].meter.hideMeter();
-
-      sounds.playSound('swoosh4', 0.15);
-      animate(this.monsterImage.getView())
-        .clear()
-        .then({ y: y - 64 }, animDuration, animate.easeInOut);
+      this.monsterImage.playAttackAnimationStart();
     }
   }
 
@@ -228,7 +219,7 @@ export default class BattleArena {
     this.components[enemy].meter.refresh(false, false);
 
     console.log(
-      '>>>',
+      'combat-flow: ',
       `${target}(+${combat[target].meter}) attacks ${enemy}(+${
         combat[enemy].meter
       })`,
@@ -274,7 +265,7 @@ export default class BattleArena {
     const atk = combat[winner].stats.attack.current;
     const def = combat[loser].stats.defense.current;
     const damage = atk - def;
-    console.log('  >>> attack', index + 1, '->', damage, 'damage');
+    console.log('combat-flow: attack', index + 1, '->', damage, 'damage');
 
     // remove loser's HP
     addStat(loser, 'hp', { current: -damage });
@@ -283,7 +274,17 @@ export default class BattleArena {
     this.components[winner].attackIcons.removeIcon();
 
     // animate screen effect
-    const r = getRandomFloat(-0.1, 0.1);
+    const screen = getScreenDimensions();
+    const x = screen.width / 2;
+    const y = screen.height / 2;
+    const d = 10;
+    const dx = getRandomFloat(-d, d);
+    const dy = getRandomFloat(-d, d);
+    const sc = getRandomFloat(1.2, 1.6);
+    const r = getRandomFloat(-0.05, 0.05);
+
+    const t = 50;
+
     animate(this.container)
       .clear()
       .wait(150)
@@ -292,18 +293,25 @@ export default class BattleArena {
         sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.02);
         sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
       })
-      .then({ scale: 1.3, r }, 50, animate.easeInOut)
-      .then({ scale: 0.95 }, 100, animate.easeInOut)
-      .then({ scale: 1, r: 0 }, 50, animate.easeInOut)
+      .then({ x: x + dx, y: y + dy, scale: sc, r }, t * 1, animate.easeInOut)
+      .then({ scale: 0.95 }, t * 2, animate.easeInOut)
+      .then({ x, y, scale: 1, r: 0 }, t * 2, animate.easeInOut)
       .then(() => cb && cb());
 
     // create damage label
-    this.overlay.createDamageLabel(loser, damage);
+
+    this.overlay.createDamageLabel(
+      loser,
+      damage,
+      loser === 'hero'
+        ? this.container.style.height / 2 + 205
+        : this.monsterImage.getView().style.y - 50,
+    );
   }
 
   executeAi(combat: Combat) {
     const target = changeTarget('monster');
-    console.log('>>> executing monster AI');
+    console.log('combat-flow: executing monster AI');
 
     // decide if we throw another dice or we resolve
     const currentMeter = combat[target].meter;
@@ -313,17 +321,17 @@ export default class BattleArena {
     const r = getRandomInt(1, 6) * precaucious;
 
     if (r <= left) {
-      console.log('>>> monster decides to spawn another card...');
+      console.log('combat-flow: monster decides to spawn another card...');
       this.components[target].cardNumbers.spawnCard();
     } else {
-      console.log('>>> monster resolves combat');
+      console.log('combat-flow: monster resolves combat');
       sounds.playSound('unlock', 1);
       setResolved(target);
     }
   }
 
   updateTurn(combat: Combat) {
-    console.log('UPDATE TURN!');
+    console.log('combat-flow: UPDATE TURN');
 
     let { target, enemy } = combat;
     this.displayMeters(true);
@@ -349,8 +357,8 @@ export default class BattleArena {
     const screen = getScreenDimensions();
 
     this.container = new View({
-      ...props,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      superview: props.superview,
+      // backgroundColor: 'rgba(0, 0, 0, 0.8)',
       width: screen.width,
       height: screen.height * 1,
       x: screen.width * 0.5,
@@ -361,20 +369,16 @@ export default class BattleArena {
       canHandleEvents: false,
     });
 
-    const y = this.container.style.height * ruleset.baselineY;
-
     this.monsterImage = new MonsterImage({
       superview: this.container,
-      x: this.container.style.width / 2,
-      y: y - 128,
-      width: 120,
-      height: 120,
     });
 
     this.overlay = new BattleOverlay({
       superview: this.container,
       zIndex: 10,
     });
+
+    const y = this.container.style.height * ruleset.baselineY;
 
     this.components = {
       hero: {
@@ -390,7 +394,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.overlay.getView(),
           x: this.container.style.width * 0.5,
-          y: y + 110,
+          y: screen.height - 130, // y + 110,
           target: 'hero',
         }) as AttackIcons,
 
@@ -414,7 +418,7 @@ export default class BattleArena {
         attackIcons: new AttackIcons({
           superview: this.overlay.getView(),
           x: this.container.style.width * 0.5,
-          y: y - 220,
+          y: 115, // y - 220,
           target: 'monster',
         }) as AttackIcons,
 

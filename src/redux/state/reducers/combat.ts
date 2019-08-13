@@ -95,7 +95,7 @@ const slice = createSlice({
       };
 
       console.log('=========================');
-      console.log('action > newCombat', state);
+      console.log('action > newCombat', { ...state });
     },
 
     action_resetCombatTurn: (state) => {
@@ -128,7 +128,7 @@ const slice = createSlice({
 
     action_throwDice: (
       state,
-      { payload }: PayloadAction<{ target: Target; value: CardNum }>,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
     ) => {
       const { target, value } = payload;
 
@@ -159,6 +159,8 @@ const slice = createSlice({
       state.index += 1;
       console.log('action > setResolved:', target, { ...state[target] });
     },
+
+    // =============
 
     // =============
 

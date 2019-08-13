@@ -4,21 +4,16 @@ import ImageView from 'ui/ImageView';
 import { animDuration } from 'src/lib/uiConfig';
 import playExplosion from './Explosion';
 import sounds from 'src/lib/sounds';
-import { waitForIt } from 'src/lib/utils';
+import { waitForIt, getScreenDimensions } from 'src/lib/utils';
+import ruleset from 'src/redux/ruleset';
 
-type Props = {
-  superview: View;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  image?: string;
-};
+type Props = { superview: View };
 
 export default class MonsterImage {
   private props: Props;
   private container: View;
   private image: ImageView;
+  private baseY: number;
 
   constructor(props: Props) {
     this.props = props;
@@ -27,6 +22,70 @@ export default class MonsterImage {
 
   getView() {
     return this.container;
+  }
+
+  private createViews(props: Props) {
+    const screen = getScreenDimensions();
+    this.baseY = screen.height * ruleset.baselineY - 112;
+
+    this.container = new View({
+      superview: props.superview,
+      x: screen.width / 2,
+      y: this.baseY,
+      width: 88,
+      height: 88,
+      centerOnOrigin: true,
+    });
+
+    this.image = new ImageView({
+      superview: this.container,
+      image: null,
+      width: this.container.style.width,
+      height: this.container.style.height,
+      x: this.container.style.width * 0.5,
+      y: this.container.style.height * 0.5,
+      scale: 1,
+      centerOnOrigin: true,
+      centerAnchor: true,
+    });
+  }
+
+  setImage(imageName: string) {
+    if (imageName) {
+      this.image.updateOpts({
+        image: `resources/images/monsters/${imageName}.png`,
+      });
+    }
+
+    animate(this.image)
+      .clear()
+      .wait(animDuration * 0.5)
+      .then({ scale: 1, opacity: 1 }, animDuration, animate.easeOut)
+      .then(() => {});
+  }
+
+  playAttackAnimationStart() {
+    const screen = getScreenDimensions();
+    const y = screen.height * ruleset.baselineY;
+
+    sounds.playSound('swoosh4', 0.15);
+    animate(this.container)
+      .clear()
+      .then(
+        { scale: 1.25, y: this.baseY + 60 },
+        animDuration,
+        animate.easeInOut,
+      );
+  }
+
+  playAttackAnimationEnd() {
+    const screen = getScreenDimensions();
+    const y = screen.height * ruleset.baselineY;
+
+    sounds.playSound('swoosh4', 0.15);
+    animate(this.container)
+      .clear()
+      .then({ scale: 1, y: this.baseY }, animDuration, animate.easeInOut);
   }
 
   playDeathAnimation() {
@@ -49,34 +108,6 @@ export default class MonsterImage {
       max: 100,
       startX: this.container.style.width / 2,
       startY: this.container.style.height / 2,
-    });
-  }
-
-  setImage(imageName: string) {
-    this.image.updateOpts({
-      image: `resources/images/monsters/${imageName}.png`,
-    });
-
-    animate(this.image)
-      .clear()
-      .wait(animDuration * 0.5)
-      .then({ scale: 1, opacity: 1 }, animDuration, animate.easeOut)
-      .then(() => {});
-  }
-
-  private createViews(props: Props) {
-    this.container = new View({ ...props, centerOnOrigin: true });
-
-    this.image = new ImageView({
-      superview: this.container,
-      image: null,
-      width: this.container.style.width,
-      height: this.container.style.height,
-      x: this.container.style.width * 0.5,
-      y: this.container.style.height * 0.5,
-      scale: 1,
-      centerOnOrigin: true,
-      centerAnchor: true,
     });
   }
 }

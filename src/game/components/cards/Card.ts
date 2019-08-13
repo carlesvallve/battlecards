@@ -9,8 +9,10 @@ import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { animDuration } from 'src/lib/uiConfig';
 import { CardType } from 'src/types/custom';
+import { waitForIt } from 'src/lib/utils';
+import sounds from 'src/lib/sounds';
 
-export type CardMode = 'mini' | 'full';
+export type CardMode = 'mini' | 'full'; //  | 'modifier';
 export type CardSide = 'front' | 'back';
 
 export type Props = {
@@ -40,6 +42,8 @@ export default class Card {
   private button: ButtonView;
   private infoDetails: View;
   private infoHand: View;
+  private infoModifier: View;
+  private labelModifierResult: LangBitmapFontTextView;
 
   constructor(props: Props) {
     this.props.id = props.id;
@@ -77,7 +81,10 @@ export default class Card {
   setProps(props: Props) {
     if (props === this.props) return;
     this.update(props);
-    this.props = props;
+
+    if (props.id) this.props.id = props.id;
+    if (props.side) this.props.side = props.side;
+    if (props.mode) this.props.mode = props.mode;
   }
 
   private update(props: Props) {
@@ -88,19 +95,28 @@ export default class Card {
     // });
 
     this.backImage.updateOpts({
-      visible: side === 'back',
+      visible: side === 'back', //  || mode === 'modifier',
     });
 
     this.infoHand.updateOpts({
       visible: mode === 'mini' && side === 'front',
     });
+
     this.infoDetails.updateOpts({
       visible: mode === 'full' && side === 'front',
     });
 
+    // this.infoModifier.updateOpts({
+    //   visible: mode === 'modifier' && side === 'front',
+    // });
+
     this.image.updateOpts({
       visible: side === 'front',
     });
+
+    // if (mode === 'modifier') {
+    //   console.log('Displaying modifier result !!!!!');
+    // }
 
     // this.props.mode = props.mode;
     // this.props.side = props.side;
@@ -202,6 +218,7 @@ export default class Card {
 
     this.createInfoHand();
     this.createInfoDetails();
+    this.createInfoModifier();
 
     this.button = new ButtonView({
       superview: this.container,
@@ -209,6 +226,35 @@ export default class Card {
       width: 120 * 2,
       height: 170 * 2,
       onClick: () => props.onClick && props.onClick(this.props.id),
+    });
+  }
+
+  createInfoModifier() {
+    this.infoModifier = new View({
+      superview: this.container,
+      backgroundColor: 'red',
+      x: 10,
+      y: 10,
+      width: 120 * 2 - 20,
+      height: 170 * 2 - 20,
+      visible: false,
+    });
+
+    this.labelModifierResult = new LangBitmapFontTextView({
+      superview: this.infoModifier,
+      backgroundColor: '#fff',
+      font: bitmapFonts('Title'),
+      size: 90,
+      color: 'black',
+      align: 'center',
+      verticalAlign: 'center',
+      centerOnOrigin: true,
+      centerAnchor: true,
+      x: this.infoModifier.style.width / 2,
+      y: this.infoModifier.style.height / 2,
+      width: this.infoModifier.style.width,
+      height: this.infoModifier.style.height,
+      localeText: () => '?',
     });
   }
 
@@ -353,5 +399,21 @@ export default class Card {
       .then({ x, y, scale: scale * 1.1 }, t, animate.easeInOut)
       .then({ x, y, scale }, t, animate.easeOutBounce)
       .then(() => cb && cb());
+  }
+
+  displayModifierResult(result: number, cb: () => void) {
+    this.infoModifier.show();
+    this.labelModifierResult.localeText = () => '?';
+
+    animate(this.infoModifier)
+      .wait(500)
+      .then(() => {
+        sounds.playSound('click1', 0.2);
+        this.labelModifierResult.localeText = () => result.toString();
+      })
+      .wait(350)
+      .then(() => cb && cb()) // apply modifier effect
+      .wait(350)
+      .then(() => this.infoModifier.hide());
   }
 }

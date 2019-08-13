@@ -48,20 +48,20 @@ export default class BattleOverlay {
     });
   }
 
-  createDamageLabel(loser: Target, damage: number) {
-    const xx = this.container.style.width / 2 + getRandomInt(-25, 25);
-    let yy = this.container.style.height / 2 + 205;
-    if (loser === 'monster') {
-      yy = this.container.style.height * ruleset.baselineY - 60;
-    }
+  createDamageLabel(loser: Target, damage: number, startY: number) {
+    const startX = this.container.style.width / 2 + getRandomInt(-15, 15);
+    // let yy = this.container.style.height / 2 + 205;
+    // if (loser === 'monster') {
+    //   yy = this.container.style.height * ruleset.baselineY - 60;
+    // }
 
     const labelDamage = new LangBitmapFontTextView({
       ...uiConfig.bitmapFontText,
       superview: this.container,
       font: bitmapFonts('TitleStroke'),
       localeText: () => `${damage}`,
-      x: xx,
-      y: yy,
+      x: startX,
+      y: startY,
       size: 18,
       color: 'yellow',
       scale: 0,
@@ -71,7 +71,7 @@ export default class BattleOverlay {
       centerAnchor: true,
     });
 
-    const y = yy - 60;
+    const y = startY - 60;
     animate(labelDamage)
       .clear()
       .wait(150)

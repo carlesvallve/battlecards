@@ -4,18 +4,30 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import bitmapFonts from 'src/lib/bitmapFonts';
-import { getScreenDimensions } from 'src/lib/utils';
+import {
+  getScreenDimensions,
+  getRandomFloat,
+  getRandomInt,
+  waitForIt,
+} from 'src/lib/utils';
 import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import Card from '../cards/Card';
+import { getTarget, throwDice } from 'src/redux/shortcuts/combat';
+import StateObserver from 'src/redux/StateObserver';
+import ruleset from 'src/redux/ruleset';
 
-type Props = { superview: View; zIndex: number };
+type Props = {
+  superview: View;
+  zIndex: number;
+  cardHasBeenPlayedHandler: (card: Card) => void;
+};
 
 export default class BattleCardDetails {
   private props: Props;
   private container: View;
   private bg: View;
   private buttonUse: View;
-  private cards: Card[];
+
   private selectedCardData: {
     card: Card;
     x: number;
@@ -23,7 +35,6 @@ export default class BattleCardDetails {
     scale: number;
     r: number;
   };
-  private active: boolean = false;
 
   constructor(props: Props) {
     this.props = props;
@@ -57,7 +68,7 @@ export default class BattleCardDetails {
       visible: false,
       opacity: 0,
       onClick: () => {
-        this.hideCardDetails();
+        this.hideCardDetails(false);
       },
     });
 
@@ -75,7 +86,7 @@ export default class BattleCardDetails {
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
         sounds.playSound('click1', 0.3);
-        this.hideCardDetails();
+        this.hideCardDetails(true);
       },
     });
   }
@@ -83,13 +94,13 @@ export default class BattleCardDetails {
   showCardDetails(card: Card) {
     if (card.getMode() === 'full') return;
 
+    console.log('SHOWCARDDETAILS', card.getID());
     sounds.playSound('swoosh4', 0.1);
 
     this.props.superview.updateOpts({ zIndex: 3 });
     card.getView().updateOpts({ zIndex: 100 });
 
     const screen = getScreenDimensions();
-
     const t = animDuration * 1;
 
     this.bg.show();
@@ -119,7 +130,7 @@ export default class BattleCardDetails {
       .then({ scale: 1.1 }, t * 0.5, animate.easeInOut);
   }
 
-  hideCardDetails() {
+  hideCardDetails(usingCard: boolean) {
     sounds.playSound('swoosh1', 0.1);
 
     const screen = getScreenDimensions();
@@ -128,17 +139,28 @@ export default class BattleCardDetails {
 
     const { card, x, y, scale, r } = this.selectedCardData;
 
+    const tempY = screen.height * ruleset.baselineY;
+
+    // animate card to first phase
     animate(card.getView())
       .clear()
       .wait(t * 0.25)
-      .then({ scale: scale * 1.5, r: r / 2 }, t * 0.25, animate.easeOut)
-      .then(() => card.setProps({ mode: 'mini', side: 'front' }))
-      .then({ x, y, scale, r }, t * 0.75, animate.easeInOut);
+      .then({ scale: scale * 1.5, r: 0, y: tempY }, t * 0.25, animate.easeOut)
+      .then(() => {
+        // are we using the card, or putting it back?
+        if (usingCard) {
+          this.playCard(card);
+        } else {
+          this.placeCardBackToHand();
+        }
+      });
 
+    // hide button
     animate(this.buttonUse)
       .wait(0)
       .then({ y: screen.height + 20 }, t * 1, animate.easeInOut);
 
+    // hide background
     animate(this.bg)
       .wait(t * 0.5)
       .then({ opacity: 0 }, t, animate.easeOut)
@@ -147,5 +169,85 @@ export default class BattleCardDetails {
         card.getView().updateOpts({ zIndex: 1 });
         this.bg.hide();
       });
+  }
+
+  placeCardBackToHand() {
+    const { card, x, y, scale, r } = this.selectedCardData;
+
+    card.setProps({ mode: 'mini', side: 'front' });
+    animate(card.getView())
+      .clear()
+      .then({ x, y, scale, r }, animDuration * 0.75, animate.easeInOut);
+  }
+
+  consumeCard() {
+    const { card } = this.selectedCardData;
+
+    // get final goal position
+    const screen = getScreenDimensions();
+    const xx = screen.width / 2;
+    const yy = screen.height * ruleset.baselineY;
+    const dx = 2;
+    const dy = getTarget(StateObserver.getState()) === 'hero' ? 25 : -25;
+
+    // transition the card to final goal position
+    animate(card.getView())
+      .clear()
+      //.wait(animDuration)
+      .then(() => sounds.playSound('swoosh1', 0.2))
+      .then({ scale: 0.45 }, animDuration * 1, animate.easeInOut)
+      .then(() => sounds.playSound('swoosh1', 0.2))
+      .then(
+        {
+          scale: 0,
+          scaleY: 0.75,
+          x: xx + dx,
+          y: yy + dy - 15,
+          r: getRandomFloat(-0.1, 0.1),
+        },
+        animDuration * 0.75,
+        animate.easeInOut,
+      )
+      .then(() => {
+        // todo: once the card is consumed we need to
+        // tell battlecardhand to swith it to used cards
+        this.props.cardHasBeenPlayedHandler(card);
+      });
+  }
+
+  // ===============================================================
+  // Play cards
+
+  playCard(card: Card) {
+    const data = ruleset.cards[card.getID()];
+
+    switch (data.type) {
+      case 'modifier':
+        this.playModifier(card);
+        break;
+      default:
+        this.consumeCard();
+    }
+  }
+
+  playModifier(card: Card) {
+    // get card data
+    const data = ruleset.cards[card.getID()];
+    console.log('PLAYING MODIFIER', card.getID(), data);
+
+    // get modifier dice
+    const diceModifier = getRandomInt(data.value.min, data.value.max);
+    card.displayModifierResult(diceModifier, () => {
+      // consume the card
+      waitForIt(() => sounds.playSound('error2', 0.3), animDuration);
+      this.consumeCard();
+
+      // apply card effect
+      waitForIt(() => {
+        sounds.playSound('click2', 0.2);
+        const { target } = StateObserver.getState().combat;
+        throwDice(target, diceModifier);
+      }, 500);
+    });
   }
 }

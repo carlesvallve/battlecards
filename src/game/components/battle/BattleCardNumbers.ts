@@ -160,8 +160,11 @@ export default class BattleCardNumbers {
       )
 
       .then(() => {
-        sounds.playSound('click5', 0.5);
+        // put card in used deck
+        sounds.playSound('click2', 0.2);
         this.usedCards.push(this.cards.pop());
+
+        // reshuffle
         if (this.cards.length === 0) {
           this.cards = this.usedCards;
           this.usedCards = [];
