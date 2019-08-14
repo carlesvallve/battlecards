@@ -391,7 +391,7 @@ export default class Card {
     animate(this.container)
       .clear()
       .then({ scale: 0.15, scaleY: 0.8, x, y }, animDuration, animate.easeInOut)
-      .then({ scale: 0.2, scaleY: 1.1 }, animDuration, animate.easeInOut)
+      .then({ scale: 0.2, scaleY: 1.1 }, animDuration * 0.5, animate.easeInOut)
       .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
       .then(() => {
         cb && cb(); // set the card as an active status
@@ -420,7 +420,7 @@ export default class Card {
       .clear()
       .then({ scale: 0.15, scaleY: 0.8, x, y }, animDuration, animate.easeInOut)
       .then({ scale: 0.2, scaleY: 1.1 }, animDuration, animate.easeInOut)
-      .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
+      // .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
       .then(() => {
         cb && cb(); // set the card as an active status
       });

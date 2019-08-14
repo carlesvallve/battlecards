@@ -92,11 +92,10 @@ export default class MonsterImage {
 
   playDeathAnimation() {
     //
-    sounds.playSound('break1', 0.6);
+    sounds.playSound('break1', 0.4);
     sounds.playSound('break2', 0.2);
-    sounds.playRandomSound(['punch1', 'punch2'], 1);
-
-    waitForIt(() => sounds.playSound('win1', 0.3), animDuration * 1.5);
+    sounds.playRandomSound(['punch1', 'punch2'], 0.8);
+    waitForIt(() => sounds.playSound('ding1', 0.3), animDuration * 1.5);
 
     animate(this.image)
       .clear()
@@ -106,8 +105,7 @@ export default class MonsterImage {
     playExplosion({
       superview: this.container,
       sc: 1,
-      // image: 'resources/images/ui/particles/blood-drop-1.png',
-      max: 100,
+      max: 20,
       startX: this.container.style.width / 2,
       startY: this.container.style.height / 2,
     });

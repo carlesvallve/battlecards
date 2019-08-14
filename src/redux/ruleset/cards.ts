@@ -30,7 +30,6 @@ export type Affliction =
   | 'frozen'
   | 'brokenarmour';
 
-
   card: {
     playType: modifier | equipment | playable | instant
     type:
@@ -112,30 +111,30 @@ const cards = {
   buckler: {
     playType: 'equipment' as CardPlayType,
     type: 'shield' as CardType,
-    value: { min: 1, max: 1 } as CardStat,
+    value: { min: 1 } as CardStat,
     image: 'resources/images/cards/shields/round-shield.png',
     name: 'Buckler',
-    desc: 'Blocks 1 attack',
+    desc: 'Block 1 attack',
     ep: 10,
   },
 
   shield: {
     playType: 'equipment' as CardPlayType,
     type: 'shield' as CardType,
-    value: { min: 2, max: 2 } as CardStat,
+    value: { min: 2 } as CardStat,
     image: 'resources/images/cards/shields/griffin-shield.png',
     name: 'Shield',
-    desc: 'Blocks 2 attacks',
+    desc: 'Block 2 attacks',
     ep: 10,
   },
 
   superiorShield: {
     playType: 'equipment' as CardPlayType,
     type: 'shield' as CardType,
-    value: { min: 3, max: 3 } as CardStat,
+    value: { min: 3 } as CardStat,
     image: 'resources/images/cards/shields/winged-shield.png',
     name: 'Superior Shield',
-    desc: 'Blocks 3 attacks',
+    desc: 'Block 3 attacks',
     ep: 10,
   },
 

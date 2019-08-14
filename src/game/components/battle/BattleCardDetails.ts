@@ -233,10 +233,14 @@ export default class BattleCardDetails {
       card.displayAsConsumed();
 
       // throw the redux dice
-      waitForIt(() => {
-        const { target } = StateObserver.getState().combat;
-        throwDice(target, diceModifier);
-      }, 500);
+      const { target } = StateObserver.getState().combat;
+      throwDice(target, diceModifier);
+
+      // // throw the redux dice
+      // waitForIt(() => {
+      //   const { target } = StateObserver.getState().combat;
+      //   throwDice(target, diceModifier);
+      // }, animDuration);
     });
   }
 
@@ -287,8 +291,8 @@ export default class BattleCardDetails {
       const enemy = getTargetEnemy(target);
       addStat(enemy, 'hp', { current: -data.value.min });
 
-      sounds.playSound('break1', 0.2);
-      sounds.playRandomSound(['punch1', 'punch2'], 1);
+      // sounds.playSound('break1', 0.2);
+      // sounds.playRandomSound(['punch1', 'punch2'], 1);
       playExplosion({
         superview: this.container,
         sc: 1,

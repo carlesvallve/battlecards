@@ -86,7 +86,7 @@ class Explosion extends View {
     sprite.fmax = 32; // life duration of each particle in frames
 
     // set it to 2 for fountain style. Need to implement better...
-    sprite.delay = getRandomInt(-1, 2);
+    sprite.delay = -1; // getRandomInt(-1, 2);
 
     return sprite;
   }

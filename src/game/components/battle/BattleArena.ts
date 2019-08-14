@@ -30,7 +30,7 @@ import BattleHeader from './BattleHeader';
 import BattleFooter from './BattleFooter';
 import BattleOverlay from './BattleOverlay';
 
-import { CombatResult, Combat } from 'src/types/custom';
+import { CombatResult, Combat, Target, TargetStat } from 'src/types/custom';
 
 type Props = {
   superview: View;
@@ -68,17 +68,21 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    // combat flow
+
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
     }).addListener((index) => {
       console.log('combat-flow: ---------', index);
       const { combat } = StateObserver.getState();
 
+      // if (index === 0) return;
+
+      if (combat.hero.stats.hp.current <= 0) return;
+      if (combat.monster.stats.hp.current <= 0) return;
+
       const id = combat.monster.id;
       if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
-
-      if (this.checkMonsterDeath(combat)) return;
-      if (this.checkHeroDeath(combat)) return;
 
       if (this.checkCombatReset(combat)) return;
       if (this.checkCombatResult(combat)) return;
@@ -86,31 +90,58 @@ export default class BattleArena {
       this.refreshMeters(combat);
       this.updateTurn(combat);
     });
+
+    // hp / damage logic
+
+    StateObserver.createSelector(({ combat }) => {
+      if (!combat.enemy) return null;
+      return {
+        hero: combat.hero.stats['hp'],
+        monster: combat.monster.stats['hp'],
+      };
+    }).addListener((values: { hero: TargetStat; monster: TargetStat }) => {
+      if (!values) return;
+
+      Object.keys(values).forEach((target) => {
+        // do not update if the target is already dead
+        if (values[target].last <= 0) return;
+
+        const damage = values[target].last - values[target].current;
+
+        if (damage > 0) {
+          if (values[target].current > 0) {
+            // damage
+            const { combat } = StateObserver.getState();
+            const attackType =
+              (combat.hero.resolved && combat.monster.resolved) ||
+              combat[target].overhead
+                ? 'melee'
+                : 'spell';
+            console.log('========= attackType', attackType);
+            this.renderDamage(attackType, target as Target, damage);
+          } else {
+            // death
+            this.killMonster();
+          }
+        }
+      });
+    });
   }
 
-  checkMonsterDeath(combat: Combat) {
-    const hp = combat.monster.stats.hp.current;
+  killMonster() {
+    // death
+    this.monsterImage.playDeathAnimation();
 
-    if (hp <= 0) {
-      this.monsterImage.playDeathAnimation();
-      waitForIt(() => {
-        // generate a new combat
-        newCombat(getRandomMonsterID());
-      }, animDuration * 3);
+    this.displayMeters(false);
 
-      return true;
-    }
-
-    return false;
-  }
-
-  checkHeroDeath(combat: Combat) {
-    const hp = combat.hero.stats.hp.current;
-    if (hp <= 0) {
-      // todo: open gameover popup
-      return true;
-    }
-    return false;
+    waitForIt(() => {
+      // generate a new combat
+      const combat = newCombat(getRandomMonsterID());
+      this.components.hero.meter.reset({ isOverhead: false });
+      this.components.monster.meter.reset({ isOverhead: false });
+      // this.checkCombatReset(combat)
+      // this.updateTurn(combat);
+    }, animDuration * 4);
   }
 
   checkCombatReset(combat: Combat) {
@@ -191,7 +222,11 @@ export default class BattleArena {
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons({ winner, loser, attacks }, () => {
-        waitForIt(() => resetCombatTurn(), 150);
+        const { combat } = StateObserver.getState();
+        if (combat.hero.stats.hp.current > 0 && combat.monster.stats.hp.current > 0) {
+          waitForIt(() => resetCombatTurn(), 150);
+        }
+       
       });
     }, animDuration * 2);
   }
@@ -251,7 +286,16 @@ export default class BattleArena {
         const t = 350;
         for (let i = 0; i < result.attacks; i++) {
           waitForIt(() => {
+            // apply damage and play the attack animation
             this.attack(i, result, () => {
+              // escape if already dead
+              const combat = StateObserver.getState().combat;
+              if (combat[loser].stats.hp.current <= 0) {
+                this.components[winner].attackIcons.removeAllIcons();
+                cb && cb();
+                return;
+              }
+
               if (i === result.attacks - 1) cb && cb();
             });
           }, i * t);
@@ -262,20 +306,35 @@ export default class BattleArena {
 
   private attack(index: number, result: CombatResult, cb: () => void) {
     const { winner, loser } = result;
+    const combat = StateObserver.getState().combat;
+
+    // escape if already dead
+    if (combat[loser].stats.hp.current <= 0) {
+      cb && cb();
+      return;
+    }
 
     // calculate damage
-    const combat = StateObserver.getState().combat;
+
     const atk = combat[winner].stats.attack.current;
     const def = combat[loser].stats.defense.current;
     const damage = atk - def;
     console.log('combat-flow: attack', index + 1, '->', damage, 'damage');
 
-    // remove loser's HP
-    addStat(loser, 'hp', { current: -damage });
-
     // remove icon
     this.components[winner].attackIcons.removeIcon();
 
+    // escape if is a death blow
+    // if (combat[loser].stats.hp.current > damage) {
+    // remove loser's HP
+    addStat(loser, 'hp', { current: -damage });
+    // }
+
+    // execute next attack
+    waitForIt(() => cb && cb(), 350);
+  }
+
+  private renderDamage(mode: 'melee' | 'spell', loser: Target, damage: number) {
     // animate screen effect
     const screen = getScreenDimensions();
     const x = screen.width / 2;
@@ -292,14 +351,15 @@ export default class BattleArena {
       .clear()
       .wait(150)
       .then(() => {
-        sounds.playRandomSound(['punch1', 'punch2'], 1);
-        sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.02);
+        if (mode === 'melee')
+          sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
+        sounds.playRandomSound(['punch1', 'punch2'], 0.8);
         sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
       })
       .then({ x: x + dx, y: y + dy, scale: sc, r }, t * 1, animate.easeInOut)
       .then({ scale: 0.95 }, t * 2, animate.easeInOut)
-      .then({ x, y, scale: 1, r: 0 }, t * 2, animate.easeInOut)
-      .then(() => cb && cb());
+      .then({ x, y, scale: 1, r: 0 }, t * 2, animate.easeInOut);
+    // .then(() => cb && cb());
 
     // create damage label
 

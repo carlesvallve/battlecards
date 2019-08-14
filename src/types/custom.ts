@@ -43,6 +43,7 @@ export type Target = 'hero' | 'monster';
 export type TargetStat = {
   current?: number;
   max?: number;
+  last?: number;
 };
 
 export type TargetAttitude = 'defensive' | 'neutral' | 'agressive';

@@ -22,8 +22,8 @@ const initialState = {
     overhead: 0,
     resolved: false,
     stats: {
-      hp: { current: 20, max: 20 },
-      ep: { current: 20, max: 20 },
+      hp: { current: 20, max: 20, last: 20 },
+      ep: { current: 20, max: 20, last: 20 },
       attack: { current: 5, max: 5 },
       defense: { current: 2, max: 5 },
       status: [],
@@ -37,8 +37,8 @@ const initialState = {
     overhead: 0,
     resolved: false,
     stats: {
-      hp: { current: 20, max: 20 },
-      ep: { current: 20, max: 20 },
+      hp: { current: 20, max: 20, last: 12 },
+      ep: { current: 20, max: 20, last: 12 },
       attack: { current: 3, max: 5 },
       defense: { current: 1, max: 5 },
       status: [],
@@ -67,7 +67,7 @@ const slice = createSlice({
     ) => {
       const { monsterID } = payload;
 
-      state.index = 1;
+      state.index = 0; // state.index === 1 ? 2 : 1;
 
       state.target = 'hero';
       state.enemy = 'monster';
@@ -78,7 +78,7 @@ const slice = createSlice({
 
       state.monster.id = monsterID;
       state.monster.meter = 0;
-      state.monster.maxSteps = ruleset.monsters[monsterID].maxSteps;
+      state.monster.maxSteps = 8; // ruleset.monsters[monsterID].maxSteps;
       state.monster.overhead = 0;
       state.monster.resolved = false;
 
@@ -91,8 +91,8 @@ const slice = createSlice({
 
       // todo: generate a monster and fill this from monster ruleset, slightly randomized
       state.monster.stats = {
-        hp: { current: 20, max: 20 },
-        ep: { current: 20, max: 20 },
+        hp: { current: 12, max: 20, last: 12 },
+        ep: { current: 12, max: 20, last: 12 },
         attack: { current: 3, max: 5 },
         defense: { current: 1, max: 5 },
         status: state.monster.stats.status,
@@ -176,6 +176,8 @@ const slice = createSlice({
     ) => {
       const { target, type, value } = payload;
       const stat = state[target].stats[type];
+
+      if (stat.last) stat.last = stat.current;
 
       if (value.current) stat.current += value.current;
       if (stat.current > stat.max) stat.current = stat.max;

@@ -58,6 +58,14 @@ export default class AttackIcons {
     waitForIt(() => cb && cb(), callbackDelay);
   }
 
+  public removeAllIcons() {
+    this.icons.forEach((icon) => {
+      animate(icon)
+        .then({ scale: 0 }, animDuration / 2, animate.easeInOut)
+        .then(() => icon.removeFromSuperview());
+    });
+  }
+
   private addIcon(i: number, meter: ProgressMeter, current: number) {
     // refresh meter
     waitForIt(() => meter.resolveTo(current, false, true), animDuration / 2);
@@ -88,6 +96,7 @@ export default class AttackIcons {
 
   removeIcon() {
     const icon = this.icons.shift();
+    if (!icon) return;
 
     const d = iconSeparation;
     const t = animDuration / 2;
@@ -113,7 +122,7 @@ export default class AttackIcons {
   }
 
   animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
-    sounds.playRandomSound(['swoosh1', 'swoosh3', 'swoosh5'], 0.3); // 'swoosh2',
+    sounds.playRandomSound(['swoosh1', 'swoosh3', 'swoosh5'], 0.15); // 'swoosh2',
 
     animate(icon).then({ x, scale: 0 }, t * 1, animate.easeInOut);
 
