@@ -1,4 +1,5 @@
 import animate from 'animate';
+import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ImageScaleView from 'ui/ImageScaleView';
@@ -8,12 +9,10 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { animDuration } from 'src/lib/uiConfig';
-import { CardType } from 'src/types/custom';
-import { waitForIt } from 'src/lib/utils';
-import sounds from 'src/lib/sounds';
-import Label from '../battle/Label';
+import { CardType, CardPlayType } from 'src/types/custom';
+import { getScreenDimensions } from 'src/lib/utils';
 
-export type CardMode = 'mini' | 'full'; //  | 'modifier';
+export type CardMode = 'mini' | 'full';
 export type CardSide = 'front' | 'back';
 
 export type Props = {
@@ -37,14 +36,14 @@ export default class Card {
     mode: 'mini',
   };
   private container: View;
+  private frame: ImageScaleView;
   private backImage: View;
+  private imageMask: View;
   private image: ImageView;
-  private labelModifier: ImageView;
-  private button: ButtonView;
-  private infoDetails: View;
   private infoHand: View;
+  private infoDetails: View;
   private infoModifier: View;
-  private labelModifierResult: Label;
+  private labelModifierResult: LangBitmapFontTextView;
 
   constructor(props: Props) {
     this.props.id = props.id;
@@ -52,6 +51,8 @@ export default class Card {
     this.createViews(props);
     this.setProps(props);
   }
+
+  // ===============================================================
 
   destroy() {
     // note: don't forget to remove listeners if any by doing:
@@ -79,6 +80,10 @@ export default class Card {
     return ruleset.cards[this.props.id].type;
   }
 
+  getPlayType(): CardPlayType {
+    return ruleset.cards[this.props.id].playType;
+  }
+
   setProps(props: Props) {
     if (props === this.props) return;
     this.update(props);
@@ -91,9 +96,10 @@ export default class Card {
   private update(props: Props) {
     const { mode, side } = props;
 
-    // this.getView().updateOpts({
-    //   zIndex: mode === 'full' ? 9 : 0,
-    // });
+    this.frame.updateOpts({
+      visible: true,
+      opacity: 1,
+    });
 
     this.backImage.updateOpts({
       visible: side === 'back', //  || mode === 'modifier',
@@ -107,23 +113,12 @@ export default class Card {
       visible: mode === 'full' && side === 'front',
     });
 
-    // this.infoModifier.updateOpts({
-    //   visible: mode === 'modifier' && side === 'front',
-    // });
-
     this.image.updateOpts({
       visible: side === 'front',
     });
-
-    // if (mode === 'modifier') {
-    //   console.log('Displaying modifier result !!!!!');
-    // }
-
-    // this.props.mode = props.mode;
-    // this.props.side = props.side;
   }
 
-  private createSelectors() {}
+  // ===============================================================
 
   private createViews(props: Props) {
     // 120 x 170
@@ -142,19 +137,21 @@ export default class Card {
       r: props.r,
     });
 
-    const imageMask = new View({
+    this.imageMask = new View({
       superview: this.container,
       backgroundColor: '#000',
-      x: 10,
-      y: 10,
+      x: this.container.style.width / 2,
+      y: this.container.style.width / 2,
       width: 222,
       height: 222,
       clip: true,
+      centerOnOrigin: true,
+      centerAnchor: true,
     });
 
     const image = ruleset.cards[props.id].image;
     this.image = new ImageView({
-      superview: imageMask,
+      superview: this.imageMask,
       x: 111,
       y: 111,
       width: 222,
@@ -168,26 +165,26 @@ export default class Card {
     });
 
     // modifier text
-    if (this.getType() === 'modifier') {
-      this.labelModifier = new LangBitmapFontTextView({
-        superview: imageMask,
-        backgroundColor: '#fff',
-        font: bitmapFonts('Title'),
-        size: 90,
-        color: 'black',
+    if (this.getPlayType() === 'modifier') {
+      const labelModifier = new LangBitmapFontTextView({
+        superview: this.imageMask,
+        // backgroundColor: '#fff',
+        font: bitmapFonts('TitleStroke'),
+        size: 85,
+        color: 'white',
         align: 'center',
         verticalAlign: 'center',
         centerOnOrigin: true,
         centerAnchor: true,
-        x: imageMask.style.width / 2,
-        y: imageMask.style.height / 2,
-        width: imageMask.style.width,
-        height: imageMask.style.height,
+        x: this.imageMask.style.width / 2,
+        y: this.imageMask.style.height / 2,
+        width: this.imageMask.style.width - 10,
+        height: this.imageMask.style.height,
         localeText: () => ruleset.cards[props.id].name,
       });
     }
 
-    const frame = new ImageScaleView({
+    this.frame = new ImageScaleView({
       superview: this.container,
       width: this.container.style.width,
       height: this.container.style.height,
@@ -208,20 +205,11 @@ export default class Card {
       height: 170 * 2 - 20,
     });
 
-    const bottom = new View({
-      superview: this.container,
-      backgroundColor: 'white',
-      x: 5,
-      y: 222,
-      width: 230,
-      height: 90,
-    });
-
     this.createInfoHand();
     this.createInfoDetails();
     this.createInfoModifier();
 
-    this.button = new ButtonView({
+    const button = new ButtonView({
       superview: this.container,
       // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: 120 * 2,
@@ -230,10 +218,12 @@ export default class Card {
     });
   }
 
-  createInfoModifier() {
+  // ===============================================================
+
+  private createInfoModifier() {
     this.infoModifier = new View({
       superview: this.container,
-      backgroundColor: 'red',
+      backgroundColor: 'white',
       x: 10,
       y: 10,
       width: 120 * 2 - 20,
@@ -241,95 +231,84 @@ export default class Card {
       visible: false,
     });
 
-    this.labelModifierResult = new Label({
+    this.labelModifierResult = new LangBitmapFontTextView({
       superview: this.infoModifier,
-      backgroundColor: '#fff',
-      font: bitmapFonts('Title'),
+      // backgroundColor: '#fff',
+      font: bitmapFonts('TitleStroke'),
       size: 90,
-      color: 'black',
+      color: 'white',
       align: 'center',
       verticalAlign: 'center',
       centerOnOrigin: true,
       centerAnchor: true,
       x: this.infoModifier.style.width / 2,
       y: this.infoModifier.style.height / 2,
-      width: this.infoModifier.style.width,
+      width: this.infoModifier.style.width - 10,
       height: this.infoModifier.style.height,
       localeText: () => '?',
     });
-
-    // this.labelModifierResult2 = new LangBitmapFontTextView({
-    //   superview: this.infoModifier,
-    //   backgroundColor: '#fff',
-    //   font: bitmapFonts('Title'),
-    //   size: 90,
-    //   color: 'black',
-    //   align: 'center',
-    //   verticalAlign: 'center',
-    //   centerOnOrigin: true,
-    //   centerAnchor: true,
-    //   x: this.infoModifier.style.width / 2,
-    //   y: this.infoModifier.style.height / 2,
-    //   width: this.infoModifier.style.width,
-    //   height: this.infoModifier.style.height,
-    //   localeText: () => '?',
-    // });
   }
 
-  createInfoDetails() {
+  private createInfoDetails() {
     this.infoDetails = new View({
       superview: this.container,
-      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
-      x: 18,
-      y: 222 + 5,
-      width: 120 * 2 - 36,
+      backgroundColor: 'white', // 'rgba(255, 0, 0, 0.5)',
+      x: 5,
+      y: 222,
+      width: 120 * 2 - 10,
       height: 90,
     });
 
     this.createInfoParagraph(
       3,
-      () => 'PROS',
-      () => 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
+      () => ruleset.cards[this.getID()].name, // 'PROS',
+      () => ruleset.cards[this.getID()].desc, // 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
     );
-    this.createInfoParagraph(
-      53,
-      () => 'CONS',
-      () => 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
-    );
+    // this.createInfoParagraph(
+    //   53,
+    //   () => 'CONS',
+    //   () => 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
+    // );
   }
 
-  createInfoParagraph(y: number, name: () => string, desc: () => string) {
+  private createInfoParagraph(
+    y: number,
+    name: () => string,
+    desc: () => string,
+  ) {
     const nameLabel = new LangBitmapFontTextView({
       superview: this.infoDetails,
-      font: bitmapFonts('TitleStroke'),
-      size: 13,
-      color: 'cyan',
-      align: 'left',
+      // backgroundColor: 'cyan',
+      font: bitmapFonts('Title'),
+      size: 24,
+      color: 'black',
+      align: 'center',
       verticalAlign: 'top',
-      x: 0,
-      y,
-      width: this.infoHand.style.width - 0,
+      x: 15,
+      y: y + 12,
+      width: this.infoHand.style.width - 32,
       height: this.infoHand.style.height - 10,
       localeText: name,
     });
 
     const descLabel = new LangBitmapFontTextView({
       superview: this.infoDetails,
+      // backgroundColor: 'pink',
       font: bitmapFonts('Title'),
-      size: 11,
+      size: 16,
       color: 'black',
-      align: 'left',
+      align: 'center',
       wordWrap: true,
       verticalAlign: 'top',
-      x: 0,
-      y: y + 20,
-      width: this.infoHand.style.width - 0,
-      height: this.infoHand.style.height - 10,
+      x: 15,
+      y: y + 50,
+      width: this.infoHand.style.width - 32,
+      height: this.infoHand.style.height - 40,
       localeText: desc,
     });
   }
 
-  createInfoHand() {
+  private createInfoHand() {
     this.infoHand = new View({
       superview: this.container,
       backgroundColor: 'white', //'rgba(255, 0, 0, 0.5)',
@@ -365,77 +344,87 @@ export default class Card {
     });
   }
 
-  spawn(
-    from: { x: number; y: number; scale: number },
-    to: { x: number; y: number; scale: number },
-    delay: number,
-    cb?: () => void,
-  ) {
-    this.getView().updateOpts({
-      x: from.x,
-      y: from.y,
-    });
+  // ==========================================================
+  // Display modes
 
+  displayAsConsumed() {
     const t = animDuration;
-    animate(this.getView())
+
+    // transition the card to final goal position
+    animate(this.container)
       .clear()
-      .wait(delay)
-      .then({ x: to.x, y: to.y, scale: to.scale }, t, animate.easeInOut)
-      .then(() => cb && cb());
-  }
-
-  flip() {
-    const t = animDuration * 0.5;
-    animate(this.getView())
-      .clear()
-      .then({ scaleX: 0 }, t, animate.easeInOut)
-      .then(() => {
-        this.setProps({ mode: this.props.mode, side: this.toggleSide() });
-      })
-      .then({ scaleX: 1 }, t, animate.easeInOut);
-  }
-
-  private toggleSide() {
-    return this.props.side === 'front' ? 'back' : 'front';
-  }
-
-  transform(opts: {
-    mode: CardMode;
-    x: number;
-    y: number;
-    scale: number;
-    cb?: () => void;
-  }) {
-    const { mode, x, y, scale, cb } = opts;
-
-    this.update({ mode, side: 'front' });
-
-    const t = animDuration;
-    animate(this.getView())
-      .clear()
-      .wait(0)
-      .then({ x, y, scale: scale * 1.1 }, t, animate.easeInOut)
-      .then({ x, y, scale }, t, animate.easeOutBounce)
-      .then(() => cb && cb());
+      // .then({ scaleY: 1 }, t, animate.easeInOut)
+      .then(() => sounds.playSound('swoosh3', 0.1))
+      .then({ scale: 0, scaleY: 0.75 }, t, animate.easeInOut);
   }
 
   displayModifierResult(result: number, cb: () => void) {
     this.infoModifier.show();
-    // this.labelModifierResult.localeText = () => '?';
-    this.labelModifierResult.setProps({ localeText: () => '?' });
+    this.labelModifierResult.localeText = () => '?';
 
     animate(this.container)
       .then({ scale: 0.45, scaleY: 0.8 }, animDuration, animate.easeInOut)
       .then(() => {
         sounds.playSound('blip2', 0.5);
-        // this.labelModifierResult.localeText = () => result.toString();
-        this.labelModifierResult.setProps({ localeText: () => result.toString() });
+        this.labelModifierResult.localeText = () => result.toString();
       })
       .then({ scale: 0.55, scaleY: 0.9 }, animDuration, animate.easeInOut)
       .then({ scale: 0.45, scaleY: 0.8 }, animDuration * 0.5, animate.easeInOut)
+      .then({ scaleY: 1 }, animDuration, animate.easeInOut)
       .then(() => {
         cb && cb(); // apply modifier effect
       })
       .then(() => this.infoModifier.hide());
   }
+
+  displayAsStatus(cb: () => void) {
+    const screen = getScreenDimensions();
+
+    this.infoModifier.hide();
+    this.infoDetails.hide();
+
+    const x = screen.width - 32;
+    const y = screen.height * ruleset.baselineY + 35;
+    const h = this.container.style.width + 5;
+
+    //container
+    animate(this.container)
+      .clear()
+      .then({ scale: 0.15, scaleY: 0.8, x, y }, animDuration, animate.easeInOut)
+      .then({ scale: 0.2, scaleY: 1.1 }, animDuration, animate.easeInOut)
+      .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
+      .then(() => {
+        cb && cb(); // set the card as an active status
+      });
+
+    // frame
+    animate(this.frame).then(
+      { height: h },
+      animDuration * 0.5,
+      animate.easeInOut,
+    );
+
+    // imageMask
+    animate(this.imageMask).then(
+      { scale: 0.95, zIndex: 2 },
+      animDuration * 0.5,
+      animate.easeInOut,
+    );
+  }
+
+  displayAsInstant(x: number, y: number, cb: () => void) {
+    const t = animDuration;
+
+    // transition the card to final goal position
+    animate(this.container)
+      .clear()
+      .then({ scale: 0.15, scaleY: 0.8, x, y }, animDuration, animate.easeInOut)
+      .then({ scale: 0.2, scaleY: 1.1 }, animDuration, animate.easeInOut)
+      .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
+      .then(() => {
+        cb && cb(); // set the card as an active status
+      });
+  }
+
+  // ===============================================================
 }

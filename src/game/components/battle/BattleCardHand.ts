@@ -3,12 +3,9 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import Card from '../cards/Card';
 import BattleCardDetails from './BattleCardDetails';
-import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
+import { getScreenDimensions } from 'src/lib/utils';
 import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
-import { CardID } from 'src/redux/ruleset/cards';
-import { throwDice } from 'src/redux/shortcuts/combat';
-import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
 
 type Props = { superview: View; zIndex: number };
@@ -20,6 +17,7 @@ export default class BattleCardHand {
   private container: View;
   private active: boolean;
   private cards: Card[];
+  private activeCards: Card[];
   private usedCards: Card[];
   private cardDetails: BattleCardDetails;
 
@@ -50,8 +48,11 @@ export default class BattleCardHand {
     });
   }
 
+  // ===================================================
+
   createCards(props: Props) {
     this.cards = [];
+    this.activeCards = [];
     this.usedCards = [];
 
     for (let i = 0; i < maxCards; i++) {
@@ -59,7 +60,7 @@ export default class BattleCardHand {
       this.cards.push(card);
     }
 
-    this.updateCardPositions();
+    this.updateCardHandPositions();
   }
 
   private createRandomCard(i: number) {
@@ -84,10 +85,12 @@ export default class BattleCardHand {
     // add a new random card to cards array
     const newCard = this.createRandomCard(index);
     this.cards.splice(index, 0, newCard);
-    this.updateCardPositions();
+    this.updateCardHandPositions();
   }
 
-  private updateCardPositions() {
+  // ===================================================
+
+  private updateCardHandPositions() {
     // todo: locate cards in an arc (?)
     // const rotations = [-0.25, -0.125, 0, 0.125, 0.25];
     // const ys = [0, -12, -15, -12, 0];
@@ -109,11 +112,29 @@ export default class BattleCardHand {
     });
   }
 
+  private updateCardStatusPositions() {
+    const screen = getScreenDimensions();
+    const center = screen.height * ruleset.baselineY + 35;
+    const max = this.activeCards.length - 1;
+    const dy = 50;
+
+    this.activeCards.forEach((card, index) => {
+      const x = screen.width - 32;
+      const y = center - max * dy + index * dy;
+
+      animate(card.getView())
+        .clear()
+        .then({ x, y }, animDuration, animate.easeInOut);
+    });
+  }
+
   private getBasePosY() {
     const screen = getScreenDimensions();
     const baseY = screen.height - 130;
     return baseY + (this.active ? 0 : 30);
   }
+
+  // ===================================================
 
   showHand() {
     if (this.active) return;
@@ -156,32 +177,34 @@ export default class BattleCardHand {
     });
   }
 
-  cardHasBeenPlayed(card: Card) {
-    console.log(
-      '>>> Card has been played',
-      card.getID(),
-      this.cards,
-      this.usedCards,
-    );
+  // ===================================================
 
+  cardHasBeenPlayed(card: Card, remainActive: boolean = false) {
     // get position of card in array
     const index = this.cards.map((el) => el).indexOf(card);
-    console.log('>>> index', index);
 
     // remove card from cards array
     const removedCard = this.cards.splice(index, 1)[0];
 
-    // put card in used deck
-    this.usedCards.push(removedCard);
+    // put card in used or active deck
+    if (remainActive) {
+      this.activeCards.push(removedCard); // equipment, status cards
+    } else {
+      this.usedCards.push(removedCard); // modifiers, instant cards
+    }
 
     console.log(
-      '>>> Card has been switched from decks',
+      '>>> Card has been played',
       card.getID(),
-      this.cards,
-      this.usedCards,
+      `cards: ${this.cards}`,
+      `usedCards: ${this.usedCards}`,
+      `activeCards: ${this.activeCards}`,
     );
 
     // reposition remaining cards
-    this.updateCardPositions();
+    this.updateCardHandPositions();
+    this.updateCardStatusPositions();
   }
+
+  // ===================================================
 }

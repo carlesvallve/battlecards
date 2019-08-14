@@ -1,4 +1,4 @@
-import { MonsterID } from "src/redux/ruleset/monsters";
+import { MonsterID } from 'src/redux/ruleset/monsters';
 
 // utility types
 
@@ -23,16 +23,45 @@ export type PopupOpts = {
   opts?: any;
 };
 
+// cards
+
+export type CardPlayType = 'modifier' | 'equipment' | 'playable' | 'instant';
+
+export type CardType = 'modifier' | 'shield' | 'weapon' | 'potion' | 'spell';
+
+export type CardStat = {
+  min?: number;
+  max?: number;
+  type?: string;
+  randomMode?: string;
+};
+
 // combat
 
 export type Target = 'hero' | 'monster';
 
-export type TargetStat = { current?: number; max?: number };
+export type TargetStat = {
+  current?: number;
+  max?: number;
+};
+
+export type TargetAttitude = 'defensive' | 'neutral' | 'agressive';
+
+export type TargetStatus =
+  | 'bleeding'
+  | 'wounded'
+  | 'blinded'
+  | 'stunned'
+  | 'poisoned'
+  | 'electrocuted'
+  | 'burned'
+  | 'frozen'
+  | 'brokenarmour';
 
 export type TargetData = {
-  id: MonsterID | 'hero',
+  id: MonsterID | 'hero';
   meter: number;
-  maxSteps: number,
+  maxSteps: number;
   overhead: number;
   resolved: boolean;
   stats: {
@@ -40,6 +69,7 @@ export type TargetData = {
     ep: TargetStat;
     attack: TargetStat;
     defense: TargetStat;
+    status: TargetStatus[];
   };
 };
 
@@ -57,24 +87,6 @@ export type CombatResult = {
   attacks: number;
   isOverhead?: boolean;
 };
-
-// cards
-
-export type CardType =
-  | 'modifier'
-  | 'shield'
-  | 'weapon'
-  | 'potion'
-  | 'playable';
-export type Affliction =
-  | 'bleeding'
-  | 'wounded'
-  | 'blinded'
-  | 'stunned'
-  | 'poisoned'
-  | 'electrocuted'
-  | 'frozen'
-  | 'brokenarmour';
 
 // custom types
 

@@ -1,20 +1,30 @@
-const monsters = {
-  // hero: {
-  //   name: 'Hero',
-  //   desc: 'An image of yourself',
-  //   attack: 0,
-  //   defense: 0,
-  //   image: 'bat',
-  //   maxSteps: 12,
-  // },
+import { TargetData } from 'src/types/custom';
 
+const data = {
+  id: null,
+  meter: 0,
+  maxSteps: 12,
+  overhead: 0,
+  resolved: false,
+  stats: {
+    hp: { current: 10, max: 10 },
+    ep: { current: 10, max: 10 },
+    attack: { current: 1, max: 1 },
+    defense: { current: 1, max: 1 },
+    status: [],
+  },
+} as TargetData;
+
+const monsters = {
   bat: {
     name: 'Bat',
     desc: 'flying scavenger',
+    image: 'bat',
     attack: 0,
     defense: 0,
-    image: 'bat',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   beholder: {
     name: 'Beholder',
@@ -22,7 +32,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'beholder',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   brute: {
     name: 'Brute',
@@ -30,7 +42,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'brute',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   cowled: {
     name: 'Cowled',
@@ -38,7 +52,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'cowled',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   cyclop: {
     name: 'Cyclop',
@@ -46,7 +62,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'cyclop',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   darknight: {
     name: 'Dark Knight',
@@ -54,7 +72,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'darknight',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   delighted: {
     name: 'Delighted',
@@ -62,7 +82,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'delighted',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   dragon: {
     name: 'Dragon',
@@ -70,7 +92,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'dragon',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   dwarf1: {
     name: 'Dwarf',
@@ -78,7 +102,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'dwarf-1',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   dwarf2: {
     name: 'Battle Dwarf',
@@ -86,7 +112,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'dwarf-2',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   elf: {
     name: 'Dark Elf',
@@ -94,7 +122,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'elf',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   executioner: {
     name: 'Executioner',
@@ -102,7 +132,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'executioner',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   goblin: {
     name: 'Goblin',
@@ -110,7 +142,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'goblin',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   golem: {
     name: 'Golem',
@@ -118,7 +152,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'golem',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   ifrit: {
     name: 'Ifrit',
@@ -126,7 +162,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'ifrit',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   imp: {
     name: 'Imp',
@@ -134,7 +172,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'imp',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   litch: {
     name: 'Litch',
@@ -142,7 +182,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'litch',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   minion1: {
     name: 'Minion',
@@ -150,7 +192,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'minion-1',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   minion2: {
     name: 'Demon',
@@ -158,7 +202,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'minion-2',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   overlord: {
     name: 'Overlord',
@@ -166,7 +212,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'overlord',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   psionic: {
     name: 'Psionic',
@@ -174,7 +222,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'psionic',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   pyromaniac: {
     name: 'Pyromaniac',
@@ -182,7 +232,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'pyromaniac',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   slime: {
     name: 'Slime',
@@ -190,7 +242,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'slime',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
   troglodyte: {
     name: 'Troglodyte',
@@ -198,7 +252,9 @@ const monsters = {
     attack: 0,
     defense: 0,
     image: 'troglodyte',
-    maxSteps: 8,
+    maxSteps: 10,
+    attitude: 'neutral',
+    cards: [],
   },
 };
 

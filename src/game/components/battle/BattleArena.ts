@@ -18,7 +18,6 @@ import {
   setResolved,
   resetCombatTurn,
   addStat,
-  setMonsterID,
   getRandomMonsterID,
 } from 'src/redux/shortcuts/combat';
 
@@ -32,7 +31,6 @@ import BattleFooter from './BattleFooter';
 import BattleOverlay from './BattleOverlay';
 
 import { CombatResult, Combat } from 'src/types/custom';
-import playExplosion from './Explosion';
 
 type Props = {
   superview: View;
@@ -41,6 +39,7 @@ type Props = {
 export default class BattleArena {
   private props: Props;
   private container: View;
+  private battleGround: View;
   private monsterImage: MonsterImage;
   private cardHand: BattleCardHand;
   private overlay: BattleOverlay;
@@ -289,7 +288,7 @@ export default class BattleArena {
 
     const t = 50;
 
-    animate(this.container)
+    animate(this.battleGround)
       .clear()
       .wait(150)
       .then(() => {
@@ -308,7 +307,7 @@ export default class BattleArena {
       loser,
       damage,
       loser === 'hero'
-        ? this.container.style.height / 2 + 205
+        ? screen.height - 85
         : this.monsterImage.getView().style.y - 50,
     );
   }
@@ -364,7 +363,20 @@ export default class BattleArena {
       superview: props.superview,
       // backgroundColor: 'rgba(0, 0, 0, 0.8)',
       width: screen.width,
-      height: screen.height * 1,
+      height: screen.height,
+      x: screen.width * 0.5,
+      y: screen.height * 0.5,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      infinite: true,
+      canHandleEvents: false,
+    });
+
+    this.battleGround = new View({
+      superview: this.container,
+      // backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      width: screen.width,
+      height: screen.height,
       x: screen.width * 0.5,
       y: screen.height * 0.5,
       centerOnOrigin: true,
@@ -374,7 +386,7 @@ export default class BattleArena {
     });
 
     this.monsterImage = new MonsterImage({
-      superview: this.container,
+      superview: this.battleGround,
     });
 
     this.overlay = new BattleOverlay({
@@ -387,7 +399,7 @@ export default class BattleArena {
     this.components = {
       hero: {
         meter: new ProgressMeter({
-          superview: this.container,
+          superview: this.battleGround,
           x: this.container.style.width * 0.5,
           y: y + 25,
           width: 220,
@@ -411,7 +423,7 @@ export default class BattleArena {
 
       monster: {
         meter: new ProgressMeter({
-          superview: this.container,
+          superview: this.battleGround,
           x: this.container.style.width * 0.5,
           y: y - 25,
           width: 220,

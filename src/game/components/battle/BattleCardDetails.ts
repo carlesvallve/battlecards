@@ -4,22 +4,25 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import bitmapFonts from 'src/lib/bitmapFonts';
-import {
-  getScreenDimensions,
-  getRandomFloat,
-  getRandomInt,
-  waitForIt,
-} from 'src/lib/utils';
+import { getScreenDimensions, getRandomInt, waitForIt } from 'src/lib/utils';
+
 import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import Card from '../cards/Card';
-import { getTarget, throwDice } from 'src/redux/shortcuts/combat';
+
 import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
+import {
+  throwDice,
+  addStat,
+  getTarget,
+  getTargetEnemy,
+} from 'src/redux/shortcuts/combat';
+import playExplosion from './Explosion';
 
 type Props = {
   superview: View;
   zIndex: number;
-  cardHasBeenPlayedHandler: (card: Card) => void;
+  cardHasBeenPlayedHandler: (card: Card, remainActive: boolean) => void;
 };
 
 export default class BattleCardDetails {
@@ -90,6 +93,9 @@ export default class BattleCardDetails {
       },
     });
   }
+
+  // ===============================================================
+  // show / hide card details
 
   showCardDetails(card: Card) {
     if (card.getMode() === 'full') return;
@@ -171,6 +177,9 @@ export default class BattleCardDetails {
       });
   }
 
+  // ===============================================================
+  // Play cards
+
   placeCardBackToHand() {
     const { card, x, y, scale, r } = this.selectedCardData;
 
@@ -180,51 +189,23 @@ export default class BattleCardDetails {
       .then({ x, y, scale, r }, animDuration * 0.75, animate.easeInOut);
   }
 
-  consumeCard() {
-    const { card } = this.selectedCardData;
-
-    // get final goal position
-    const screen = getScreenDimensions();
-    const xx = screen.width / 2;
-    const yy = screen.height * ruleset.baselineY;
-    const dx = 2;
-    const dy = getTarget(StateObserver.getState()) === 'hero' ? 25 : -25;
-
-    // transition the card to final goal position
-    animate(card.getView())
-      .clear()
-      .then({ scale: 0.45, scaleY: 1 }, animDuration * 1, animate.easeInOut)
-      .then(() => sounds.playSound('swoosh3', 0.1))
-      .then(
-        {
-          scale: 0,
-          scaleY: 0.75,
-          x: xx + dx,
-          y: yy + dy - 15,
-          r: getRandomFloat(-0.1, 0.1),
-        },
-        animDuration * 1,
-        animate.easeInOut,
-      )
-      .then(() => {
-        // once the card is consumed we need to
-        // tell battlecardhand to swith it to used cards
-        this.props.cardHasBeenPlayedHandler(card);
-      });
-  }
-
-  // ===============================================================
-  // Play cards
-
   playCard(card: Card) {
-    const data = ruleset.cards[card.getID()];
-
-    switch (data.type) {
+    switch (card.getType()) {
       case 'modifier':
         this.playModifier(card);
         break;
+      case 'shield':
+      case 'weapon':
+        this.playEquipment(card);
+        break;
+      case 'potion':
+        this.playPotion(card);
+        break;
+      case 'spell':
+        this.playSpell(card);
+        break;
       default:
-        this.consumeCard();
+        card.displayAsConsumed();
     }
   }
 
@@ -234,18 +215,92 @@ export default class BattleCardDetails {
     console.log('PLAYING MODIFIER', card.getID(), data);
 
     // get modifier dice
-    const diceModifier = getRandomInt(data.value.min, data.value.max);
-    card.displayModifierResult(diceModifier, () => {
-      // consume the card
-      // waitForIt(() => sounds.playSound('blip2', 0.8), animDuration);
-      this.consumeCard();
+    let diceModifier = data.value.min;
 
-      // apply card effect
+    if (data.value.randomMode) {
+      if (data.value.randomMode === 'BETWEEN') {
+        diceModifier = getRandomInt(data.value.min, data.value.max);
+      } else if (data.value.randomMode === 'OR') {
+        diceModifier = Math.random() < 0.5 ? data.value.min : data.value.max;
+      }
+    }
+
+    // put card in usedCards array
+    this.props.cardHasBeenPlayedHandler(card, false);
+
+    card.displayModifierResult(diceModifier, () => {
+      // make the card disappear
+      card.displayAsConsumed();
+
+      // throw the redux dice
       waitForIt(() => {
-        // sounds.playSound('blip2', 0.8);
         const { target } = StateObserver.getState().combat;
         throwDice(target, diceModifier);
       }, 500);
     });
   }
+
+  playEquipment(card: Card) {
+    // get card data
+    const data = ruleset.cards[card.getID()];
+    console.log('PLAYING EQUIPMENT', card.getID(), data);
+
+    // put card in activeCards array
+    this.props.cardHasBeenPlayedHandler(card, true);
+
+    // transform card into status card icon
+    card.displayAsStatus(() => {});
+  }
+
+  playPotion(card: Card) {
+    // get card data
+    const data = ruleset.cards[card.getID()];
+    console.log('PLAYING POTION', card.getID(), data);
+
+    const screen = getScreenDimensions();
+    const x = screen.width * 0.5;
+    const y = screen.height - 60;
+
+    card.displayAsInstant(x, y, () => {
+      card.displayAsConsumed();
+      const target = getTarget(StateObserver.getState());
+      addStat(target, data.value.type, { current: data.value.min });
+      sounds.playSound('break2', 0.2);
+    });
+
+    // put card in usedCards array
+    this.props.cardHasBeenPlayedHandler(card, false);
+  }
+
+  playSpell(card: Card) {
+    // get card data
+    const data = ruleset.cards[card.getID()];
+    console.log('PLAYING POTION', card.getID(), data);
+
+    const screen = getScreenDimensions();
+    const x = screen.width * 0.5;
+    const y = screen.height * ruleset.baselineY - 100;
+
+    card.displayAsInstant(x, y, () => {
+      card.displayAsConsumed();
+      const target = getTarget(StateObserver.getState());
+      const enemy = getTargetEnemy(target);
+      addStat(enemy, 'hp', { current: -data.value.min });
+
+      sounds.playSound('break1', 0.2);
+      sounds.playRandomSound(['punch1', 'punch2'], 1);
+      playExplosion({
+        superview: this.container,
+        sc: 1,
+        max: 20,
+        startX: this.container.style.width / 2,
+        startY: this.container.style.height / 2,
+      });
+    });
+
+    // put card in usedCards array
+    this.props.cardHasBeenPlayedHandler(card, false);
+  }
+
+  // ===============================================================
 }

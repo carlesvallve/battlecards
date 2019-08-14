@@ -26,6 +26,7 @@ const initialState = {
       ep: { current: 20, max: 20 },
       attack: { current: 5, max: 5 },
       defense: { current: 2, max: 5 },
+      status: [],
     },
   },
 
@@ -40,6 +41,7 @@ const initialState = {
       ep: { current: 20, max: 20 },
       attack: { current: 3, max: 5 },
       defense: { current: 1, max: 5 },
+      status: [],
     },
   },
 } as Combat;
@@ -87,11 +89,13 @@ const slice = createSlice({
       //   defense: { current: 1, max: 5 },
       // };
 
+      // todo: generate a monster and fill this from monster ruleset, slightly randomized
       state.monster.stats = {
         hp: { current: 20, max: 20 },
         ep: { current: 20, max: 20 },
         attack: { current: 3, max: 5 },
         defense: { current: 1, max: 5 },
+        status: state.monster.stats.status,
       };
 
       console.log('=========================');
@@ -171,8 +175,12 @@ const slice = createSlice({
       }: PayloadAction<{ target: Target; type: string; value: TargetStat }>,
     ) => {
       const { target, type, value } = payload;
-      if (value.current) state[target].stats[type].current += value.current;
-      if (value.max) state[target].stats[type].max += value.max;
+      const stat = state[target].stats[type];
+
+      if (value.current) stat.current += value.current;
+      if (stat.current > stat.max) stat.current = stat.max;
+
+      if (value.max) stat.max += value.max;
     },
 
     action_setStat: (

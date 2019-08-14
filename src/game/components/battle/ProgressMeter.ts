@@ -49,8 +49,10 @@ export default class ProgressMeter {
       ({ combat }) => combat[target].maxSteps,
     ).addListener((maxSteps) => {
       for (let i = 0; i < totalSteps; i++) {
+        const riskyOpacity = i <= maxSteps - 4 ? 0.5 : 1;
+
         const active = i <= maxSteps - 1;
-        this.steps[i].updateOpts({ opacity: active ? 1 : 0 });
+        this.steps[i].updateOpts({ opacity: active ? 1 : riskyOpacity });
       }
     });
   }
