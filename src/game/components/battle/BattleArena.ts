@@ -19,6 +19,7 @@ import {
   resetCombatTurn,
   addStat,
   getRandomMonsterID,
+  setMeter,
 } from 'src/redux/shortcuts/combat';
 
 import ProgressMeter from './ProgressMeter';
@@ -76,16 +77,24 @@ export default class BattleArena {
       const { combat } = StateObserver.getState();
       console.log('combat-flow: ---------', index);
 
-      // if (combat.hero.stats.hp.current <= 0) return;
-      // if (combat.monster.stats.hp.current <= 0) return;
+      // unblock ui in case monster resolved and hero can keep playing
+      if (combat.target === 'hero' && combat.monster.resolved) {
+        blockUi(false);
+      }
 
+      // update monster image
       const id = combat.monster.id;
       if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
 
       if (this.checkCombatReset(combat)) return;
       if (this.checkCombatResult(combat)) return;
 
-      this.refreshMeters(combat);
+      // both meters need to refresh their colors
+      // since they depend on each other
+      this.components.hero.meter.updateMeterColors();
+      this.components.monster.meter.updateMeterColors();
+
+      // this.refreshMeters(combat);
       this.updateTurn(combat);
     });
 
@@ -101,9 +110,6 @@ export default class BattleArena {
       if (!values) return;
 
       Object.keys(values).forEach((target) => {
-        // do not update if the target is already dead
-        // if (values[target].current <= 0 || values[target].last <= 0) return;
-
         const damage = values[target].last - values[target].current;
 
         if (damage > 0) {
@@ -112,7 +118,6 @@ export default class BattleArena {
           const bothResolved = combat.hero.resolved && combat.monster.resolved;
           const isOverhead = combat[target].overhead;
           const attackType = bothResolved || isOverhead ? 'melee' : 'spell';
-          console.log('========= rendering damage', target, attackType);
 
           if (values[target].current > 0) {
             // damage
@@ -128,18 +133,15 @@ export default class BattleArena {
   }
 
   killMonster() {
-    // death
+    // render monster death
     this.monsterImage.playDeathAnimation();
-
     this.displayMeters(false);
 
+    // generate a new combat
     waitForIt(() => {
-      // generate a new combat
-      const combat = newCombat(getRandomMonsterID());
-      this.components.hero.meter.reset({ isOverhead: false });
-      this.components.monster.meter.reset({ isOverhead: false });
-      // this.checkCombatReset(combat);
-      // this.updateTurn(combat);
+      newCombat(getRandomMonsterID());
+      // setMeter('hero', 0);
+      // setMeter('monster', 0);
     }, animDuration * 5);
   }
 
@@ -148,8 +150,8 @@ export default class BattleArena {
     if (combat.index.turn === 0) {
       const { target, enemy } = combat;
       if (target && enemy) {
-        this.components[target].meter.reset({ isOverhead: false });
-        this.components[enemy].meter.reset({ isOverhead: false });
+        setMeter('hero', 0);
+        setMeter('monster', 0);
         this.updateTurn(combat);
       }
 
@@ -207,13 +209,9 @@ export default class BattleArena {
   resolveCombat(result: CombatResult) {
     const { winner, loser, attacks, isOverhead } = result;
 
-    // set meters
-    this.components[winner].meter.resolveTo(attacks, true);
-    if (isOverhead) {
-      this.components[loser].meter.reset({ isOverhead: true });
-    } else {
-      this.components[loser].meter.resolveTo(0, false);
-    }
+    // update meters to combat result
+    setMeter(winner, attacks);
+    setMeter(loser, 0);
 
     // hide the user's card hand
     this.cardHand.hideHand();
@@ -233,8 +231,6 @@ export default class BattleArena {
   }
 
   displayMeters(value: boolean) {
-    const y = this.container.style.height * ruleset.baselineY;
-
     if (value) {
       this.components.hero.meter.showMeter();
       this.components.monster.meter.showMeter();
@@ -244,28 +240,6 @@ export default class BattleArena {
       this.components.monster.meter.hideMeter();
       this.monsterImage.playAttackAnimationStart();
     }
-  }
-
-  refreshMeters(combat: Combat) {
-    const { target, enemy } = combat;
-
-    // refresh both meters
-    this.components[target].meter.refresh(true, !combat[target].resolved);
-    this.components[enemy].meter.refresh(false, false);
-
-    console.log(
-      'combat-flow: ',
-      `${target}(+${combat[target].meter}) attacks ${enemy}(+${
-        combat[enemy].meter
-      })`,
-    );
-
-    // unblock ui in case monster resolved and hero can keep playing
-    waitForIt(() => {
-      if (target === 'hero' && combat[enemy].resolved) {
-        blockUi(false);
-      }
-    }, 350);
   }
 
   createAttackIcons(result: CombatResult, cb: () => void) {
@@ -312,7 +286,6 @@ export default class BattleArena {
     }
 
     // calculate damage
-
     const atk = combat[winner].stats.attack.current;
     const def = combat[loser].stats.defense.current;
     const damage = atk - def;

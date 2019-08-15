@@ -11,6 +11,7 @@ import {
   getCurrentMeter,
   getColorByTarget,
   getTargetEnemy,
+  setMeter,
 } from 'src/redux/shortcuts/combat';
 import bitmapFonts from 'src/lib/bitmapFonts';
 
@@ -24,7 +25,6 @@ type Props = {
 };
 
 const totalSteps = 12;
-const animDuration = 20;
 
 export default class ProgressMeter {
   private container: View;
@@ -43,17 +43,10 @@ export default class ProgressMeter {
   }
 
   private createSelectors() {
-    const target = this.props.target;
-
     StateObserver.createSelector(
-      ({ combat }) => combat[target].maxSteps,
-    ).addListener((maxSteps) => {
-      for (let i = 0; i < totalSteps; i++) {
-        const riskyOpacity = i <= maxSteps - 4 ? 0.5 : 1;
-
-        const active = i <= maxSteps - 1;
-        this.steps[i].updateOpts({ opacity: active ? 1 : riskyOpacity });
-      }
+      ({ combat }) => combat[this.props.target].meter,
+    ).addListener((meter) => {
+      this.updateMeter(meter);
     });
   }
 
@@ -119,8 +112,12 @@ export default class ProgressMeter {
 
   showMeter() {
     if (this.active) return;
-    this.reset({ isOverhead: false });
-    
+    // this.reset({ isOverhead: false });
+    setMeter(this.props.target, 0);
+
+    // update bg
+    this.updateMeterBg();
+
     animate(this.container)
       .then({ scale: 0.75, opacity: 1 }, 250, animate.easeInOut)
       .then(() => (this.active = true));
@@ -131,9 +128,11 @@ export default class ProgressMeter {
 
     this.steps = [];
     for (let i = 0; i < totalSteps; i++) {
-      const active = false;
+      const allowed = false;
 
       const step = new ImageScaleView({
+        active: false,
+
         superview: this.container,
         ...getColorByTarget(this.props.target),
         centerOnOrigin: false,
@@ -141,108 +140,80 @@ export default class ProgressMeter {
         height: this.container.style.height - 10,
         x: 6 + i * w,
         y: 5,
-        opacity: active ? 1 : 0,
+        opacity: allowed ? 1 : 0,
       });
       this.steps.push(step);
     }
   }
 
-  refresh(updateLabel: boolean, updateSound: boolean = false) {
-    const currentMeter = getCurrentMeter(this.props.target);
-    if (currentMeter === 0) return;
-
-    const enemyMeter = getCurrentMeter(getTargetEnemy(this.props.target));
+  updateMeter(meter: number) {
+    const target = this.props.target;
+    const { combat } = StateObserver.getState();
+    const maxSteps = combat[target].maxSteps;
 
     // update bg
-    this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });
+    this.updateMeterBg();
 
     // update label
-    if (updateLabel) {
-      this.label.setProps({ localeText: () => currentMeter.toString() });
-    }
+    this.label.setProps({ localeText: () => meter.toString() });
 
-    // update steps
-    for (let i = 0; i < currentMeter; i++) {
-      waitForIt(() => {
-        const num = i + 1;
-
-        const step = this.steps[num - 1];
-
-        if (step) {
-          let color =
-            enemyMeter < num ? uiConfig.frameYellow : uiConfig.frameOrange;
-          step.updateOpts({ ...color, centerOnOrigin: false });
-        }
-
-        if (i === currentMeter - 1) {
-          if (updateSound) sounds.playSound('tick2', 0.2);
-        }
-      }, i * animDuration);
-    }
-  }
-
-  resolveTo(
-    value: number,
-    animated: boolean = true,
-    animatedLabel: boolean = true,
-  ) {
-    const current = getCurrentMeter(this.props.target);
-
-    if (!animatedLabel) {
-      this.label.setProps({ localeText: () => value.toString() });
-    }
-
-    // update steps
-    // sounds.playSound('tick2', 0.2);
-    for (let i = 0; i < current; i++) {
-      waitForIt(
-        () => {
-          const num = current - i - 1;
-
-          const step = this.steps[num];
-
-          if (step) {
-            let color = getColorByTarget(this.props.target);
-            if (num < value) color = uiConfig.frameYellow;
-            step.updateOpts({ ...color, centerOnOrigin: false });
-          }
-
-          // update label
-          if (animatedLabel) {
-            if (num >= value) {
-              this.label.setProps({ localeText: () => num.toString() });
-            }
-          }
-
-          if (i === current - 1) {
-            sounds.playSound('tick2', 0.2);
-          }
-        },
-        animated ? i * animDuration : 0,
-      );
-    }
-  }
-
-  reset(opts?: { isOverhead: boolean }) {
-    const target = this.props.target;
+    // update sound
+    sounds.playSound('tick2', 0.2);
 
     // update steps
     for (let i = 0; i < totalSteps; i++) {
-      // const num = i + 1;
+      const step = this.steps[i];
+
+      // basic color (red or blue)
       this.steps[i].updateOpts({
         ...getColorByTarget(target),
         centerOnOrigin: false,
       });
+
+      // hide steps that are not allowed
+      const allowed = i <= maxSteps - 1;
+      step.updateOpts({ opacity: allowed ? 1 : 0 });
+
+      // dim steps that re risky
+      const risky = i >= maxSteps - 4;
+      if (allowed && risky) {
+        step.updateOpts({ opacity: 0.7 });
+      }
     }
 
-    // update bg
-    if (opts && opts.isOverhead) {
+    // update yellow/orange colors
+    this.updateMeterColors();
+  }
+
+  updateMeterBg() {
+    const { combat } = StateObserver.getState();
+    if (combat[this.props.target].overhead > 0) {
       this.bg.updateOpts({ ...uiConfig.frameRed, zIndex: 2 });
     } else {
       this.bg.updateOpts({ ...uiConfig.frameBlack, zIndex: 0 });
     }
+  }
 
-    // update label
-    this.label.setProps({ localeText: () => '0' });
+  updateMeterColors() {
+    const { target } = this.props;
+    const meter = getCurrentMeter(target);
+    const enemyMeter = getCurrentMeter(getTargetEnemy(target));
+
+    // tint steps that are active (orange or yellow)
+    for (let i = 0; i < totalSteps; i++) {
+      const step = this.steps[i];
+
+      const active = i < meter;
+      if (active) {
+        let stepColor =
+          enemyMeter <= i ? uiConfig.frameYellow : uiConfig.frameOrange;
+
+        step.updateOpts({
+          opacity: 1,
+          ...stepColor,
+          centerOnOrigin: false,
+        });
+      }
+    }
   }
 }

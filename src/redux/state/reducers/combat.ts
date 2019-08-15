@@ -7,6 +7,7 @@ import { Target, TargetData, TargetStat, Combat } from 'src/types/custom';
 import { CardNum } from 'src/game/components/cards/CardNumber';
 import { MonsterID } from 'src/redux/ruleset/monsters';
 import ruleset from 'src/redux/ruleset';
+import { getRandomInt } from 'src/lib/utils';
 // import ruleset from 'src/redux/ruleset';
 
 const initialState = {
@@ -20,7 +21,7 @@ const initialState = {
 
   hero: {
     id: 'hero',
-    meter: 0,
+    meter: -1,
     maxSteps: 12,
     overhead: 0,
     resolved: false,
@@ -35,7 +36,7 @@ const initialState = {
 
   monster: {
     id: null,
-    meter: 0,
+    meter: -1,
     maxSteps: 12,
     overhead: 0,
     resolved: false,
@@ -80,13 +81,13 @@ const slice = createSlice({
       state.target = 'hero';
       state.enemy = 'monster';
 
-      state.hero.meter = 0;
+      state.hero.meter = -1;
       state.hero.overhead = 0;
       state.hero.resolved = false;
 
       state.monster.id = monsterID;
-      state.monster.meter = 0;
-      state.monster.maxSteps = 8; // ruleset.monsters[monsterID].maxSteps;
+      state.monster.meter = -1;
+      state.monster.maxSteps = 8 + getRandomInt(0, 3); // ruleset.monsters[monsterID].maxSteps;
       state.monster.overhead = 0;
       state.monster.resolved = false;
 
@@ -178,6 +179,14 @@ const slice = createSlice({
       console.log('action > setResolved:', target, { ...state[target] });
     },
 
+    action_setMeter: (
+      state,
+      { payload }: PayloadAction<{ target: Target; value: number }>,
+    ) => {
+      const { target, value } = payload;
+      state[target].meter = value;
+    },
+
     // =====================================================================
     // Stats
 
@@ -220,6 +229,7 @@ export const {
   action_changeTarget,
   action_throwDice,
   action_setResolved,
+  action_setMeter,
 
   action_addStat,
   action_setStat,

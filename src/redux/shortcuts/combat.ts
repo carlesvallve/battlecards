@@ -9,6 +9,7 @@ import {
   action_setStat,
   action_setMonsterID,
   action_newCombat,
+  action_setMeter,
 } from 'src/redux/state/reducers/combat';
 import uiConfig from 'src/lib/uiConfig';
 import { CardNum } from 'src/game/components/cards/CardNumber';
@@ -85,6 +86,10 @@ export const throwDice = (target: Target, value: number) => {
 
 export const setResolved = (target: Target) => {
   StateObserver.dispatch(action_setResolved({ target }));
+};
+
+export const setMeter = (target: Target, value: number) => {
+  StateObserver.dispatch(action_setMeter({ target, value }));
 };
 
 export const addStat = (target: Target, type: string, value: TargetStat) => {

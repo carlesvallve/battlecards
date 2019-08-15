@@ -4,7 +4,7 @@ import ImageScaleView from 'ui/ImageScaleView';
 import { waitForIt } from 'src/lib/utils';
 import { Target } from 'src/types/custom';
 import sounds from 'src/lib/sounds';
-import { getCurrentMeter } from 'src/redux/shortcuts/combat';
+import { getCurrentMeter, setMeter } from 'src/redux/shortcuts/combat';
 import ProgressMeter from './ProgressMeter';
 
 type Props = {
@@ -67,8 +67,8 @@ export default class AttackIcons {
   }
 
   private addIcon(i: number, meter: ProgressMeter, current: number) {
-    // refresh meter
-    waitForIt(() => meter.resolveTo(current, false, true), animDuration / 2);
+    // refresh meter ?
+    // waitForIt(() => setMeter(this.props.target, current), animDuration / 2);
 
     const d = iconSeparation;
     const x = this.container.style.width / 2 + i * d;
