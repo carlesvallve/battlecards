@@ -218,10 +218,10 @@ export default class BattleArena {
 
     // all active cards that cannot be played are returned to the user hand
     // const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
-    // if (loser === 'hero') {
     this.cardHand.hideHand();
-    this.cardHand.returnActiveCardsToHand();
 
+    // if (winner === StateObserver.getState().combat.target) {
+    this.cardHand.returnActiveCardsToHand();
     // }
 
     // create attack icons
@@ -251,13 +251,14 @@ export default class BattleArena {
     let newAttacks = 0;
 
     // todo: enemies will be able to add attacks too in the future
-    if (winner !== 'hero') {
+    if (winner === 'monster') {
+      // if (winner !== StateObserver.getState().combat.target) {
       waitForIt(() => cb && cb(newAttacks), 0);
       return;
     }
 
     const screen = getScreenDimensions();
-    const weaponCards = []; //this.cardHand.getActiveCardsOfType('weapon');
+    const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
     console.log('>>> weaponCards', weaponCards);
 
     // for each card

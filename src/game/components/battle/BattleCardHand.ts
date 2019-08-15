@@ -241,24 +241,7 @@ export default class BattleCardHand {
   }
 
   returnActiveCardsToHand() {
-    const screen = getScreenDimensions();
     this.activeCards.forEach((card, index) => {
-      //
-
-      // animate(card.getView())
-      //   .clear()
-      //   .then(
-      //     { x: screen.width + 10, opacity: 1 },
-      //     animDuration,
-      //     animate.easeInOut,
-      //   )
-      //   .then(() => {
-      //     card.displayAsHand(() => {});
-      //   })
-      //   .then(() => {
-      //     this.returnCardToHand(card);
-      //   });
-      // // .then(() => this.updateCardHandPositions());
       const delay = index * animDuration * 0.5;
       card.displayAsHand(delay, () => this.returnCardToHand(card));
     });

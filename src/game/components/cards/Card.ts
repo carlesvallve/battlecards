@@ -443,16 +443,12 @@ export default class Card {
     animate(this.container)
       .clear()
       .then({ x: cx, y: cy, scale: 0.65, scaleY: 1 }, t, animate.easeInOut)
-      //.then({ scale: 0.35, scaleY: 0.8, x, y }, t, animate.easeInOut)
-      // .then({ scale: 0.65, scaleY: 1.1 }, t, animate.easeInOut)
       .wait(250)
       .then({ x: x + 10, y, scale: 0, scaleY: 1 }, t * 1, animate.easeInOut)
       .then(() => {
         this.displayAsConsumed();
         cb && cb(); // set the card as an active status
       });
-    // .then({ x, y, scale: 0.2, scaleY: 0.9 }, t * 0.25, animate.easeInOut)
-    // .then({ x, y, scale: 0, scaleY: 1 }, t * 0.5, animate.easeInOut);
   }
 
   displayAsHand(delay: number, cb: () => void) {
