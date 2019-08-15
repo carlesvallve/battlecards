@@ -75,15 +75,15 @@ const cards = {
   //   ep: 5,
   // },
 
-  // oneToThree: {
-  //   playType: 'modifier' as CardPlayType,
-  //   type: 'modifier' as CardType,
-  //   value: { min: 1, max: 3, randomMode: 'BETWEEN' } as CardStat,
-  //   image: null,
-  //   name: '1-3',
-  //   desc: '',
-  //   ep: 5,
-  // },
+  oneToThree: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 1, max: 3, randomMode: 'BETWEEN' } as CardStat,
+    image: null,
+    name: '1-3',
+    desc: '',
+    ep: 5,
+  },
 
   // oneToFive: {
   //   playType: 'modifier' as CardPlayType,
@@ -185,16 +185,16 @@ const cards = {
   //   effect: 'brokenarmour' as TargetStatus,
   // },
 
-  // greatAxe: {
-  //   playType: 'equipment' as CardPlayType,
-  //   type: 'weapon' as CardType,
-  //   value: { min: 3, max: 3 } as CardStat,
-  //   image: 'resources/images/cards/weapons/sharp-axe.png',
-  //   name: 'Great Axe',
-  //   desc: 'Add 2 attacks and cause ARMOUR BREAK',
-  //   ep: 10,
-  //   effect: 'brokenarmour' as TargetStatus,
-  // },
+  greatAxe: {
+    playType: 'equipment' as CardPlayType,
+    type: 'weapon' as CardType,
+    value: { min: 3, max: 3 } as CardStat,
+    image: 'resources/images/cards/weapons/sharp-axe.png',
+    name: 'Great Axe',
+    desc: 'Add 2 attacks and cause ARMOUR BREAK',
+    ep: 10,
+    effect: 'brokenarmour' as TargetStatus,
+  },
 
   // club: {
   //   playType: 'equipment' as CardPlayType,
@@ -207,16 +207,16 @@ const cards = {
   //   effect: 'stunned' as TargetStatus,
   // },
 
-  // flail: {
-  //   playType: 'equipment' as CardPlayType,
-  //   type: 'weapon' as CardType,
-  //   value: { min: 3, max: 3 } as CardStat,
-  //   image: 'resources/images/cards/weapons/flail.png',
-  //   name: 'Morning Star',
-  //   desc: 'Add 2 attacks and cause STUNNING',
-  //   ep: 10,
-  //   effect: 'stunned' as TargetStatus,
-  // },
+  flail: {
+    playType: 'equipment' as CardPlayType,
+    type: 'weapon' as CardType,
+    value: { min: 3, max: 3 } as CardStat,
+    image: 'resources/images/cards/weapons/flail.png',
+    name: 'Morning Star',
+    desc: 'Add 2 attacks and cause STUNNING',
+    ep: 10,
+    effect: 'stunned' as TargetStatus,
+  },
 
   // ============================================
   // potions

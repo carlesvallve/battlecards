@@ -145,6 +145,7 @@ export default class BattleArena {
       this.components.hero.meter.hideMeter();
       this.components.monster.meter.hideMeter();
       this.monsterImage.playAttackAnimationStart();
+      this.cardHand.hideHand();
     }
   }
 
