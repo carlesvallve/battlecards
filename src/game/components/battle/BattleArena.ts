@@ -216,6 +216,14 @@ export default class BattleArena {
     // hide the user's card hand
     this.cardHand.hideHand();
 
+    // all active cards that cannot be played are returned to the user hand
+    // const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
+    // if (loser === 'hero') {
+    this.cardHand.hideHand();
+    this.cardHand.returnActiveCardsToHand();
+
+    // }
+
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons({ winner, loser, attacks }, () => {
@@ -249,7 +257,7 @@ export default class BattleArena {
     }
 
     const screen = getScreenDimensions();
-    const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
+    const weaponCards = []; //this.cardHand.getActiveCardsOfType('weapon');
     console.log('>>> weaponCards', weaponCards);
 
     // for each card
@@ -403,6 +411,15 @@ export default class BattleArena {
     } else {
       // turn is done
       waitForIt(() => {
+        // if (
+        //   (combat.hero.resolved && combat.monster.resolved) ||
+        //   (!!combat.hero.overhead || !!combat.monster.overhead)
+        // ) {
+        //   console.log('*************************************************');
+        // }
+
+        console.log('*************************************************');
+
         if (!combat[enemy].resolved) target = changeTarget();
         this.cardHand.showHand();
         blockUi(target !== 'hero');

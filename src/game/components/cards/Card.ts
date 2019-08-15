@@ -10,7 +10,7 @@ import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { animDuration } from 'src/lib/uiConfig';
 import { CardType, CardPlayType, CardStat } from 'src/types/custom';
-import { getScreenDimensions } from 'src/lib/utils';
+import { getScreenDimensions, waitForIt } from 'src/lib/utils';
 
 export type CardMode = 'mini' | 'full';
 export type CardSide = 'front' | 'back';
@@ -129,6 +129,7 @@ export default class Card {
 
     this.container = new View({
       superview: props.superview,
+      // backgroundColor: 'rgba(255,255, 0,0.5)',
       x: props.x,
       y: props.y,
       width: 120 * 2,
@@ -452,6 +453,40 @@ export default class Card {
       });
     // .then({ x, y, scale: 0.2, scaleY: 0.9 }, t * 0.25, animate.easeInOut)
     // .then({ x, y, scale: 0, scaleY: 1 }, t * 0.5, animate.easeInOut);
+  }
+
+  displayAsHand(delay: number, cb: () => void) {
+    const screen = getScreenDimensions();
+    const x = screen.width + 40;
+
+    this.props.mode = 'mini';
+
+    const t = animDuration * 1;
+
+    waitForIt(() => {
+      //container
+      animate(this.container)
+        .then({ x, scale: 0.225, scaleY: 1, opacity: 0 }, t, animate.easeInOut)
+        .wait(150)
+        .then(() => {
+          this.infoHand.show();
+          cb && cb();
+        });
+
+      // frame
+      animate(this.frame).then(
+        { scale: 1, height: this.container.style.height },
+        t,
+        animate.easeInOut,
+      );
+
+      // imageMask
+      animate(this.imageMask).then(
+        { scale: 1, zIndex: 0 },
+        t,
+        animate.easeInOut,
+      );
+    }, delay);
   }
 
   // ===============================================================

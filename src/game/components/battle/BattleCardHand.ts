@@ -103,13 +103,15 @@ export default class BattleCardHand {
     const max = this.cards.length - 1;
     const dx = 60;
 
+    const t = animDuration; //this.active ? animDuration : 0;
+
     this.cards.forEach((card, index) => {
       const x = center - (max * dx) / 2 + index * dx;
       const y = this.getBasePosY();
 
       animate(card.getView())
-        .clear()
-        .then({ x, y }, animDuration, animate.easeInOut);
+        // .clear()
+        .then({ x, y }, t, animate.easeInOut);
     });
   }
 
@@ -119,13 +121,15 @@ export default class BattleCardHand {
     const max = this.activeCards.length - 1;
     const dy = 50;
 
+    const t = animDuration; //this.active ? animDuration : 0;
+
     this.activeCards.forEach((card, index) => {
       const x = screen.width - 32;
       const y = center - max * dy + index * dy;
 
       animate(card.getView())
         .clear()
-        .then({ x, y }, animDuration, animate.easeInOut);
+        .then({ x, y }, t, animate.easeInOut);
     });
   }
 
@@ -211,15 +215,53 @@ export default class BattleCardHand {
     // get position of card in array
     const index = this.activeCards.map((el) => el).indexOf(card);
 
-    // remove card from cards array
+    // remove card from active cards array
     const removedCard = this.activeCards.splice(index, 1)[0];
 
-    // put card in used or active deck
-
-    this.usedCards.push(removedCard); // modifiers, instant cards
+    // put card in used deck
+    this.usedCards.push(removedCard);
 
     // reposition remaining cards
     this.updateCardStatusPositions();
+  }
+
+  returnCardToHand(card: Card) {
+    // get position of card in array
+    const index = this.activeCards.map((el) => el).indexOf(card);
+
+    // remove card from active cards array
+    const removedCard = this.activeCards.splice(index, 1)[0];
+
+    // put card in hand deck
+    this.cards.push(removedCard);
+
+    // reposition remaining cards
+    this.updateCardHandPositions();
+    // this.updateCardStatusPositions();
+  }
+
+  returnActiveCardsToHand() {
+    const screen = getScreenDimensions();
+    this.activeCards.forEach((card, index) => {
+      //
+
+      // animate(card.getView())
+      //   .clear()
+      //   .then(
+      //     { x: screen.width + 10, opacity: 1 },
+      //     animDuration,
+      //     animate.easeInOut,
+      //   )
+      //   .then(() => {
+      //     card.displayAsHand(() => {});
+      //   })
+      //   .then(() => {
+      //     this.returnCardToHand(card);
+      //   });
+      // // .then(() => this.updateCardHandPositions());
+      const delay = index * animDuration * 0.5;
+      card.displayAsHand(delay, () => this.returnCardToHand(card));
+    });
   }
 
   // ===================================================

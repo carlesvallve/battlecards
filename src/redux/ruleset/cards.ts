@@ -118,25 +118,25 @@ const cards = {
     ep: 10,
   },
 
-  // shield: {
-  //   playType: 'equipment' as CardPlayType,
-  //   type: 'shield' as CardType,
-  //   value: { min: 2 } as CardStat,
-  //   image: 'resources/images/cards/shields/griffin-shield.png',
-  //   name: 'Shield',
-  //   desc: 'Block 2 attacks',
-  //   ep: 10,
-  // },
+  shield: {
+    playType: 'equipment' as CardPlayType,
+    type: 'shield' as CardType,
+    value: { min: 2 } as CardStat,
+    image: 'resources/images/cards/shields/griffin-shield.png',
+    name: 'Shield',
+    desc: 'Block 2 attacks',
+    ep: 10,
+  },
 
-  // superiorShield: {
-  //   playType: 'equipment' as CardPlayType,
-  //   type: 'shield' as CardType,
-  //   value: { min: 3 } as CardStat,
-  //   image: 'resources/images/cards/shields/winged-shield.png',
-  //   name: 'Superior Shield',
-  //   desc: 'Block 3 attacks',
-  //   ep: 10,
-  // },
+  superiorShield: {
+    playType: 'equipment' as CardPlayType,
+    type: 'shield' as CardType,
+    value: { min: 3 } as CardStat,
+    image: 'resources/images/cards/shields/winged-shield.png',
+    name: 'Superior Shield',
+    desc: 'Block 3 attacks',
+    ep: 10,
+  },
 
   // ============================================
   // weapon
