@@ -235,12 +235,6 @@ export default class BattleCardDetails {
       // throw the redux dice
       const { target } = StateObserver.getState().combat;
       throwDice(target, diceModifier);
-
-      // // throw the redux dice
-      // waitForIt(() => {
-      //   const { target } = StateObserver.getState().combat;
-      //   throwDice(target, diceModifier);
-      // }, animDuration);
     });
   }
 
@@ -262,8 +256,8 @@ export default class BattleCardDetails {
     console.log('PLAYING POTION', card.getID(), data);
 
     const screen = getScreenDimensions();
-    const x = screen.width * 0.5;
-    const y = screen.height - 60;
+    const x = screen.width * 0.26;
+    const y = screen.height - (data.value.type === 'hp' ? 55 : 25);
 
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();
@@ -308,27 +302,14 @@ export default class BattleCardDetails {
   playActiveWeapon(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING POTION', card.getID(), data);
+    console.log('PLAYING ACTIVE WEAPON', card.getID(), data);
 
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;
     const y = screen.height * ruleset.baselineY - 100;
-
-    card.displayAsInstant(x, y, () => {
+    // displayAsInstant displayAsActiveWeapon
+    card.displayAsActiveWeapon(x, y, () => {
       card.displayAsConsumed();
-      // const target = getTarget(StateObserver.getState());
-      // const enemy = getTargetEnemy(target);
-      // addStat(enemy, 'hp', { current: -data.value.min });
-
-      // // sounds.playSound('break1', 0.2);
-      // // sounds.playRandomSound(['punch1', 'punch2'], 1);
-      // playExplosion({
-      //   superview: this.container,
-      //   sc: 1,
-      //   max: 20,
-      //   startX: this.container.style.width / 2,
-      //   startY: this.container.style.height / 2,
-      // });
     });
 
     // put card in usedCards array

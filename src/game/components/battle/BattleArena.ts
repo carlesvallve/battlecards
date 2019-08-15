@@ -69,6 +69,7 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    // ==========================================
     // combat flow
 
     StateObserver.createSelector(({ combat }) => {
@@ -105,9 +106,9 @@ export default class BattleArena {
     });
 
     // ==========================================
-
     // selector for applying damage and killing
     // ONLY to be used while we are not physically attacking
+
     StateObserver.createSelector(({ combat }) => {
       if (!combat.hero || !combat.monster) return;
       return {
@@ -122,7 +123,7 @@ export default class BattleArena {
       const isOverhead = !!combat.hero.overhead || !!combat.monster.overhead;
       const attackType = bothResolved || isOverhead ? 'combat' : 'spell';
       if (attackType === 'combat') return;
-      console.log('===', attackType, bothResolved, isOverhead);
+      // console.log('===', attackType, bothResolved, isOverhead);
 
       Object.keys(values).forEach((target) => {
         let damage = values[target].last - values[target].current;
@@ -132,6 +133,7 @@ export default class BattleArena {
         }
       });
     });
+    // ==========================================
   }
 
   displayMeters(value: boolean) {
@@ -154,8 +156,6 @@ export default class BattleArena {
     // generate a new combat
     waitForIt(() => {
       newCombat(getRandomMonsterID());
-      // setMeter('hero', 0);
-      // setMeter('monster', 0);
     }, animDuration * 5);
   }
 
@@ -241,15 +241,16 @@ export default class BattleArena {
     const { winner, loser, attacks, isOverhead } = result;
     let newAttacks = 0;
 
+    // todo: enemies will be able to add attacks too in the future
     if (winner !== 'hero') {
-      waitForIt(() => cb && cb(newAttacks), 500);
+      waitForIt(() => cb && cb(newAttacks), 0);
       return;
     }
 
     const screen = getScreenDimensions();
-    // todo: Check if there is a status card to be applied before generating attack icons
     const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
     console.log('>>> weaponCards', weaponCards);
+
     // for each card
     weaponCards.forEach((card, index) => {
       waitForIt(() => {
@@ -257,7 +258,8 @@ export default class BattleArena {
           screen.width * 0.5 + (attacks * 40) / 2,
           screen.height - 120,
           () => {
-            this.components.hero.attackIcons.addIcon(newAttacks, () => {});
+            const index = attacks + newAttacks;
+            this.components.hero.attackIcons.addIcon(index, () => {});
             newAttacks++;
           },
         );
@@ -266,12 +268,7 @@ export default class BattleArena {
     });
 
     // return callback once all attacks have been added
-    waitForIt(() => cb && cb(newAttacks), 1000 * weaponCards.length);
-
-    // make card fly to center of the screen
-    // make card fly to attack icon position
-    // consume card
-    // add as many new icons as card additional attacks
+    waitForIt(() => cb && cb(newAttacks), 1100 * weaponCards.length);
   }
 
   createAttackIcons(result: CombatResult, cb: () => void) {
@@ -292,18 +289,16 @@ export default class BattleArena {
     const t = 350;
     console.log('========== ATTACKS', result.attacks);
 
-    for (let i = 0; i < result.attacks; i++) {
-      waitForIt(() => {
-        // apply damage and play the attack animation
-        this.attack(i, result, () => {
-          // setAttacks(winner, attacks - i - 1);
-          if (i === result.attacks - 1) {
-            // setAttacks(winner, 0);
-            cb && cb();
-          }
-        });
-      }, i * t);
-    }
+    waitForIt(() => {
+      for (let i = 0; i < result.attacks; i++) {
+        waitForIt(() => {
+          // apply damage and play the attack animation
+          this.attack(i, result, () => {
+            if (i === result.attacks - 1) cb && cb();
+          });
+        }, i * t);
+      }
+    }, 350);
   }
 
   private attack(index: number, result: CombatResult, cb: () => void) {
@@ -324,8 +319,7 @@ export default class BattleArena {
 
     // check if enemy died on the last blow
     // if so, kill it and escape
-    console.log('###', index, '/', result.attacks - 1);
-    console.log('### enemyHP', enemyHP);
+    console.log('###', index, '/', result.attacks - 1, 'enemyHP', enemyHP);
     if (index === result.attacks - 1) {
       if (enemyHP <= 0) {
         this.killMonster();
