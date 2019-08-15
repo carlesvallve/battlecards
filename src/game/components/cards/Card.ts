@@ -9,7 +9,7 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { animDuration } from 'src/lib/uiConfig';
-import { CardType, CardPlayType } from 'src/types/custom';
+import { CardType, CardPlayType, CardStat } from 'src/types/custom';
 import { getScreenDimensions } from 'src/lib/utils';
 
 export type CardMode = 'mini' | 'full';
@@ -66,6 +66,10 @@ export default class Card {
 
   getID(): CardID {
     return this.props.id;
+  }
+
+  getData(): CardStat {
+    return ruleset.cards[this.props.id];
   }
 
   getSide(): CardSide {
@@ -422,6 +426,33 @@ export default class Card {
       .then({ scale: 0.2, scaleY: 1.1 }, animDuration, animate.easeInOut)
       // .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
       .then(() => {
+        cb && cb(); // set the card as an active status
+      });
+  }
+
+  displayAsActiveWeapon(x: number, y: number, cb: () => void) {
+    const screen = getScreenDimensions();
+
+    const t = animDuration;
+
+    const cx = screen.width * 0.5;
+    const cy = screen.height * ruleset.baselineY;
+
+    // transition the card to final goal position
+    animate(this.container)
+      .clear()
+      .then(
+        { x: cx, y: cy, scale: 0.65, scaleY: 1 },
+        animDuration,
+        animate.easeInOut,
+      )
+      //.then({ scale: 0.35, scaleY: 0.8, x, y }, animDuration, animate.easeInOut)
+      // .then({ scale: 0.65, scaleY: 1.1 }, animDuration, animate.easeInOut)
+      .wait(250)
+      .then({ x, y, scale: 0, scaleY: 1 }, animDuration, animate.easeInOut)
+      // .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
+      .then(() => {
+        this.displayAsConsumed();
         cb && cb(); // set the card as an active status
       });
   }

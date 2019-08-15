@@ -94,6 +94,7 @@ export const setMeter = (target: Target, value: number) => {
 
 export const addStat = (target: Target, type: string, value: TargetStat) => {
   StateObserver.dispatch(action_addStat({ target, type, value }));
+  return StateObserver.getState().combat[target].stats.hp.current;
 };
 
 export const setStat = (target: Target, type: string, value: TargetStat) => {

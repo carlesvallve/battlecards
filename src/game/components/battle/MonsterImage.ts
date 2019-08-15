@@ -15,6 +15,8 @@ export default class MonsterImage {
   private image: ImageView;
   private baseY: number;
 
+  private alive: boolean = true;
+
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
@@ -22,6 +24,10 @@ export default class MonsterImage {
 
   getView() {
     return this.container;
+  }
+
+  isAlive() {
+    return this.alive;
   }
 
   private createViews(props: Props) {
@@ -51,6 +57,7 @@ export default class MonsterImage {
   }
 
   setImage(imageName: string) {
+    this.alive = true;
     if (imageName) {
       this.image.updateOpts({
         image: `resources/images/monsters/${imageName}.png`,
@@ -83,6 +90,8 @@ export default class MonsterImage {
   }
 
   playDeathAnimation() {
+    this.alive = false;
+
     // play death sounds
     sounds.playSound('break1', 0.4);
     sounds.playSound('break2', 0.2);

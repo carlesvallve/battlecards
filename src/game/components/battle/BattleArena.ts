@@ -75,7 +75,13 @@ export default class BattleArena {
       return combat.index;
     }).addListener((index) => {
       const { combat } = StateObserver.getState();
-      console.log('combat-flow: ---------', index);
+      // console.log('combat-flow: ---------', index);
+
+      if (combat.index.turn === 0) {
+        setMeter('hero', 0);
+        setMeter('monster', 0);
+        return;
+      }
 
       // unblock ui in case monster resolved and hero can keep playing
       if (combat.target === 'hero' && combat.monster.resolved) {
@@ -86,7 +92,7 @@ export default class BattleArena {
       const id = combat.monster.id;
       if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
 
-      if (this.checkCombatReset(combat)) return;
+      // if (this.checkCombatReset(combat)) return;
       if (this.checkCombatResult(combat)) return;
 
       // both meters need to refresh their colors
@@ -98,38 +104,46 @@ export default class BattleArena {
       this.updateTurn(combat);
     });
 
-    // hp / damage logic
+    // ==========================================
 
+    // selector for applying damage and killing
+    // ONLY to be used while we are not physically attacking
     StateObserver.createSelector(({ combat }) => {
-      if (!combat.enemy) return null;
+      if (!combat.hero || !combat.monster) return;
       return {
         hero: combat.hero.stats['hp'],
         monster: combat.monster.stats['hp'],
       };
-    }).addListener((values: { hero: TargetStat; monster: TargetStat }) => {
+    }).addListener((values) => {
       if (!values) return;
+      const { combat } = StateObserver.getState();
+
+      const bothResolved = combat.hero.resolved && combat.monster.resolved;
+      const isOverhead = !!combat.hero.overhead || !!combat.monster.overhead;
+      const attackType = bothResolved || isOverhead ? 'combat' : 'spell';
+      if (attackType === 'combat') return;
+      console.log('===', attackType, bothResolved, isOverhead);
 
       Object.keys(values).forEach((target) => {
-        const damage = values[target].last - values[target].current;
-
+        let damage = values[target].last - values[target].current;
         if (damage > 0) {
-          const { combat } = StateObserver.getState();
-
-          const bothResolved = combat.hero.resolved && combat.monster.resolved;
-          const isOverhead = combat[target].overhead;
-          const attackType = bothResolved || isOverhead ? 'melee' : 'spell';
-
-          if (values[target].current > 0) {
-            // damage
-            this.renderDamage(attackType, target as Target, damage, false);
-          } else {
-            // death
-            this.renderDamage(attackType, target as Target, damage, true);
-            waitForIt(() => this.killMonster(), animDuration * 0.5);
-          }
+          this.renderDamage('melee', combat.enemy, damage);
+          if (values[target].current <= 0) this.killMonster();
         }
       });
     });
+  }
+
+  displayMeters(value: boolean) {
+    if (value) {
+      this.components.hero.meter.showMeter();
+      this.components.monster.meter.showMeter();
+      this.monsterImage.playAttackAnimationEnd();
+    } else {
+      this.components.hero.meter.hideMeter();
+      this.components.monster.meter.hideMeter();
+      this.monsterImage.playAttackAnimationStart();
+    }
   }
 
   killMonster() {
@@ -143,21 +157,6 @@ export default class BattleArena {
       // setMeter('hero', 0);
       // setMeter('monster', 0);
     }, animDuration * 5);
-  }
-
-  checkCombatReset(combat: Combat) {
-    // check for combat reset
-    if (combat.index.turn === 0) {
-      const { target, enemy } = combat;
-      if (target && enemy) {
-        setMeter('hero', 0);
-        setMeter('monster', 0);
-        this.updateTurn(combat);
-      }
-
-      return true;
-    }
-    return false;
   }
 
   checkCombatResult(combat: Combat) {
@@ -219,27 +218,60 @@ export default class BattleArena {
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons({ winner, loser, attacks }, () => {
-        const { combat } = StateObserver.getState();
-        if (
-          combat.hero.stats.hp.current > 0 &&
-          combat.monster.stats.hp.current > 0
-        ) {
-          waitForIt(() => resetCombatTurn(), 150);
-        }
+        // apply additional attacks if wevhave any active cards on the right
+        this.applyAdditionalAttacks(result, (newAttacks: number) => {
+          // start attacking sequence
+          result.attacks += newAttacks;
+
+          this.startAttackingSequence(result, () => {
+            waitForIt(() => {
+              resetCombatTurn();
+            }, 150);
+          });
+        });
       });
     }, animDuration * 2);
   }
 
-  displayMeters(value: boolean) {
-    if (value) {
-      this.components.hero.meter.showMeter();
-      this.components.monster.meter.showMeter();
-      this.monsterImage.playAttackAnimationEnd();
-    } else {
-      this.components.hero.meter.hideMeter();
-      this.components.monster.meter.hideMeter();
-      this.monsterImage.playAttackAnimationStart();
+  applyAdditionalAttacks(
+    result: CombatResult,
+    cb: (newAttacks: number) => void,
+  ) {
+    // currentAttacks: number) {
+    const { winner, loser, attacks, isOverhead } = result;
+    let newAttacks = 0;
+
+    if (winner !== 'hero') {
+      waitForIt(() => cb && cb(newAttacks), 500);
+      return;
     }
+
+    const screen = getScreenDimensions();
+    // todo: Check if there is a status card to be applied before generating attack icons
+    const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
+    console.log('>>> weaponCards', weaponCards);
+    // for each card
+    weaponCards.forEach((card, index) => {
+      waitForIt(() => {
+        card.displayAsActiveWeapon(
+          screen.width * 0.5 + (attacks * 40) / 2,
+          screen.height - 120,
+          () => {
+            this.components.hero.attackIcons.addIcon(newAttacks, () => {});
+            newAttacks++;
+          },
+        );
+        this.cardHand.activeCardHasBeenPlayed(card);
+      }, index * 1000);
+    });
+
+    // return callback once all attacks have been added
+    waitForIt(() => cb && cb(newAttacks), 1000 * weaponCards.length);
+
+    // make card fly to center of the screen
+    // make card fly to attack icon position
+    // consume card
+    // add as many new icons as card additional attacks
   }
 
   createAttackIcons(result: CombatResult, cb: () => void) {
@@ -249,64 +281,63 @@ export default class BattleArena {
     const meter = this.components[winner].meter;
 
     this.components[winner].attackIcons.addIcons(meter, attacks, () => {
-      // hide meters
-      this.displayMeters(false);
-
-      // start attacking sequence
-      waitForIt(() => {
-        const t = 350;
-        for (let i = 0; i < result.attacks; i++) {
-          waitForIt(() => {
-            // apply damage and play the attack animation
-            this.attack(i, result, () => {
-              // escape if already dead
-              const combat = StateObserver.getState().combat;
-              if (combat[loser].stats.hp.current <= 0) {
-                this.components[winner].attackIcons.removeAllIcons();
-                cb && cb();
-                return;
-              }
-
-              if (i === result.attacks - 1) cb && cb();
-            });
-          }, i * t);
-        }
-      }, 150);
+      cb && cb();
     });
+  }
+
+  private startAttackingSequence(result: CombatResult, cb: () => void) {
+    // hide meters
+    this.displayMeters(false);
+
+    const t = 350;
+    console.log('========== ATTACKS', result.attacks);
+
+    for (let i = 0; i < result.attacks; i++) {
+      waitForIt(() => {
+        // apply damage and play the attack animation
+        this.attack(i, result, () => {
+          // setAttacks(winner, attacks - i - 1);
+          if (i === result.attacks - 1) {
+            // setAttacks(winner, 0);
+            cb && cb();
+          }
+        });
+      }, i * t);
+    }
   }
 
   private attack(index: number, result: CombatResult, cb: () => void) {
     const { winner, loser } = result;
     const combat = StateObserver.getState().combat;
 
-    // escape if already dead
-    if (combat[loser].stats.hp.current <= 0) {
-      cb && cb();
-      return;
-    }
-
-    // calculate damage
+    // calculate and render damage
     const atk = combat[winner].stats.attack.current;
     const def = combat[loser].stats.defense.current;
     const damage = atk - def;
-    console.log('combat-flow: attack', index + 1, '->', damage, 'damage');
+    this.renderDamage('melee', loser, damage);
 
     // remove icon
     this.components[winner].attackIcons.removeIcon();
 
-    // remove loser's HP
-    addStat(loser, 'hp', { current: -damage });
+    // // remove loser's HP
+    const enemyHP = addStat(loser, 'hp', { current: -damage });
+
+    // check if enemy died on the last blow
+    // if so, kill it and escape
+    console.log('###', index, '/', result.attacks - 1);
+    console.log('### enemyHP', enemyHP);
+    if (index === result.attacks - 1) {
+      if (enemyHP <= 0) {
+        this.killMonster();
+        return;
+      }
+    }
 
     // execute next attack
     waitForIt(() => cb && cb(), 350);
   }
 
-  private renderDamage(
-    mode: 'melee' | 'spell',
-    loser: Target,
-    damage: number,
-    finalBlow: boolean,
-  ) {
+  private renderDamage(mode: 'melee' | 'spell', loser: Target, damage: number) {
     // animate screen effect
     const screen = getScreenDimensions();
     const x = screen.width / 2;
@@ -323,20 +354,16 @@ export default class BattleArena {
       .clear()
       .wait(150)
       .then(() => {
-        if (!finalBlow) {
-          if (mode === 'melee')
-            sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
-          sounds.playRandomSound(['punch1', 'punch2'], 0.8);
-          sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
-        }
+        if (mode === 'melee')
+          sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
+        sounds.playRandomSound(['punch1', 'punch2'], 0.8);
+        sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
       })
       .then({ x: x + dx, y: y + dy, scale: sc, r }, t * 1, animate.easeInOut)
       .then({ scale: 0.95 }, t * 2, animate.easeInOut)
       .then({ x, y, scale: 1, r: 0 }, t * 2, animate.easeInOut);
-    // .then(() => cb && cb());
 
     // create damage label
-
     this.overlay.createDamageLabel(
       loser,
       damage,

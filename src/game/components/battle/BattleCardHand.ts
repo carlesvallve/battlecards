@@ -7,6 +7,7 @@ import { getScreenDimensions } from 'src/lib/utils';
 import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
+import { CardType } from 'src/types/custom';
 
 type Props = { superview: View; zIndex: number };
 
@@ -206,5 +207,31 @@ export default class BattleCardHand {
     this.updateCardStatusPositions();
   }
 
+  activeCardHasBeenPlayed(card: Card) {
+    // get position of card in array
+    const index = this.activeCards.map((el) => el).indexOf(card);
+
+    // remove card from cards array
+    const removedCard = this.activeCards.splice(index, 1)[0];
+
+    // put card in used or active deck
+
+    this.usedCards.push(removedCard); // modifiers, instant cards
+
+    // reposition remaining cards
+    this.updateCardStatusPositions();
+  }
+
   // ===================================================
+
+  getActiveCards(): Card[] {
+    console.log('==== activeCards', this.activeCards);
+    return this.activeCards;
+  }
+
+  getActiveCardsOfType(type: CardType): Card[] {
+    return this.activeCards.filter((card, index) => {
+      return ruleset.cards[card.getID()].type === type;
+    });
+  }
 }

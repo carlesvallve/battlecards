@@ -24,6 +24,7 @@ const initialState = {
     meter: -1,
     maxSteps: 12,
     overhead: 0,
+    attacks: 0,
     resolved: false,
     stats: {
       hp: { current: 20, max: 20, last: 20 },
@@ -38,11 +39,12 @@ const initialState = {
     id: null,
     meter: -1,
     maxSteps: 12,
+    attacks: 0,
     overhead: 0,
     resolved: false,
     stats: {
-      hp: { current: 20, max: 20, last: 12 },
-      ep: { current: 20, max: 20, last: 12 },
+      hp: { current: 20, max: 20, last: 20 },
+      ep: { current: 20, max: 20, last: 20 },
       attack: { current: 3, max: 5 },
       defense: { current: 1, max: 5 },
       status: [],
@@ -87,7 +89,7 @@ const slice = createSlice({
 
       state.monster.id = monsterID;
       state.monster.meter = -1;
-      state.monster.maxSteps = 8 + getRandomInt(0, 3); // ruleset.monsters[monsterID].maxSteps;
+      state.monster.maxSteps = 5 + getRandomInt(0, 3); // ruleset.monsters[monsterID].maxSteps;
       state.monster.overhead = 0;
       state.monster.resolved = false;
 
@@ -112,7 +114,7 @@ const slice = createSlice({
     },
 
     action_resetCombatTurn: (state) => {
-      console.log('action > resetCombatTurn');
+      // console.log('action > resetCombatTurn');
 
       state.index.turn = 1; // updating turn index
 
@@ -137,10 +139,10 @@ const slice = createSlice({
       state.enemy = state.target === 'hero' ? 'monster' : 'hero';
 
       // reset old hp props
-      state.hero.stats.hp.last = state.hero.stats.hp.current;
-      state.monster.stats.hp.last = state.monster.stats.hp.current;
+      // state.hero.stats.hp.last = state.hero.stats.hp.current;
+      // state.monster.stats.hp.last = state.monster.stats.hp.current;
 
-      console.log('action > changeTarget:', state.target);
+      // console.log('action > changeTarget:', state.target);
     },
 
     action_throwDice: (
@@ -164,7 +166,7 @@ const slice = createSlice({
 
       state.index.turn += 1; // updating turn index
 
-      console.log('action > throwDice:', target, { ...state[target] });
+      // console.log('action > throwDice:', target, { ...state[target] });
     },
 
     action_setResolved: (
@@ -176,7 +178,7 @@ const slice = createSlice({
 
       state.index.turn += 1; // updating turn index
 
-      console.log('action > setResolved:', target, { ...state[target] });
+      // console.log('action > setResolved:', target, { ...state[target] });
     },
 
     action_setMeter: (
@@ -199,9 +201,10 @@ const slice = createSlice({
       const { target, type, value } = payload;
       const stat = state[target].stats[type];
 
-      if (stat.last) stat.last = stat.current;
+      stat.last = stat.current;
 
       if (value.current) stat.current += value.current;
+      // if (stat.current < 0) stat.current = 0;
       if (stat.current > stat.max) stat.current = stat.max;
 
       if (value.max) stat.max += value.max;

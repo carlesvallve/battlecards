@@ -25,7 +25,7 @@ export default class BattleOverlay {
       return ui.isBlocked;
     }).addListener((isBlocked) => {
       this.container.updateOpts({
-        backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.25)' : '',
+        // backgroundColor: isBlocked ? 'rgba(255, 0, 0, 0.25)' : '',
         canHandleEvents: isBlocked,
       });
     });

@@ -15,7 +15,7 @@ type Props = {
 };
 
 const iconSeparation = 40;
-const iconDisplacement = 32;
+const iconDisplacement = 20;
 const animDuration = 180;
 
 export default class AttackIcons {
@@ -49,7 +49,7 @@ export default class AttackIcons {
     for (let i = 0; i < maxAttacks; i++) {
       waitForIt(() => {
         const current = maxAttacks - this.icons.length - 1;
-        this.addIcon(i, meter, current);
+        this.addIcon(i);
       }, i * animDuration * 2);
     }
 
@@ -66,7 +66,7 @@ export default class AttackIcons {
     });
   }
 
-  private addIcon(i: number, meter: ProgressMeter, current: number) {
+  public addIcon(i: number, cb?: () => void) {
     // refresh meter ?
     // waitForIt(() => setMeter(this.props.target, current), animDuration / 2);
 
@@ -88,9 +88,10 @@ export default class AttackIcons {
 
     const t = animDuration;
     const x2 = this.center - (this.icons.length * d) / 2;
-    this.animateIconIn(icon, { t, x, x2 });
+    this.animateIconIn(icon, { t, x, x2 }, cb);
 
     this.icons.push(icon);
+
     return icon;
   }
 
