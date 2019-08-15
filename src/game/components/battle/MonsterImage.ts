@@ -65,11 +65,7 @@ export default class MonsterImage {
   }
 
   playAttackAnimationStart() {
-    const screen = getScreenDimensions();
-    const y = screen.height * ruleset.baselineY;
-
-    sounds.playSound('swoosh1', 0.15); // this makes sounds so crowded
-
+    // sounds.playSound('swoosh1', 0.15); // this makes sounds so crowded
     animate(this.container)
       .clear()
       .then(
@@ -80,23 +76,20 @@ export default class MonsterImage {
   }
 
   playAttackAnimationEnd() {
-    const screen = getScreenDimensions();
-    const y = screen.height * ruleset.baselineY;
-
     sounds.playSound('swoosh4', 0.15);
-
     animate(this.container)
       .clear()
       .then({ scale: 1, y: this.baseY }, animDuration, animate.easeInOut);
   }
 
   playDeathAnimation() {
-    //
+    // play death sounds
     sounds.playSound('break1', 0.4);
     sounds.playSound('break2', 0.2);
     sounds.playRandomSound(['punch1', 'punch2'], 0.8);
     waitForIt(() => sounds.playSound('ding1', 0.3), animDuration * 1.5);
 
+    // fadeout image
     animate(this.image)
       .clear()
       .then({ scale: 0.25, opacity: 0 }, animDuration, animate.easeInOut);

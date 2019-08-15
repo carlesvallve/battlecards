@@ -108,6 +108,7 @@ export default class ProgressMeter {
   }
 
   hideMeter() {
+    if (!this.active) return;
     this.active = false;
     animate(this.container).then(
       { scale: 0, opacity: 0 },
@@ -117,6 +118,9 @@ export default class ProgressMeter {
   }
 
   showMeter() {
+    if (this.active) return;
+    this.reset({ isOverhead: false });
+    
     animate(this.container)
       .then({ scale: 0.75, opacity: 1 }, 250, animate.easeInOut)
       .then(() => (this.active = true));

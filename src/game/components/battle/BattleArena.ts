@@ -73,13 +73,11 @@ export default class BattleArena {
     StateObserver.createSelector(({ combat }) => {
       return combat.index;
     }).addListener((index) => {
-      console.log('combat-flow: ---------', index);
       const { combat } = StateObserver.getState();
+      console.log('combat-flow: ---------', index);
 
-      // if (index === 0) return;
-
-      if (combat.hero.stats.hp.current <= 0) return;
-      if (combat.monster.stats.hp.current <= 0) return;
+      // if (combat.hero.stats.hp.current <= 0) return;
+      // if (combat.monster.stats.hp.current <= 0) return;
 
       const id = combat.monster.id;
       if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
@@ -104,24 +102,25 @@ export default class BattleArena {
 
       Object.keys(values).forEach((target) => {
         // do not update if the target is already dead
-        if (values[target].last <= 0) return;
+        // if (values[target].current <= 0 || values[target].last <= 0) return;
 
         const damage = values[target].last - values[target].current;
 
         if (damage > 0) {
+          const { combat } = StateObserver.getState();
+
+          const bothResolved = combat.hero.resolved && combat.monster.resolved;
+          const isOverhead = combat[target].overhead;
+          const attackType = bothResolved || isOverhead ? 'melee' : 'spell';
+          console.log('========= rendering damage', target, attackType);
+
           if (values[target].current > 0) {
             // damage
-            const { combat } = StateObserver.getState();
-            const attackType =
-              (combat.hero.resolved && combat.monster.resolved) ||
-              combat[target].overhead
-                ? 'melee'
-                : 'spell';
-            console.log('========= attackType', attackType);
-            this.renderDamage(attackType, target as Target, damage);
+            this.renderDamage(attackType, target as Target, damage, false);
           } else {
             // death
-            this.killMonster();
+            this.renderDamage(attackType, target as Target, damage, true);
+            waitForIt(() => this.killMonster(), animDuration * 0.5);
           }
         }
       });
@@ -139,14 +138,14 @@ export default class BattleArena {
       const combat = newCombat(getRandomMonsterID());
       this.components.hero.meter.reset({ isOverhead: false });
       this.components.monster.meter.reset({ isOverhead: false });
-      // this.checkCombatReset(combat)
+      // this.checkCombatReset(combat);
       // this.updateTurn(combat);
-    }, animDuration * 4);
+    }, animDuration * 5);
   }
 
   checkCombatReset(combat: Combat) {
     // check for combat reset
-    if (combat.index === 0) {
+    if (combat.index.turn === 0) {
       const { target, enemy } = combat;
       if (target && enemy) {
         this.components[target].meter.reset({ isOverhead: false });
@@ -223,10 +222,12 @@ export default class BattleArena {
     waitForIt(() => {
       this.createAttackIcons({ winner, loser, attacks }, () => {
         const { combat } = StateObserver.getState();
-        if (combat.hero.stats.hp.current > 0 && combat.monster.stats.hp.current > 0) {
+        if (
+          combat.hero.stats.hp.current > 0 &&
+          combat.monster.stats.hp.current > 0
+        ) {
           waitForIt(() => resetCombatTurn(), 150);
         }
-       
       });
     }, animDuration * 2);
   }
@@ -235,17 +236,13 @@ export default class BattleArena {
     const y = this.container.style.height * ruleset.baselineY;
 
     if (value) {
-      if (!this.components['hero'].meter.getActive()) {
-        this.components['hero'].meter.showMeter();
-        this.components['monster'].meter.showMeter();
-        this.monsterImage.playAttackAnimationEnd();
-      }
+      this.components.hero.meter.showMeter();
+      this.components.monster.meter.showMeter();
+      this.monsterImage.playAttackAnimationEnd();
     } else {
-      if (this.components['hero'].meter.getActive()) {
-        this.components['hero'].meter.hideMeter();
-        this.components['monster'].meter.hideMeter();
-        this.monsterImage.playAttackAnimationStart();
-      }
+      this.components.hero.meter.hideMeter();
+      this.components.monster.meter.hideMeter();
+      this.monsterImage.playAttackAnimationStart();
     }
   }
 
@@ -324,17 +321,19 @@ export default class BattleArena {
     // remove icon
     this.components[winner].attackIcons.removeIcon();
 
-    // escape if is a death blow
-    // if (combat[loser].stats.hp.current > damage) {
     // remove loser's HP
     addStat(loser, 'hp', { current: -damage });
-    // }
 
     // execute next attack
     waitForIt(() => cb && cb(), 350);
   }
 
-  private renderDamage(mode: 'melee' | 'spell', loser: Target, damage: number) {
+  private renderDamage(
+    mode: 'melee' | 'spell',
+    loser: Target,
+    damage: number,
+    finalBlow: boolean,
+  ) {
     // animate screen effect
     const screen = getScreenDimensions();
     const x = screen.width / 2;
@@ -351,10 +350,12 @@ export default class BattleArena {
       .clear()
       .wait(150)
       .then(() => {
-        if (mode === 'melee')
-          sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
-        sounds.playRandomSound(['punch1', 'punch2'], 0.8);
-        sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
+        if (!finalBlow) {
+          if (mode === 'melee')
+            sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
+          sounds.playRandomSound(['punch1', 'punch2'], 0.8);
+          sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
+        }
       })
       .then({ x: x + dx, y: y + dy, scale: sc, r }, t * 1, animate.easeInOut)
       .then({ scale: 0.95 }, t * 2, animate.easeInOut)

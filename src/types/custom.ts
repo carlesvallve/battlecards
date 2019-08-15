@@ -75,7 +75,11 @@ export type TargetData = {
 };
 
 export type Combat = {
-  index: number;
+  index: {
+    combat: number;
+    turn: number;
+  };
+
   target: Target;
   enemy: Target;
   hero: TargetData;

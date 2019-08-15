@@ -10,7 +10,10 @@ import ruleset from 'src/redux/ruleset';
 // import ruleset from 'src/redux/ruleset';
 
 const initialState = {
-  index: 0,
+  index: {
+    combat: 0,
+    turn: 0,
+  },
 
   target: null,
   enemy: null,
@@ -52,6 +55,9 @@ const slice = createSlice({
   reducers: {
     // update: (_, { payload }: PayloadAction<any>) => payload,
 
+    // =====================================================================
+    // Combat flow
+
     action_setMonsterID: (
       state,
       { payload }: PayloadAction<{ id: MonsterID }>,
@@ -67,7 +73,9 @@ const slice = createSlice({
     ) => {
       const { monsterID } = payload;
 
-      state.index = 0; // state.index === 1 ? 2 : 1;
+      // update combat index
+      state.index.combat += 1;
+      state.index.turn = 1;
 
       state.target = 'hero';
       state.enemy = 'monster';
@@ -105,7 +113,7 @@ const slice = createSlice({
     action_resetCombatTurn: (state) => {
       console.log('action > resetCombatTurn');
 
-      state.index = 0;
+      state.index.turn = 1; // updating turn index
 
       state.hero.meter = 0;
       state.hero.overhead = 0;
@@ -126,6 +134,10 @@ const slice = createSlice({
         state.target = state.target === 'hero' ? 'monster' : 'hero';
       }
       state.enemy = state.target === 'hero' ? 'monster' : 'hero';
+
+      // reset old hp props
+      state.hero.stats.hp.last = state.hero.stats.hp.current;
+      state.monster.stats.hp.last = state.monster.stats.hp.current;
 
       console.log('action > changeTarget:', state.target);
     },
@@ -149,7 +161,7 @@ const slice = createSlice({
         state[target].meter = 0;
       }
 
-      state.index += 1;
+      state.index.turn += 1; // updating turn index
 
       console.log('action > throwDice:', target, { ...state[target] });
     },
@@ -160,13 +172,14 @@ const slice = createSlice({
     ) => {
       const { target } = payload;
       state[target].resolved = true;
-      state.index += 1;
+
+      state.index.turn += 1; // updating turn index
+
       console.log('action > setResolved:', target, { ...state[target] });
     },
 
-    // =============
-
-    // =============
+    // =====================================================================
+    // Stats
 
     action_addStat: (
       state,
@@ -196,6 +209,8 @@ const slice = createSlice({
       if (value.max) state[target].stats[type].max = value.max;
     },
   },
+
+  // =====================================================================
 });
 
 export const {
