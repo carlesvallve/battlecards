@@ -117,7 +117,7 @@ const slice = createSlice({
     action_resetCombatTurn: (state) => {
       // console.log('action > resetCombatTurn');
 
-      state.index.turn = 1; // updating turn index
+      state.index.turn += 1; // updating turn index
 
       state.hero.meter = 0;
       state.hero.overhead = 0;

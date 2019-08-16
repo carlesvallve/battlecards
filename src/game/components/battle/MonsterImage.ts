@@ -92,11 +92,18 @@ export default class MonsterImage {
   playDeathAnimation() {
     this.alive = false;
 
-    // play death sounds
-    sounds.playSound('break1', 0.4);
-    sounds.playSound('break2', 0.2);
-    sounds.playRandomSound(['punch1', 'punch2'], 0.8);
-    waitForIt(() => sounds.playSound('ding1', 0.3), animDuration * 1.5);
+    waitForIt(() => {
+      // play death sounds
+      sounds.playSound('break1', 0.2);
+      sounds.playSound('break2', 0.1);
+      if (Math.random() < 0.5) {
+        sounds.playSound('punch1', 0.75);
+      } else {
+        sounds.playSound('punch2', 0.25);
+      }
+
+      waitForIt(() => sounds.playSound('ding1', 0.3), animDuration * 1.5);
+    }, 100);
 
     // fadeout image
     animate(this.image)

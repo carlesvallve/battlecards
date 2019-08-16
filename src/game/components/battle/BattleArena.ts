@@ -159,7 +159,7 @@ export default class BattleArena {
 
         if (damage > 0) {
           // render damage on target
-          this.playDamageAnimation('spell', target, damage);
+          this.playDamageAnimation(target, damage);
 
           // check if we have to kill the target,
           // once enemy has ended all attacks
@@ -437,11 +437,7 @@ export default class BattleArena {
     waitForIt(() => cb && cb(), 350);
   }
 
-  private playDamageAnimation(
-    mode: 'melee' | 'spell',
-    loser: Target,
-    damage: number,
-  ) {
+  private playDamageAnimation(loser: Target, damage: number) {
     // render damage on target
 
     // animate screen effect
@@ -456,15 +452,25 @@ export default class BattleArena {
 
     const t = 50;
 
+    sounds.playRandomSound(['swoosh1', 'swoosh3'], 0.15);
+
     animate(this.battleGround)
       .clear()
       .wait(150)
       .then(() => {
-        sounds.playRandomSound(['punch1'], 0.8); // , 'punch2'
-        sounds.playRandomSound(['', 'break1', 'break1'], 0.2);
-        if (mode === 'melee') {
-          sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
+        if (Math.random() < 0.5) {
+          sounds.playSound('punch1', 0.75);
+        } else {
+          sounds.playSound('punch2', 0.25);
         }
+        if (Math.random() < 0.5) {
+          sounds.playSound('punch1', 0.75);
+        } else {
+          sounds.playSound('punch2', 0.25);
+        }
+        sounds.playRandomSound(['break1', 'break1'], 0.05);
+
+        // sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
       })
       .then({ x: x + dx, y: y + dy, scale: sc, r }, t * 1, animate.easeInOut)
       .then({ scale: 0.95 }, t * 2, animate.easeInOut)
@@ -502,7 +508,7 @@ export default class BattleArena {
   }
 
   updateTurn(combat: Combat) {
-    console.log('combat-flow: UPDATE TURN', combat);
+    console.log('combat-flow: UPDATE TURN', combat.index.turn, combat);
 
     let { target, enemy } = combat;
 
@@ -521,26 +527,17 @@ export default class BattleArena {
     } else {
       // turn is done
       waitForIt(() => {
-        // if (
-        //   (combat.hero.resolved && combat.monster.resolved) ||
-        //   (!!combat.hero.overhead || !!combat.monster.overhead)
-        // ) {
-        //   console.log('*************************************************');
-        // }
-
         console.log('*************************************************');
-
-        if (!combat[enemy].resolved) target = changeTarget();
         this.components.hero.cardHand.showHand();
         this.components.monster.cardHand.showHand();
+        if (!combat[enemy].resolved) target = changeTarget();
         blockUi(target !== 'hero');
       }, 350);
     }
   }
 
   initializeNewCombatTurn(combat: Combat) {
-    // update EP
-    // todo: we also need to add +5 ep per each successful attack from previous turn winner
+    // update +5 EP points to both contenders
     addStat('hero', 'ep', { current: 5 });
     addStat('monster', 'ep', { current: 5 });
   }
@@ -654,12 +651,6 @@ export default class BattleArena {
     //   zIndex: 1,
     //   target: 'hero',
     //   startGame: this.startGame.bind(this),
-    // });
-
-    // this.cardHand = new BattleCardHand({
-    //   superview: this.container,
-    //   zIndex: 1,
-    //   target: 'hero',
     // });
 
     this.header = new BattleHeader({

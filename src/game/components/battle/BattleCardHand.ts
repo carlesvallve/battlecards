@@ -109,7 +109,7 @@ export default class BattleCardHand {
     const screen = getScreenDimensions();
     const center = screen.width / 2;
     const max = this.handCards.length - 1;
-    const dx = this.props.target === 'hero' ? 60 : 60 * 0.45;
+    const dx = this.props.target === 'hero' ? 60 : 60 * 0.465;
 
     const t = animDuration;
 
@@ -148,7 +148,7 @@ export default class BattleCardHand {
   }
 
   private getBaseScale() {
-    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.45;
+    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.465;
     return scale;
   }
 
