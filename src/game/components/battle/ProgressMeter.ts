@@ -149,7 +149,7 @@ export default class ProgressMeter {
   updateMeter(meter: number) {
     const target = this.props.target;
     const { combat } = StateObserver.getState();
-    const maxSteps = combat[target].maxSteps;
+    const maxSteps = combat[target].stats.maxSteps;
 
     // update bg
     this.updateMeterBg();

@@ -32,7 +32,13 @@ export type CardPlayType =
   | 'playable'
   | 'instant';
 
-export type CardType = 'modifier' | 'shield' | 'weapon' | 'potion' | 'spell' | 'ability';
+export type CardType =
+  | 'modifier'
+  | 'shield'
+  | 'weapon'
+  | 'potion'
+  | 'spell'
+  | 'ability';
 
 export type CardStat = {
   min?: number;
@@ -48,7 +54,6 @@ export type Target = 'hero' | 'monster';
 export type TargetStat = {
   current?: number;
   max?: number;
-  last?: number;
 };
 
 export type TargetAttitude = 'defensive' | 'neutral' | 'agressive';
@@ -67,7 +72,7 @@ export type TargetStatus =
 export type TargetData = {
   id: MonsterID | 'hero';
   meter: number;
-  maxSteps: number;
+  // maxSteps: number;
   overhead: number;
   resolved: boolean;
   isDead: boolean;
@@ -77,6 +82,9 @@ export type TargetData = {
     attack: TargetStat;
     defense: TargetStat;
     status: TargetStatus[];
+
+    maxSteps: number;
+    maxCards: number;
   };
 };
 

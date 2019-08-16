@@ -8,10 +8,11 @@ import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
 import { CardType, Target, CardPlayType } from 'src/types/custom';
+import StateObserver from 'src/redux/StateObserver';
 
 type Props = { superview: View; zIndex: number; target: Target };
 
-const maxCards = 5;
+// const maxCards = 5;
 
 export default class BattleCardHand {
   private props: Props;
@@ -56,6 +57,11 @@ export default class BattleCardHand {
 
   // ===================================================
 
+  private getMaxCards() {
+    const { target } = this.props;
+    return StateObserver.getState().combat[target].stats.maxCards;
+  }
+
   createHandCards(props: Props) {
     this.handCards = [];
     this.activeCards = [];
@@ -66,9 +72,10 @@ export default class BattleCardHand {
     // each time we use or discard a card, we'll add it to the last position of the deck
     // when the deck is empty, or we use the last original card, it will be reshuffled
 
-    const { target } = props;
+    // const { target } = props;
+    // const maxCards = StateObserver.getState().combat[target].stats.maxCards;
 
-    for (let i = 0; i < maxCards; i++) {
+    for (let i = 0; i < this.getMaxCards(); i++) {
       const card = this.createRandomCard(i);
       this.handCards.push(card);
     }
@@ -109,7 +116,7 @@ export default class BattleCardHand {
     const screen = getScreenDimensions();
     const center = screen.width / 2;
     const max = this.handCards.length - 1;
-    const dx = this.props.target === 'hero' ? 60 : 60 * 0.465;
+    const dx = this.props.target === 'hero' ? 60 : 60 * 0.58; //0.465;
 
     const t = animDuration;
 
@@ -142,13 +149,13 @@ export default class BattleCardHand {
 
   private getBasePosY() {
     const screen = getScreenDimensions();
-    const baseY = this.props.target === 'hero' ? screen.height - 130 : 95;
+    const baseY = this.props.target === 'hero' ? screen.height - 130 : 95 + 10;
     const dy = this.props.target === 'hero' ? 30 : -30;
     return baseY + (this.active ? 0 : dy);
   }
 
   private getBaseScale() {
-    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.465;
+    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.58; //0.465;
     return scale;
   }
 
@@ -158,7 +165,7 @@ export default class BattleCardHand {
     if (this.active) return;
 
     // if we have less than maxCards, add random cards to deck
-    const cardsToAdd = maxCards - this.handCards.length;
+    const cardsToAdd = this.getMaxCards() - this.handCards.length;
     if (cardsToAdd > 0) {
       for (let i = 0; i < cardsToAdd; i++) {
         this.addRandomCardToDeck(0);

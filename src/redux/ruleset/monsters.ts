@@ -1,19 +1,19 @@
 import { TargetData } from 'src/types/custom';
 
-const data = {
-  id: null,
-  meter: 0,
-  maxSteps: 12,
-  overhead: 0,
-  resolved: false,
-  stats: {
-    hp: { current: 10, max: 10 },
-    ep: { current: 10, max: 10 },
-    attack: { current: 1, max: 1 },
-    defense: { current: 1, max: 1 },
-    status: [],
-  },
-} as TargetData;
+// const data = {
+//   id: null,
+//   meter: 0,
+//   maxSteps: 12,
+//   overhead: 0,
+//   resolved: false,
+//   stats: {
+//     hp: { current: 10, max: 10 },
+//     ep: { current: 10, max: 10 },
+//     attack: { current: 1, max: 1 },
+//     defense: { current: 1, max: 1 },
+//     status: [],
+//   },
+// } as TargetData;
 
 const monsters = {
   bat: {

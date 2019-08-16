@@ -492,7 +492,7 @@ export default class BattleArena {
 
     // decide if we throw another dice or we resolve
     const currentMeter = combat[target].meter;
-    const left = combat[target].maxSteps - currentMeter;
+    const left = combat[target].stats.maxSteps - currentMeter;
 
     const precaucious = 1.0; // 0: agressive 1: normal 2: coward
     const r = getRandomInt(1, 6) * precaucious;

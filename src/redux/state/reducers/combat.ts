@@ -4,7 +4,6 @@ import {
   createSerializableStateInvariantMiddleware,
 } from 'redux-starter-kit';
 import { Target, TargetData, TargetStat, Combat } from 'src/types/custom';
-import { CardNum } from 'src/game/components/cards/CardNumber';
 import { MonsterID } from 'src/redux/ruleset/monsters';
 import ruleset from 'src/redux/ruleset';
 import { getRandomInt } from 'src/lib/utils';
@@ -22,14 +21,16 @@ const initialState = {
   hero: {
     id: 'hero',
     meter: -100,
-    maxSteps: 12,
+
     overhead: 0,
     attacks: 0,
     resolved: false,
     isDead: false,
     stats: {
-      hp: { current: 20, max: 20, last: 20 },
-      ep: { current: 20, max: 20, last: 20 },
+      maxSteps: 12,
+      maxCards: 4,
+      hp: { current: 20, max: 20 },
+      ep: { current: 20, max: 20 },
       attack: { current: 5, max: 5 },
       defense: { current: 2, max: 5 },
       status: [],
@@ -39,14 +40,16 @@ const initialState = {
   monster: {
     id: null,
     meter: -100,
-    maxSteps: 12,
+
     attacks: 0,
     overhead: 0,
     resolved: false,
     isDead: false,
     stats: {
-      hp: { current: 20, max: 20, last: 20 },
-      ep: { current: 20, max: 20, last: 20 },
+      maxSteps: 12,
+      maxCards: 4,
+      hp: { current: 20, max: 20 },
+      ep: { current: 20, max: 20 },
       attack: { current: 3, max: 5 },
       defense: { current: 1, max: 5 },
       status: [],
@@ -69,7 +72,7 @@ const slice = createSlice({
     ) => {
       const { id } = payload;
       state.monster.id = id;
-      state.monster.maxSteps = ruleset.monsters[id].maxSteps;
+      state.monster.stats.maxSteps = ruleset.monsters[id].maxSteps;
     },
 
     action_newCombat: (
@@ -90,25 +93,27 @@ const slice = createSlice({
       state.hero.resolved = false;
       (state.hero.isDead = false), (state.monster.id = monsterID);
       state.monster.meter = -100;
-      state.monster.maxSteps = 5 + getRandomInt(0, 3); // ruleset.monsters[monsterID].maxSteps;
+
       state.monster.overhead = 0;
       state.monster.resolved = false;
-      (state.monster.isDead = false),
-        // state.hero.stats = {
-        //   hp: { current: 20, max: 20 },
-        //   ep: { current: 20, max: 20 },
-        //   attack: { current: 3, max: 5 },
-        //   defense: { current: 1, max: 5 },
-        // };
+      state.monster.isDead = false;
+      // state.hero.stats = {
+      //   hp: { current: 20, max: 20 },
+      //   ep: { current: 20, max: 20 },
+      //   attack: { current: 3, max: 5 },
+      //   defense: { current: 1, max: 5 },
+      // };
 
-        // todo: generate a monster and fill this from monster ruleset, slightly randomized
-        (state.monster.stats = {
-          hp: { current: 12, max: 20, last: 12 },
-          ep: { current: 20, max: 20, last: 20 },
-          attack: { current: 3, max: 5 },
-          defense: { current: 1, max: 5 },
-          status: state.monster.stats.status,
-        });
+      // todo: generate a monster and fill this from monster ruleset, slightly randomized
+      state.monster.stats = {
+        maxSteps: 5 + getRandomInt(0, 3), // ruleset.monsters[monsterID].maxSteps;
+        maxCards: 4,
+        hp: { current: 12, max: 20 },
+        ep: { current: 20, max: 20 },
+        attack: { current: 3, max: 5 },
+        defense: { current: 1, max: 5 },
+        status: state.monster.stats.status,
+      };
 
       console.log('=========================');
       console.log('action > newCombat', { ...state });
@@ -139,10 +144,6 @@ const slice = createSlice({
       }
       state.enemy = state.target === 'hero' ? 'monster' : 'hero';
 
-      // reset old hp props
-      // state.hero.stats.hp.last = state.hero.stats.hp.current;
-      // state.monster.stats.hp.last = state.monster.stats.hp.current;
-
       // console.log('action > changeTarget:', state.target);
     },
 
@@ -160,8 +161,9 @@ const slice = createSlice({
       state[target].overhead = 0;
       state[target].meter += value;
 
-      if (state[target].meter > state[target].maxSteps) {
-        state[target].overhead = state[target].meter - state[target].maxSteps;
+      if (state[target].meter > state[target].stats.maxSteps) {
+        state[target].overhead =
+          state[target].meter - state[target].stats.maxSteps;
         state[target].meter = 0;
       }
 
@@ -206,8 +208,6 @@ const slice = createSlice({
     ) => {
       const { target, type, value } = payload;
       const stat = state[target].stats[type];
-
-      stat.last = stat.current;
 
       if (value.current) stat.current += value.current;
       // if (stat.current < 0) stat.current = 0;

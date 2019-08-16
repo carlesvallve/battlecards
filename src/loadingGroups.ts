@@ -15,7 +15,7 @@ const initialAssets = new AssetGroup(
 // );
 
 // sound assets
-var soundURLs = AssetGroup.constructURLs('resources/sounds/');
+var soundURLs = AssetGroup.constructURLs('resources/sounds/sfx');
 const soundAssets = new AssetGroup(soundURLs, null, AssetGroup.PRIORITY_LOW);
 
 export default { initialAssets, soundAssets };
