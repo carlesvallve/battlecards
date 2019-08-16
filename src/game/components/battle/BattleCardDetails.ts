@@ -18,6 +18,7 @@ import {
   getTargetEnemy,
 } from 'src/redux/shortcuts/combat';
 import playExplosion from './Explosion';
+import { Target } from 'src/types/custom';
 
 type Props = {
   superview: View;
@@ -89,7 +90,7 @@ export default class BattleCardDetails {
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
         sounds.playSound('click1', 0.3);
-        this.hideCardDetails(true);
+        this.playCard(this.selectedCardData.card);
       },
     });
   }
@@ -155,9 +156,9 @@ export default class BattleCardDetails {
       .then(() => {
         // are we using the card, or putting it back?
         if (usingCard) {
-          this.playCard(card);
+          this.playCardByType(card); // play card depending on type
         } else {
-          this.placeCardBackToHand();
+          this.placeCardBackToHand(); // or return card to the user hand
         }
       });
 
@@ -190,6 +191,27 @@ export default class BattleCardDetails {
   }
 
   playCard(card: Card) {
+    // check if the card can be played
+    const { combat } = StateObserver.getState();
+    const target = getTarget(StateObserver.getState());
+    const cost = card.getData().ep;
+    if (cost > combat[target].stats.ep.current) {
+      console.warn('Not enough EP to play this card!');
+      // comment this is we want to be able to play cards
+      // unlimited for testing purposes
+      return;
+    }
+
+    // remove EP cost
+    addStat(target, 'ep', { current: -cost });
+
+    // start card using animation
+    this.hideCardDetails(true);
+    // this.playCardByType(card);
+  }
+
+  playCardByType(card: Card) {
+    // play card depending on type
     switch (card.getType()) {
       case 'modifier':
         this.playModifier(card);

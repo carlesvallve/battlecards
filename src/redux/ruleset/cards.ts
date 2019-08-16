@@ -228,7 +228,7 @@ const cards = {
     image: 'resources/images/cards/potions/health-potion.png',
     name: 'HP Potion',
     desc: 'Restores 10 HP',
-    ep: 10,
+    ep: 0,
   },
 
   potionEP: {
@@ -238,7 +238,7 @@ const cards = {
     image: 'resources/images/cards/potions/potion-ball.png',
     name: 'EP Potion',
     desc: 'Restores 10 EP',
-    ep: 10,
+    ep: 0,
   },
 
   // ============================================

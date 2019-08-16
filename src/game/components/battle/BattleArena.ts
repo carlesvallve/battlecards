@@ -373,7 +373,10 @@ export default class BattleArena {
     // remove icon
     this.components[winner].attackIcons.removeIcon();
 
-    // // remove loser's HP
+    // add EP to winner
+    addStat(winner, 'ep', { current: 5 });
+
+    // remove HP from loser
     const enemyHP = addStat(loser, 'hp', { current: -damage });
 
     // check if enemy died on the last blow
@@ -448,9 +451,15 @@ export default class BattleArena {
   }
 
   updateTurn(combat: Combat) {
-    console.log('combat-flow: UPDATE TURN');
+    console.log('combat-flow: UPDATE TURN', combat);
 
     let { target, enemy } = combat;
+
+    // if is the start of a new turn
+    if (combat.index.turn === 1) {
+      this.initializeNewCombatTurn(combat);
+    }
+
     this.displayMeters(true);
 
     if (target === 'hero' || combat['hero'].resolved) {
@@ -475,6 +484,13 @@ export default class BattleArena {
         blockUi(target !== 'hero');
       }, 350);
     }
+  }
+
+  initializeNewCombatTurn(combat: Combat) {
+    // update EP
+    // todo: we also need to add +5 ep per each successful attack from previous turn winner
+    addStat('hero', 'ep', { current: 5 });
+    addStat('monster', 'ep', { current: 5 });
   }
 
   // ============================================================

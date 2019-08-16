@@ -68,7 +68,7 @@ export default class Card {
     return this.props.id;
   }
 
-  getData(): CardStat {
+  getData(): any {
     return ruleset.cards[this.props.id];
   }
 
