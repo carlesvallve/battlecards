@@ -26,6 +26,7 @@ const initialState = {
     overhead: 0,
     attacks: 0,
     resolved: false,
+    isDead: false,
     stats: {
       hp: { current: 20, max: 20, last: 20 },
       ep: { current: 20, max: 20, last: 20 },
@@ -42,6 +43,7 @@ const initialState = {
     attacks: 0,
     overhead: 0,
     resolved: false,
+    isDead: false,
     stats: {
       hp: { current: 20, max: 20, last: 20 },
       ep: { current: 20, max: 20, last: 20 },
@@ -86,28 +88,27 @@ const slice = createSlice({
       state.hero.meter = -100;
       state.hero.overhead = 0;
       state.hero.resolved = false;
-
-      state.monster.id = monsterID;
+      (state.hero.isDead = false), (state.monster.id = monsterID);
       state.monster.meter = -100;
       state.monster.maxSteps = 5 + getRandomInt(0, 3); // ruleset.monsters[monsterID].maxSteps;
       state.monster.overhead = 0;
       state.monster.resolved = false;
+      (state.monster.isDead = false),
+        // state.hero.stats = {
+        //   hp: { current: 20, max: 20 },
+        //   ep: { current: 20, max: 20 },
+        //   attack: { current: 3, max: 5 },
+        //   defense: { current: 1, max: 5 },
+        // };
 
-      // state.hero.stats = {
-      //   hp: { current: 20, max: 20 },
-      //   ep: { current: 20, max: 20 },
-      //   attack: { current: 3, max: 5 },
-      //   defense: { current: 1, max: 5 },
-      // };
-
-      // todo: generate a monster and fill this from monster ruleset, slightly randomized
-      state.monster.stats = {
-        hp: { current: 12, max: 20, last: 12 },
-        ep: { current: 20, max: 20, last: 20 },
-        attack: { current: 3, max: 5 },
-        defense: { current: 1, max: 5 },
-        status: state.monster.stats.status,
-      };
+        // todo: generate a monster and fill this from monster ruleset, slightly randomized
+        (state.monster.stats = {
+          hp: { current: 12, max: 20, last: 12 },
+          ep: { current: 20, max: 20, last: 20 },
+          attack: { current: 3, max: 5 },
+          defense: { current: 1, max: 5 },
+          status: state.monster.stats.status,
+        });
 
       console.log('=========================');
       console.log('action > newCombat', { ...state });
@@ -189,6 +190,11 @@ const slice = createSlice({
       state[target].meter = value;
     },
 
+    action_kill: (state, { payload }: PayloadAction<{ target: Target }>) => {
+      const { target } = payload;
+      state[target].isDead = true;
+    },
+
     // =====================================================================
     // Stats
 
@@ -233,6 +239,7 @@ export const {
   action_throwDice,
   action_setResolved,
   action_setMeter,
+  action_kill,
 
   action_addStat,
   action_setStat,

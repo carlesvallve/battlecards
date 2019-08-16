@@ -3,20 +3,11 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import Card from '../cards/Card';
 import BattleCardDetails from './BattleCardDetails';
-import {
-  getScreenDimensions,
-  getRandomItemFromArray,
-  getRandomItemsFromArr,
-} from 'src/lib/utils';
-import uiConfig, { animDuration } from 'src/lib/uiConfig';
+import { getScreenDimensions } from 'src/lib/utils';
+import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
-import { CardType, CombatResult, Target, CardPlayType } from 'src/types/custom';
-import { CardData, CardID } from 'src/redux/ruleset/cards';
-import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
-import bitmapFonts from 'src/lib/bitmapFonts';
-import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
-import BattleCardDeck from './BattleCardDeck';
+import { CardType, Target, CardPlayType } from 'src/types/custom';
 
 type Props = { superview: View; zIndex: number; target: Target };
 
@@ -34,12 +25,10 @@ export default class BattleCardHand {
 
   constructor(props: Props) {
     this.props = props;
-
     this.createViews(props);
   }
 
   init() {
-    // this.createDeckCards(this.props);
     this.createHandCards(this.props);
   }
 
@@ -79,12 +68,8 @@ export default class BattleCardHand {
 
     const { target } = props;
 
-    console.log('>>>>>>>>>>>>>>', target);
-
-    // BattleCardDeck.reshuffle(target);
-
     for (let i = 0; i < maxCards; i++) {
-      const card = this.createRandomCard(i); // BattleCardDeck.extract(target) //
+      const card = this.createRandomCard(i);
       this.handCards.push(card);
     }
 
@@ -119,10 +104,6 @@ export default class BattleCardHand {
   // ===================================================
 
   private updateCardHandPositions() {
-    // todo: locate cards in an arc (?)
-    // const rotations = [-0.25, -0.125, 0, 0.125, 0.25];
-    // const ys = [0, -12, -15, -12, 0];
-
     // if (this.active) sounds.playSound('swoosh4', 0.1);
 
     const screen = getScreenDimensions();
@@ -161,7 +142,6 @@ export default class BattleCardHand {
 
   private getBasePosY() {
     const screen = getScreenDimensions();
-    // const baseY = screen.height - 130;
     const baseY = this.props.target === 'hero' ? screen.height - 130 : 95;
     const dy = this.props.target === 'hero' ? 30 : -30;
     return baseY + (this.active ? 0 : dy);
@@ -288,15 +268,6 @@ export default class BattleCardHand {
       const isWin = winner === this.props.target;
       cardsToDiscard = this.getActiveCardsOfPlayType(
         isWin ? 'defensive' : 'offensive',
-      );
-      console.log(
-        '=========== winner:',
-        winner,
-        'target:',
-        this.props.target,
-        'isWin:',
-        isWin,
-        cardsToDiscard,
       );
     } else {
       cardsToDiscard = this.activeCards;

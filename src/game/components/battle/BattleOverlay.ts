@@ -1,7 +1,7 @@
 import animate from 'animate';
 import View from 'ui/View';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
-import { Target } from 'src/types/custom';
+import { Target, TargetStat } from 'src/types/custom';
 import uiConfig from 'src/lib/uiConfig';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 import bitmapFonts from 'src/lib/bitmapFonts';

@@ -104,15 +104,15 @@ const cards = {
     ep: 10,
   },
 
-  superiorShield: {
-    playType: 'defensive' as CardPlayType,
-    type: 'shield' as CardType,
-    value: { min: 3 } as CardStat,
-    image: 'resources/images/cards/shields/winged-shield.png',
-    name: 'Superior Shield',
-    desc: 'Block 3 attacks',
-    ep: 10,
-  },
+  // superiorShield: {
+  //   playType: 'defensive' as CardPlayType,
+  //   type: 'shield' as CardType,
+  //   value: { min: 3 } as CardStat,
+  //   image: 'resources/images/cards/shields/winged-shield.png',
+  //   name: 'Superior Shield',
+  //   desc: 'Block 3 attacks',
+  //   ep: 10,
+  // },
 
   // ============================================
   // weapon
@@ -139,16 +139,16 @@ const cards = {
     effect: 'bleeding' as TargetStatus,
   },
 
-  superiorSword: {
-    playType: 'offensive' as CardPlayType,
-    type: 'weapon' as CardType,
-    value: { min: 3, max: 3 } as CardStat,
-    image: 'resources/images/cards/weapons/pointy-sword.png',
-    name: 'superior Sword',
-    desc: 'Add 2 attacks and cause BLEEDING',
-    ep: 10,
-    effect: 'wounded' as TargetStatus,
-  },
+  // superiorSword: {
+  //   playType: 'offensive' as CardPlayType,
+  //   type: 'weapon' as CardType,
+  //   value: { min: 3, max: 3 } as CardStat,
+  //   image: 'resources/images/cards/weapons/pointy-sword.png',
+  //   name: 'superior Sword',
+  //   desc: 'Add 2 attacks and cause BLEEDING',
+  //   ep: 10,
+  //   effect: 'wounded' as TargetStatus,
+  // },
 
   axe: {
     playType: 'offensive' as CardPlayType,
@@ -161,27 +161,27 @@ const cards = {
     effect: 'brokenarmour' as TargetStatus,
   },
 
-  greatAxe: {
-    playType: 'offensive' as CardPlayType,
-    type: 'weapon' as CardType,
-    value: { min: 3, max: 3 } as CardStat,
-    image: 'resources/images/cards/weapons/sharp-axe.png',
-    name: 'Great Axe',
-    desc: 'Add 2 attacks and cause ARMOUR BREAK',
-    ep: 10,
-    effect: 'brokenarmour' as TargetStatus,
-  },
+  // greatAxe: {
+  //   playType: 'offensive' as CardPlayType,
+  //   type: 'weapon' as CardType,
+  //   value: { min: 3, max: 3 } as CardStat,
+  //   image: 'resources/images/cards/weapons/sharp-axe.png',
+  //   name: 'Great Axe',
+  //   desc: 'Add 2 attacks and cause ARMOUR BREAK',
+  //   ep: 10,
+  //   effect: 'brokenarmour' as TargetStatus,
+  // },
 
-  club: {
-    playType: 'offensive' as CardPlayType,
-    type: 'weapon' as CardType,
-    value: { min: 1, max: 1 } as CardStat,
-    image: 'resources/images/cards/weapons/wood-club.png',
-    name: 'Club',
-    desc: 'Add 1 attacks and cause STUNNING',
-    ep: 10,
-    effect: 'stunned' as TargetStatus,
-  },
+  // club: {
+  //   playType: 'offensive' as CardPlayType,
+  //   type: 'weapon' as CardType,
+  //   value: { min: 1, max: 1 } as CardStat,
+  //   image: 'resources/images/cards/weapons/wood-club.png',
+  //   name: 'Club',
+  //   desc: 'Add 1 attacks and cause STUNNING',
+  //   ep: 10,
+  //   effect: 'stunned' as TargetStatus,
+  // },
 
   flail: {
     playType: 'offensive' as CardPlayType,
@@ -223,10 +223,10 @@ const cards = {
   fire: {
     playType: 'instant' as CardPlayType,
     type: 'spell' as CardType,
-    value: { min: 10, max: 10 } as CardStat,
+    value: { min: 14, max: 10 } as CardStat,
     image: 'resources/images/cards/spells/fire-spell-cast.png',
     name: 'Fire Ball',
-    desc: '10 fire damage and cause BURNING',
+    desc: '14 fire damage and cause BURNING',
     ep: 10,
     effect: 'burned' as TargetStatus,
   },

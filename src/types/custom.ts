@@ -70,6 +70,7 @@ export type TargetData = {
   maxSteps: number;
   overhead: number;
   resolved: boolean;
+  isDead: boolean;
   stats: {
     hp: TargetStat;
     ep: TargetStat;

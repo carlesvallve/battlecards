@@ -4,7 +4,7 @@ import View from 'ui/View';
 import ButtonView from 'ui/widget/ButtonView';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import bitmapFonts from 'src/lib/bitmapFonts';
-import { getScreenDimensions, getRandomInt, waitForIt } from 'src/lib/utils';
+import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 
 import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import Card from '../cards/Card';
@@ -14,7 +14,6 @@ import ruleset from 'src/redux/ruleset';
 import {
   throwDice,
   addStat,
-  getTarget,
   getTargetEnemy,
 } from 'src/redux/shortcuts/combat';
 import playExplosion from './Explosion';
@@ -99,23 +98,6 @@ export default class BattleCardDetails {
         }
       },
     });
-
-    // this.buttonCancel = new ButtonScaleViewWithText({
-    //   ...uiConfig.buttonGreen,
-    //   superview: this.container,
-    //   zIndex: 3,
-    //   width: screen.width - 80,
-    //   height: 75,
-    //   x: 40,
-    //   y: screen.height + 20,
-    //   labelOffsetY: -3,
-    //   localeText: () => 'OKAY',
-    //   size: 16,
-    //   font: bitmapFonts('TitleStroke'),
-    //   onClick: () => {
-    //     sounds.playSound('click1', 0.3);
-    //   },
-    // });
   }
 
   // ===============================================================
@@ -278,7 +260,7 @@ export default class BattleCardDetails {
       card.displayAsConsumed();
 
       // throw the redux dice
-      const { target } = this.props; // StateObserver.getState().combat;
+      const { target } = this.props;
       throwDice(target, diceModifier);
     });
   }
@@ -291,7 +273,7 @@ export default class BattleCardDetails {
     // put card in activeCards array
     this.props.cardHasBeenPlayedHandler(card, true);
 
-    // transform card into status card icon
+    // transform card into active card icon
     card.displayAsActiveCard(this.props.target, () => {});
   }
 
@@ -303,20 +285,6 @@ export default class BattleCardDetails {
     const screen = getScreenDimensions();
     const x = screen.width * 0.26;
     const y = screen.height - (data.value.type === 'hp' ? 55 : 25);
-
-    // const type = data.value.type;
-    // let offset = { x: 0, y: 0 };
-    // if (this.props.target === 'hero') {
-    //   offset = { x: -100, y: type === 'hp' ? 55 : 25 };
-    // } else {
-    //   offset = { x: type === 'hp' ? -55 : 55, y: -50 };
-    // }
-
-    // const type = data.value.type;
-    // const offset =
-    //   this.props.target === 'hero'
-    //     ? { x: -100, y: type === 'hp' ? 55 : 25 }
-    //     : { x: type === 'hp' ? -55 : 55, y: -50 };
 
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();
@@ -332,16 +300,11 @@ export default class BattleCardDetails {
   playSpell(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING POTION', card.getID(), data);
+    console.log('PLAYING SPELL', card.getID(), data);
 
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;
     const y = screen.height * ruleset.baselineY - 100;
-
-    // const offset = {
-    //   x: -100,
-    //   y: this.props.target === 'hero' ? -100 : 100
-    // }
 
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();

@@ -27,7 +27,12 @@ export default class AttackIcons {
 
   constructor(props: Props) {
     this.props = props;
+    this.icons = [];
     this.createViews(props);
+  }
+
+  getIcons() {
+    return this.icons;
   }
 
   protected createViews(props: Props) {
