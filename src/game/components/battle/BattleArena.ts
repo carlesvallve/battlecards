@@ -442,6 +442,8 @@ export default class BattleArena {
     loser: Target,
     damage: number,
   ) {
+    // render damage on target
+
     // animate screen effect
     const screen = getScreenDimensions();
     const x = screen.width / 2;
@@ -458,10 +460,11 @@ export default class BattleArena {
       .clear()
       .wait(150)
       .then(() => {
-        if (mode === 'melee')
+        sounds.playRandomSound(['punch1'], 0.8); // , 'punch2'
+        sounds.playRandomSound(['', 'break1', 'break1'], 0.2);
+        if (mode === 'melee') {
           sounds.playRandomSound(['sword1', 'sword2', 'sword3'], 0.05);
-        sounds.playRandomSound(['punch1', 'punch2'], 0.8);
-        sounds.playRandomSound(['', 'break1', 'break1'], 0.1);
+        }
       })
       .then({ x: x + dx, y: y + dy, scale: sc, r }, t * 1, animate.easeInOut)
       .then({ scale: 0.95 }, t * 2, animate.easeInOut)
