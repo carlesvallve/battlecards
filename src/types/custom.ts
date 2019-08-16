@@ -72,19 +72,18 @@ export type TargetStatus =
 export type TargetData = {
   id: MonsterID | 'hero';
   meter: number;
-  // maxSteps: number;
   overhead: number;
   resolved: boolean;
   isDead: boolean;
   stats: {
+    maxSteps: number;
+    maxCards: number;
+
     hp: TargetStat;
     ep: TargetStat;
     attack: TargetStat;
     defense: TargetStat;
     status: TargetStatus[];
-
-    maxSteps: number;
-    maxCards: number;
   };
 };
 

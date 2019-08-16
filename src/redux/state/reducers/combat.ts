@@ -115,8 +115,9 @@ const slice = createSlice({
         status: state.monster.stats.status,
       };
 
-      console.log('=========================');
+      console.log('================================');
       console.log('action > newCombat', { ...state });
+      console.log('================================');
     },
 
     action_resetCombatTurn: (state) => {
