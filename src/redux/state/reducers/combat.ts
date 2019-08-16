@@ -21,7 +21,7 @@ const initialState = {
 
   hero: {
     id: 'hero',
-    meter: -1,
+    meter: -100,
     maxSteps: 12,
     overhead: 0,
     attacks: 0,
@@ -37,7 +37,7 @@ const initialState = {
 
   monster: {
     id: null,
-    meter: -1,
+    meter: -100,
     maxSteps: 12,
     attacks: 0,
     overhead: 0,
@@ -83,12 +83,12 @@ const slice = createSlice({
       state.target = 'hero';
       state.enemy = 'monster';
 
-      state.hero.meter = -1;
+      state.hero.meter = -100;
       state.hero.overhead = 0;
       state.hero.resolved = false;
 
       state.monster.id = monsterID;
-      state.monster.meter = -1;
+      state.monster.meter = -100;
       state.monster.maxSteps = 5 + getRandomInt(0, 3); // ruleset.monsters[monsterID].maxSteps;
       state.monster.overhead = 0;
       state.monster.resolved = false;

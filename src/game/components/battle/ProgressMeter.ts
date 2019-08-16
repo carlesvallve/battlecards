@@ -63,7 +63,7 @@ export default class ProgressMeter {
       ...props,
       centerOnOrigin: true,
       centerAnchor: true,
-      scale: 0.75,
+      scale: 0, // 0.75,
     });
 
     const box = new ImageScaleView({

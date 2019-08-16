@@ -4,9 +4,9 @@ import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import StatInfo from './StatInfo';
 import MonsterInfo from './MonsterInfo';
+import { animDuration } from 'src/lib/uiConfig';
 
-
-type Props = { superview: View; } 
+type Props = { superview: View };
 
 export default class BattleHeader {
   private props: Props;
@@ -17,6 +17,14 @@ export default class BattleHeader {
     this.createViews(props);
   }
 
+  init() {
+    animate(this.container).then(
+      { opacity: 1, y: 5 },
+      animDuration,
+      animate.easeInOut,
+    );
+  }
+
   private createViews(props: Props) {
     const screen = getScreenDimensions();
 
@@ -24,7 +32,8 @@ export default class BattleHeader {
       ...props,
       width: screen.width,
       height: 80,
-      y: 5,
+      y: 5 - 100,
+      opacity: 0,
     });
 
     const dBars = 55;

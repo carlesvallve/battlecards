@@ -7,73 +7,49 @@ import {
 
 // ================ cards =================
 
-/*
-export type CardPlayType =
-  | 'modifier'
-  | 'equipment'
-  | 'playable'
-  | 'instant';
-
-export type CardType =
-  | 'shield'
-  | 'weapon'
-  | 'potion'
-  | 'spell';
-  
-export type Affliction =
-  | 'bleeding'
-  | 'wounded'
-  | 'blinded'
-  | 'stunned'
-  | 'poisoned'
-  | 'electrocuted'
-  | 'frozen'
-  | 'brokenarmour';
-
-  card: {
-    playType: modifier | equipment | playable | instant
-    type:
-      - shield (removes N enemy attacks)
-      - weapon (adds N attacks)
-      - potion (adds N hp / ep)
-      - spell (adds | remove affliction)
-
-  }
-*/
-
 const cards = {
   // ============================================
   // modifier
 
-  // one: {
-  //   playType: 'modifier' as CardPlayType,
-  //   type: 'modifier' as CardType,
-  //   value: { min: 1, max: 1 } as CardStat,
-  //   image: null,
-  //   name: '+1',
-  //   desc: '',
-  //   ep: 5,
-  // },
+  one: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 1, max: 1 } as CardStat,
+    image: null,
+    name: '+1',
+    desc: 'Adds +1 to your combat meter',
+    ep: 5,
+  },
 
-  // two: {
-  //   playType: 'modifier' as CardPlayType,
-  //   type: 'modifier' as CardType,
-  //   value: { min: 2, max: 2 } as CardStat,
-  //   image: null,
-  //   name: '+2',
-  //   desc: '',
-  //   ep: 5,
-  // },
+  two: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 2, max: 2 } as CardStat,
+    image: null,
+    name: '+2',
+    desc: 'Adds +2 to your combat meter',
+    ep: 5,
+  },
 
-  // three: {
-  //   playType: 'modifier' as CardPlayType,
-  //   type: 'modifier' as CardType,
-  //   value: { min: 3, max: 3 } as CardStat,
-  //   image: null,
-  //   name: '+3',
-  //   desc: '',
-  //   ep: 5,
-  // },
+  three: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 3, max: 3 } as CardStat,
+    image: null,
+    name: '+3',
+    desc: 'Adds +3 to your combat meter',
+    ep: 5,
+  },
+
+  six: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 3, max: 3 } as CardStat,
+    image: null,
+    name: '+6',
+    desc: 'Adds +6 to your combat meter',
+    ep: 5,
+  },
 
   oneToThree: {
     playType: 'modifier' as CardPlayType,
@@ -81,29 +57,29 @@ const cards = {
     value: { min: 1, max: 3, randomMode: 'BETWEEN' } as CardStat,
     image: null,
     name: '1-3',
-    desc: '',
+    desc: 'Adds a random value between 1 and 3 to your combat meter',
     ep: 5,
   },
 
-  // oneToFive: {
-  //   playType: 'modifier' as CardPlayType,
-  //   type: 'modifier' as CardType,
-  //   value: { min: 1, max: 5, randomMode: 'BETWEEN' } as CardStat,
-  //   image: null,
-  //   name: '1-5',
-  //   desc: '',
-  //   ep: 5,
-  // },
+  oneToFive: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 1, max: 5, randomMode: 'BETWEEN' } as CardStat,
+    image: null,
+    name: '1-5',
+    desc: 'Adds a random value between 1 and 5 to your combat meter',
+    ep: 5,
+  },
 
-  // oneToTen: {
-  //   playType: 'modifier' as CardPlayType,
-  //   type: 'modifier' as CardType,
-  //   value: { min: 1, max: 10, randomMode: 'OR' } as CardStat,
-  //   image: null,
-  //   name: '+1/+10',
-  //   desc: '',
-  //   ep: 5,
-  // },
+  oneOrTen: {
+    playType: 'modifier' as CardPlayType,
+    type: 'modifier' as CardType,
+    value: { min: 1, max: 10, randomMode: 'OR' } as CardStat,
+    image: null,
+    name: '1/10',
+    desc: 'Adds either +1 or +10 to your combat meter',
+    ep: 5,
+  },
 
   // ============================================
   // shield
@@ -152,38 +128,38 @@ const cards = {
     effect: 'bleeding' as TargetStatus,
   },
 
-  // sword: {
-  //   playType: 'offensive' as CardPlayType,
-  //   type: 'weapon' as CardType,
-  //   value: { min: 2, max: 2 } as CardStat,
-  //   image: 'resources/images/cards/weapons/sword-brandish.png',
-  //   name: 'Sword',
-  //   desc: 'Add 1 attacks and cause BLEEDING',
-  //   ep: 10,
-  //   effect: 'bleeding' as TargetStatus,
-  // },
+  sword: {
+    playType: 'offensive' as CardPlayType,
+    type: 'weapon' as CardType,
+    value: { min: 2, max: 2 } as CardStat,
+    image: 'resources/images/cards/weapons/sword-brandish.png',
+    name: 'Sword',
+    desc: 'Add 1 attacks and cause BLEEDING',
+    ep: 10,
+    effect: 'bleeding' as TargetStatus,
+  },
 
-  // superiorSword: {
-  //   playType: 'offensive' as CardPlayType,
-  //   type: 'weapon' as CardType,
-  //   value: { min: 3, max: 3 } as CardStat,
-  //   image: 'resources/images/cards/weapons/pointy-sword.png',
-  //   name: 'superior Sword',
-  //   desc: 'Add 2 attacks and cause BLEEDING',
-  //   ep: 10,
-  //   effect: 'wounded' as TargetStatus,
-  // },
+  superiorSword: {
+    playType: 'offensive' as CardPlayType,
+    type: 'weapon' as CardType,
+    value: { min: 3, max: 3 } as CardStat,
+    image: 'resources/images/cards/weapons/pointy-sword.png',
+    name: 'superior Sword',
+    desc: 'Add 2 attacks and cause BLEEDING',
+    ep: 10,
+    effect: 'wounded' as TargetStatus,
+  },
 
-  // axe: {
-  //   playType: 'offensive' as CardPlayType,
-  //   type: 'weapon' as CardType,
-  //   value: { min: 2, max: 2 } as CardStat,
-  //   image: 'resources/images/cards/weapons/battered-axe.png',
-  //   name: 'Battle Axe',
-  //   desc: 'Add 1 attack and cause ARMOUR BREAK',
-  //   ep: 10,
-  //   effect: 'brokenarmour' as TargetStatus,
-  // },
+  axe: {
+    playType: 'offensive' as CardPlayType,
+    type: 'weapon' as CardType,
+    value: { min: 2, max: 2 } as CardStat,
+    image: 'resources/images/cards/weapons/battered-axe.png',
+    name: 'Battle Axe',
+    desc: 'Add 1 attack and cause ARMOUR BREAK',
+    ep: 10,
+    effect: 'brokenarmour' as TargetStatus,
+  },
 
   greatAxe: {
     playType: 'offensive' as CardPlayType,
@@ -196,16 +172,16 @@ const cards = {
     effect: 'brokenarmour' as TargetStatus,
   },
 
-  // club: {
-  //   playType: 'offensive' as CardPlayType,
-  //   type: 'weapon' as CardType,
-  //   value: { min: 1, max: 1 } as CardStat,
-  //   image: 'resources/images/cards/weapons/wood-club.png',
-  //   name: 'Club',
-  //   desc: 'Add 1 attacks and cause STUNNING',
-  //   ep: 10,
-  //   effect: 'stunned' as TargetStatus,
-  // },
+  club: {
+    playType: 'offensive' as CardPlayType,
+    type: 'weapon' as CardType,
+    value: { min: 1, max: 1 } as CardStat,
+    image: 'resources/images/cards/weapons/wood-club.png',
+    name: 'Club',
+    desc: 'Add 1 attacks and cause STUNNING',
+    ep: 10,
+    effect: 'stunned' as TargetStatus,
+  },
 
   flail: {
     playType: 'offensive' as CardPlayType,
@@ -292,7 +268,7 @@ const cards = {
 // ======================================================
 
 export type CardID = keyof typeof cards;
-export type Card = (typeof cards)[CardID];
+export type CardData = (typeof cards)[CardID];
 const cardIds: CardID[] = Object.keys(cards) as CardID[];
 
 export default {

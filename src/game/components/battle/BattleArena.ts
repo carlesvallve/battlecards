@@ -33,6 +33,7 @@ import BattleFooter from './BattleFooter';
 import BattleOverlay from './BattleOverlay';
 
 import { CombatResult, Combat, Target, TargetStat } from 'src/types/custom';
+import BattleCardDeck from './BattleCardDeck';
 
 type Props = {
   superview: View;
@@ -41,8 +42,11 @@ type Props = {
 export default class BattleArena {
   private props: Props;
   private container: View;
+  private header: BattleHeader;
+  private footer: BattleFooter;
   private battleGround: View;
   private monsterImage: MonsterImage;
+  private cardDeck: BattleCardDeck;
   private cardHand: BattleCardHand;
   private overlay: BattleOverlay;
   private components: {
@@ -65,6 +69,21 @@ export default class BattleArena {
   }
 
   init() {
+    this.cardDeck.init();
+  }
+
+  startGame() {
+    // display footer and header
+    this.header.init();
+    this.footer.init();
+
+    // generate card-number decks
+    this.components.hero.cardNumbers.init();
+    this.components.monster.cardNumbers.init();
+
+    // generate card decks
+    this.cardHand.init();
+
     // generate a new combat
     newCombat(getRandomMonsterID());
   }
@@ -112,6 +131,7 @@ export default class BattleArena {
 
     StateObserver.createSelector(({ combat }) => {
       if (!combat.hero || !combat.monster) return;
+      // if (combat.hero.meter === -1 || combat.monster.meter === -1) return;
       return {
         hero: combat.hero.stats['hp'],
         monster: combat.monster.stats['hp'],
@@ -585,17 +605,24 @@ export default class BattleArena {
       },
     };
 
+    this.cardDeck = new BattleCardDeck({
+      superview: this.container,
+      zIndex: 1,
+      target: 'hero',
+      startGame: this.startGame.bind(this),
+    });
+
     this.cardHand = new BattleCardHand({
       superview: this.container,
       zIndex: 1,
       target: 'hero',
     });
 
-    const header = new BattleHeader({
+    this.header = new BattleHeader({
       superview: this.container,
     });
 
-    const footer = new BattleFooter({
+    this.footer = new BattleFooter({
       superview: this.container,
     });
   }

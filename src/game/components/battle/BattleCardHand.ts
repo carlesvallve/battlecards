@@ -3,11 +3,19 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import Card from '../cards/Card';
 import BattleCardDetails from './BattleCardDetails';
-import { getScreenDimensions } from 'src/lib/utils';
-import { animDuration } from 'src/lib/uiConfig';
+import {
+  getScreenDimensions,
+  getRandomItemFromArray,
+  getRandomItemsFromArr,
+} from 'src/lib/utils';
+import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
 import { CardType, CombatResult, Target, CardPlayType } from 'src/types/custom';
+import { CardData, CardID } from 'src/redux/ruleset/cards';
+import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
+import bitmapFonts from 'src/lib/bitmapFonts';
+import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
 
 type Props = { superview: View; zIndex: number; target: Target };
 
@@ -17,7 +25,8 @@ export default class BattleCardHand {
   private props: Props;
   private container: View;
   private active: boolean;
-  private cards: Card[];
+  private deckCards: Card[];
+  private handCards: Card[];
   private activeCards: Card[];
   private usedCards: Card[];
   private cardDetails: BattleCardDetails;
@@ -25,7 +34,11 @@ export default class BattleCardHand {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
-    this.createCards(props);
+  }
+
+  init() {
+    // this.createDeckCards(this.props);
+    this.createHandCards(this.props);
   }
 
   private createViews(props: Props) {
@@ -51,14 +64,14 @@ export default class BattleCardHand {
 
   // ===================================================
 
-  createCards(props: Props) {
-    this.cards = [];
+  createHandCards(props: Props) {
+    this.handCards = [];
     this.activeCards = [];
     this.usedCards = [];
 
     for (let i = 0; i < maxCards; i++) {
       const card = this.createRandomCard(i);
-      this.cards.push(card);
+      this.handCards.push(card);
     }
 
     this.updateCardHandPositions();
@@ -74,7 +87,7 @@ export default class BattleCardHand {
       mode: 'mini',
       x: 40 + i * 60,
       y: this.getBasePosY(),
-      r: 0, // rotations[i],
+      r: 0,
       scale: 0.225,
       onClick: () => this.cardDetails.showCardDetails(card),
     });
@@ -85,7 +98,7 @@ export default class BattleCardHand {
   addRandomCardToDeck(index: number = 0) {
     // add a new random card to cards array
     const newCard = this.createRandomCard(index);
-    this.cards.splice(index, 0, newCard);
+    this.handCards.splice(index, 0, newCard);
     this.updateCardHandPositions();
   }
 
@@ -100,12 +113,12 @@ export default class BattleCardHand {
 
     const screen = getScreenDimensions();
     const center = screen.width / 2;
-    const max = this.cards.length - 1;
+    const max = this.handCards.length - 1;
     const dx = 60;
 
     const t = animDuration; //this.active ? animDuration : 0;
 
-    this.cards.forEach((card, index) => {
+    this.handCards.forEach((card, index) => {
       const x = center - (max * dx) / 2 + index * dx;
       const y = this.getBasePosY();
 
@@ -145,7 +158,7 @@ export default class BattleCardHand {
     if (this.active) return;
 
     // if we have less than maxCards, add random cards to deck
-    const cardsToAdd = maxCards - this.cards.length;
+    const cardsToAdd = maxCards - this.handCards.length;
     if (cardsToAdd > 0) {
       for (let i = 0; i < cardsToAdd; i++) {
         this.addRandomCardToDeck(0);
@@ -155,7 +168,7 @@ export default class BattleCardHand {
     sounds.playSound('swoosh1', 0.1);
     this.active = true;
 
-    this.cards.forEach((card, index) => {
+    this.handCards.forEach((card, index) => {
       card.getView().show();
       animate(card.getView()).then(
         { y: this.getBasePosY(), opacity: 1 },
@@ -171,7 +184,7 @@ export default class BattleCardHand {
     sounds.playSound('swoosh1', 0.1);
     this.active = false;
 
-    this.cards.forEach((card, index) => {
+    this.handCards.forEach((card, index) => {
       animate(card.getView())
         .then(
           { y: this.getBasePosY(), opacity: 0 },
@@ -186,10 +199,10 @@ export default class BattleCardHand {
 
   cardHasBeenPlayed(card: Card, remainActive: boolean = false) {
     // get position of card in array
-    const index = this.cards.map((el) => el).indexOf(card);
+    const index = this.handCards.map((el) => el).indexOf(card);
 
     // remove card from cards array
-    const removedCard = this.cards.splice(index, 1)[0];
+    const removedCard = this.handCards.splice(index, 1)[0];
 
     // put card in used or active deck
     if (remainActive) {
@@ -201,7 +214,7 @@ export default class BattleCardHand {
     console.log(
       '>>> Card has been played',
       card.getID(),
-      `cards: ${this.cards}`,
+      `cards: ${this.handCards}`,
       `usedCards: ${this.usedCards}`,
       `activeCards: ${this.activeCards}`,
     );
@@ -233,7 +246,7 @@ export default class BattleCardHand {
     const removedCard = this.activeCards.splice(index, 1)[0];
 
     // put card in hand deck
-    this.cards.push(removedCard);
+    this.handCards.push(removedCard);
 
     // reposition remaining cards
     this.updateCardHandPositions();

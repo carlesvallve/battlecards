@@ -46,6 +46,17 @@ export const getRandomItemFromArray = (arr: any[]) => {
   return arr[getRandomInt(0, arr.length - 1)];
 };
 
+export const getRandomItemsFromArr = <T>(arr: T[], n: number) => {
+  // Shuffle array
+  const shuffled = shuffleArray(arr);
+  // Get sub-array of first n elements after shuffled
+  return shuffled.slice(0, n);
+};
+
+export const shuffleArray = <T>(arr: T[]) => {
+  return arr.sort(() => 0.5 - Math.random());
+};
+
 export const getRandomPos = (min: number, max: number): Point => {
   const screen = getScreenDimensions();
   const x = getRandomInt(20, screen.width - 20);

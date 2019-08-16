@@ -32,7 +32,7 @@ export type CardPlayType =
   | 'playable'
   | 'instant';
 
-export type CardType = 'modifier' | 'shield' | 'weapon' | 'potion' | 'spell';
+export type CardType = 'modifier' | 'shield' | 'weapon' | 'potion' | 'spell' | 'ability';
 
 export type CardStat = {
   min?: number;

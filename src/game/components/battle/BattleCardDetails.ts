@@ -23,7 +23,7 @@ import { Target } from 'src/types/custom';
 type Props = {
   superview: View;
   zIndex: number;
-  cardHasBeenPlayedHandler: (card: Card, remainActive: boolean) => void;
+  cardHasBeenPlayedHandler?: (card: Card, remainActive: boolean) => void;
 };
 
 export default class BattleCardDetails {
@@ -31,6 +31,7 @@ export default class BattleCardDetails {
   private container: View;
   private bg: View;
   private buttonUse: View;
+  private buttonCancel: View;
 
   private selectedCardData: {
     card: Card;
@@ -85,14 +86,35 @@ export default class BattleCardDetails {
       x: 40,
       y: screen.height + 20,
       labelOffsetY: -3,
-      localeText: () => 'USE',
+      localeText: () => (props.cardHasBeenPlayedHandler ? 'USE' : 'OK'),
       size: 16,
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
         sounds.playSound('click1', 0.3);
-        this.playCard(this.selectedCardData.card);
+        if (props.cardHasBeenPlayedHandler) {
+          this.playCard(this.selectedCardData.card);
+        } else {
+          this.hideCardDetails(false);
+        }
       },
     });
+
+    // this.buttonCancel = new ButtonScaleViewWithText({
+    //   ...uiConfig.buttonGreen,
+    //   superview: this.container,
+    //   zIndex: 3,
+    //   width: screen.width - 80,
+    //   height: 75,
+    //   x: 40,
+    //   y: screen.height + 20,
+    //   labelOffsetY: -3,
+    //   localeText: () => 'OKAY',
+    //   size: 16,
+    //   font: bitmapFonts('TitleStroke'),
+    //   onClick: () => {
+    //     sounds.playSound('click1', 0.3);
+    //   },
+    // });
   }
 
   // ===============================================================

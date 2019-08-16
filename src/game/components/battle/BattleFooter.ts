@@ -3,6 +3,7 @@ import View from 'ui/View';
 import { getScreenDimensions } from 'src/lib/utils';
 import ProgressBar from './ProgressBar';
 import ButtonAction from './ButtonAction';
+import { animDuration } from 'src/lib/uiConfig';
 
 type Props = { superview: View };
 
@@ -15,6 +16,15 @@ export default class BattleFooter {
     this.createViews(props);
   }
 
+  init() {
+    const screen = getScreenDimensions();
+    animate(this.container).then(
+      { opacity: 1, y: screen.height - 80 },
+      animDuration,
+      animate.easeInOut,
+    );
+  }
+
   private createViews(props: Props) {
     const screen = getScreenDimensions();
 
@@ -23,9 +33,10 @@ export default class BattleFooter {
       ...props,
       width: screen.width,
       height: 80,
-      y: screen.height - 80,
+      y: screen.height - 80 + 100,
       infinite: false,
       canHandleEvents: false,
+      opacity: 0,
     });
 
     const buttonAction = new ButtonAction({

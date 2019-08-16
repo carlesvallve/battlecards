@@ -26,7 +26,16 @@ export default class BattleCardNumbers {
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
-    this.createCards(props);
+  }
+
+  init() {
+    this.createCards(this.props);
+
+    animate(this.container).then(
+      { opacity: 1, y: 0 },
+      animDuration,
+      animate.easeInOut,
+    );
   }
 
   private createViews(props: Props) {
@@ -38,10 +47,11 @@ export default class BattleCardNumbers {
       width: screen.width,
       height: screen.height,
       x: 0,
-      y: 0,
+      y: 100,
       infinite: true,
       canHandleEvents: false,
       zIndex: props.zIndex,
+      opacity: 0,
     });
   }
 
@@ -112,7 +122,7 @@ export default class BattleCardNumbers {
 
     // block the combat ui
     blockUi(true);
-    
+
     sounds.playSound('swoosh1', 0.2);
 
     this.updateCardLabels(card);
