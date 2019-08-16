@@ -103,7 +103,7 @@ const slice = createSlice({
       // todo: generate a monster and fill this from monster ruleset, slightly randomized
       state.monster.stats = {
         hp: { current: 12, max: 20, last: 12 },
-        ep: { current: 12, max: 20, last: 12 },
+        ep: { current: 20, max: 20, last: 20 },
         attack: { current: 3, max: 5 },
         defense: { current: 1, max: 5 },
         status: state.monster.stats.status,

@@ -9,7 +9,7 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import ruleset from 'src/redux/ruleset';
 import { CardID } from 'src/redux/ruleset/cards';
 import { animDuration } from 'src/lib/uiConfig';
-import { CardType, CardPlayType, CardStat } from 'src/types/custom';
+import { CardType, CardPlayType, CardStat, Target } from 'src/types/custom';
 import { getScreenDimensions, waitForIt } from 'src/lib/utils';
 
 export type CardMode = 'mini' | 'full';
@@ -47,7 +47,6 @@ export default class Card {
 
   constructor(props: Props) {
     this.props.id = props.id;
-
     this.createViews(props);
     this.setProps(props);
   }
@@ -95,6 +94,7 @@ export default class Card {
     if (props.id) this.props.id = props.id;
     if (props.side) this.props.side = props.side;
     if (props.mode) this.props.mode = props.mode;
+    if (props.scale) this.props.scale = props.scale;
   }
 
   private update(props: Props) {
@@ -382,14 +382,15 @@ export default class Card {
       .then(() => this.infoModifier.hide());
   }
 
-  displayAsStatus(cb: () => void) {
+  displayAsActiveCard(target: Target, cb: () => void) {
     const screen = getScreenDimensions();
 
     this.infoModifier.hide();
     this.infoDetails.hide();
 
-    const x = screen.width - 32;
-    const y = screen.height * ruleset.baselineY + 35;
+    const x = target === 'hero' ? screen.width - 32 : 32;
+    const dTarget = target === 'hero' ? 35 : -35 * 3;
+    const y = screen.height * ruleset.baselineY + dTarget; // target === 'hero' ? 35 : -100;
     const h = this.container.style.width + 5;
 
     //container
@@ -431,7 +432,7 @@ export default class Card {
       });
   }
 
-  displayAsActiveWeapon(x: number, y: number, cb: () => void) {
+  displayAsAlteringAttacks(x: number, y: number, cb: () => void) {
     const screen = getScreenDimensions();
 
     const t = animDuration;
@@ -451,18 +452,20 @@ export default class Card {
       });
   }
 
-  displayAsHand(delay: number, cb: () => void) {
-    const screen = getScreenDimensions();
-    const x = screen.width + 40;
-
+  displayAsReturningToHand(target: Target, delay: number, cb: () => void) {
     this.props.mode = 'mini';
 
+    const x = this.container.style.x + (target === 'hero' ? 20 : -20);
     const t = animDuration * 1;
 
     waitForIt(() => {
       //container
       animate(this.container)
-        .then({ x, scale: 0.225, scaleY: 1, opacity: 0 }, t, animate.easeInOut)
+        .then(
+          { x, scale: this.props.scale, scaleY: 1, opacity: 0 },
+          t,
+          animate.easeInOut,
+        )
         .wait(150)
         .then(() => {
           this.infoHand.show();

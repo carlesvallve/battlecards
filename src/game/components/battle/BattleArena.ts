@@ -46,19 +46,21 @@ export default class BattleArena {
   private footer: BattleFooter;
   private battleGround: View;
   private monsterImage: MonsterImage;
-  private cardDeck: BattleCardDeck;
-  private cardHand: BattleCardHand;
+  // private cardDeck: BattleCardDeck;
+  // private cardHand: BattleCardHand;
   private overlay: BattleOverlay;
   private components: {
     hero: {
       meter: ProgressMeter;
       attackIcons: AttackIcons;
       cardNumbers: BattleCardNumbers;
+      cardHand: BattleCardHand;
     };
     monster: {
       meter: ProgressMeter;
       attackIcons: AttackIcons;
       cardNumbers: BattleCardNumbers;
+      cardHand: BattleCardHand;
     };
   };
 
@@ -69,7 +71,8 @@ export default class BattleArena {
   }
 
   init() {
-    this.cardDeck.init();
+    // this.cardDeck.init();
+    this.startGame();
   }
 
   startGame() {
@@ -82,7 +85,9 @@ export default class BattleArena {
     this.components.monster.cardNumbers.init();
 
     // generate card decks
-    this.cardHand.init();
+    this.components.hero.cardHand.init();
+    this.components.monster.cardHand.init();
+    // this.cardHand.init();
 
     // generate a new combat
     newCombat(getRandomMonsterID());
@@ -149,7 +154,7 @@ export default class BattleArena {
       Object.keys(values).forEach((target) => {
         let damage = values[target].last - values[target].current;
         if (damage > 0) {
-          this.renderDamage('melee', combat.enemy, damage);
+          this.renderDamage('spell', combat.enemy, damage);
           if (values[target].current <= 0) this.killMonster();
         }
       });
@@ -161,12 +166,16 @@ export default class BattleArena {
     if (value) {
       this.components.hero.meter.showMeter();
       this.components.monster.meter.showMeter();
+      // this.components.hero.cardHand.showHand();
+      // this.components.monster.cardHand.showHand();
       this.monsterImage.playAttackAnimationEnd();
     } else {
       this.components.hero.meter.hideMeter();
       this.components.monster.meter.hideMeter();
+      this.components.hero.cardHand.hideHand();
+      this.components.monster.cardHand.hideHand();
       this.monsterImage.playAttackAnimationStart();
-      this.cardHand.hideHand();
+      // this.cardHand.hideHand();
     }
   }
 
@@ -176,7 +185,7 @@ export default class BattleArena {
     this.displayMeters(false);
 
     // all active cards that cannot be played are returned to the user hand
-    this.cardHand.returnActiveCardsToHand(null);
+    this.components.hero.cardHand.returnActiveCardsToHand(null);
 
     // generate a new combat
     waitForIt(() => {
@@ -238,19 +247,21 @@ export default class BattleArena {
     setMeter(loser, 0);
 
     // hide the user's card hand
-    this.cardHand.hideHand();
+    this.components.hero.cardHand.hideHand();
+    this.components.monster.cardHand.hideHand();
 
     // all active cards that cannot be played are returned to the user hand
-    this.cardHand.returnActiveCardsToHand(winner);
+    this.components[winner].cardHand.returnActiveCardsToHand(winner);
+    this.components[loser].cardHand.returnActiveCardsToHand(winner);
 
     // create attack icons
     waitForIt(() => {
-      this.createAttackIcons({ winner, loser, attacks }, () => {
-        // apply additional attacks if we have any active cards on the right
+      this.createAttackIcons(result, () => {
+        // apply additional attacks if we have any in active cards
         this.applyAdditionalAttacks(result, (newAttacks: number) => {
           result.attacks += newAttacks;
 
-          // apply additional blocks
+          // apply additional blocks if we have any in active cards
           this.applyAdditionalBlocks(result, (newBlocks: number) => {
             result.attacks -= newBlocks;
 
@@ -263,6 +274,11 @@ export default class BattleArena {
   }
 
   finalAttackOutcome(result: CombatResult) {
+    // all active cards that cannot be played are returned to the user hand
+    // const { winner, loser } = result;
+    // this.components[winner].cardHand.returnActiveCardsToHand(winner);
+    // this.components[loser].cardHand.returnActiveCardsToHand(loser);
+
     // skip attacking sequence
     if (result.attacks <= 0) {
       resetCombatTurn();
@@ -285,27 +301,29 @@ export default class BattleArena {
     let newBlocks = 0;
 
     // todo: enemies will be able to block too in the future
-    if (loser === 'monster') {
-      waitForIt(() => cb && cb(newBlocks), 0);
-      return;
-    }
+    // if (loser === 'monster') {
+    //   waitForIt(() => cb && cb(newBlocks), 0);
+    //   return;
+    // }
 
-    const shieldCards = this.cardHand.getActiveCardsOfType('shield');
+    const shieldCards = this.components[loser].cardHand.getActiveCardsOfType(
+      'shield',
+    );
 
     // for each shield card
     shieldCards.forEach((card, index) => {
       waitForIt(() => {
         // todo: change the name os this function to displayAsActiveCardEffect (?)
-        card.displayAsActiveWeapon(
+        card.displayAsAlteringAttacks(
           screen.width * 0.5 + (attacks * 40) / 2,
           115,
           () => {
             const index = newBlocks;
-            this.components.monster.attackIcons.removeIcon(() => {});
+            this.components[winner].attackIcons.removeIcon(() => {});
             newBlocks++;
           },
         );
-        this.cardHand.activeCardHasBeenPlayed(card);
+        this.components[loser].cardHand.activeCardHasBeenPlayed(card);
       }, index * 1000);
     });
 
@@ -317,33 +335,33 @@ export default class BattleArena {
     result: CombatResult,
     cb: (newAttacks: number) => void,
   ) {
-    // currentAttacks: number) {
     const { winner, loser, attacks } = result;
     let newAttacks = 0;
 
     // todo: enemies will be able to add attacks too in the future
-    if (winner === 'monster') {
-      waitForIt(() => cb && cb(newAttacks), 0);
-      return;
-    }
+    // if (winner === 'monster') {
+    //   waitForIt(() => cb && cb(newAttacks), 0);
+    //   return;
+    // }
 
     const screen = getScreenDimensions();
-    const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
-    console.log('>>> weaponCards', weaponCards);
+    const weaponCards = this.components[winner].cardHand.getActiveCardsOfType(
+      'weapon',
+    );
 
     // for each card
     weaponCards.forEach((card, index) => {
       waitForIt(() => {
-        card.displayAsActiveWeapon(
+        card.displayAsAlteringAttacks(
           screen.width * 0.5 + (attacks * 40) / 2,
           screen.height - 120,
           () => {
             const index = attacks + newAttacks;
-            this.components.hero.attackIcons.addIcon(index, () => {});
+            this.components[winner].attackIcons.addIcon(index, () => {});
             newAttacks++;
           },
         );
-        this.cardHand.activeCardHasBeenPlayed(card);
+        this.components[winner].cardHand.activeCardHasBeenPlayed(card);
       }, index * 1000);
     });
 
@@ -500,7 +518,8 @@ export default class BattleArena {
         console.log('*************************************************');
 
         if (!combat[enemy].resolved) target = changeTarget();
-        this.cardHand.showHand();
+        this.components.hero.cardHand.showHand();
+        this.components.monster.cardHand.showHand();
         blockUi(target !== 'hero');
       }, 350);
     }
@@ -578,6 +597,12 @@ export default class BattleArena {
           target: 'hero',
           zIndex: 2,
         }),
+
+        cardHand: new BattleCardHand({
+          superview: this.container,
+          target: 'hero',
+          zIndex: 1,
+        }),
       },
 
       monster: {
@@ -602,21 +627,27 @@ export default class BattleArena {
           target: 'monster',
           zIndex: 2,
         }),
+
+        cardHand: new BattleCardHand({
+          superview: this.container,
+          target: 'monster',
+          zIndex: 1,
+        }),
       },
     };
 
-    this.cardDeck = new BattleCardDeck({
-      superview: this.container,
-      zIndex: 1,
-      target: 'hero',
-      startGame: this.startGame.bind(this),
-    });
+    // this.cardDeck = new BattleCardDeck({
+    //   superview: this.container,
+    //   zIndex: 1,
+    //   target: 'hero',
+    //   startGame: this.startGame.bind(this),
+    // });
 
-    this.cardHand = new BattleCardHand({
-      superview: this.container,
-      zIndex: 1,
-      target: 'hero',
-    });
+    // this.cardHand = new BattleCardHand({
+    //   superview: this.container,
+    //   zIndex: 1,
+    //   target: 'hero',
+    // });
 
     this.header = new BattleHeader({
       superview: this.container,

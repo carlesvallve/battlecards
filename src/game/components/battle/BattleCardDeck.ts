@@ -3,7 +3,11 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import Card from '../cards/Card';
 import BattleCardDetails from './BattleCardDetails';
-import { getScreenDimensions, getRandomItemsFromArr } from 'src/lib/utils';
+import {
+  getScreenDimensions,
+  getRandomItemsFromArr,
+  shuffleArray,
+} from 'src/lib/utils';
 import uiConfig, { animDuration } from 'src/lib/uiConfig';
 import ruleset from 'src/redux/ruleset';
 import { CardType, Target } from 'src/types/custom';
@@ -25,13 +29,13 @@ export default class BattleCardDeck {
   private deckCards: Card[];
   private cardDetails: BattleCardDetails;
 
-  public static deckData: {
+  public static cards: {
     hero: CardID[];
     monster: CardID[];
   };
 
   constructor(props: Props) {
-    BattleCardDeck.deckData = { hero: [], monster: [] };
+    BattleCardDeck.cards = { hero: [], monster: [] };
 
     this.props = props;
     this.createViews(props);
@@ -57,6 +61,7 @@ export default class BattleCardDeck {
 
     this.cardDetails = new BattleCardDetails({
       superview: this.container,
+      target: props.target,
       zIndex: 2,
     });
 
@@ -112,13 +117,7 @@ export default class BattleCardDeck {
     const spells = this.getRandomCardsOfType('spell', 2);
     const potions = this.getRandomCardsOfType('potion', 2);
 
-    const deckData = [
-      ...modifiers,
-      ...weapons,
-      ...shields,
-      ...spells,
-      ...potions,
-    ];
+    const cards = [...modifiers, ...weapons, ...shields, ...spells, ...potions];
 
     this.deckCards = [];
 
@@ -126,7 +125,7 @@ export default class BattleCardDeck {
     const dx = 77;
     const dy = 110;
 
-    deckData.forEach((id, index) => {
+    cards.forEach((id, index) => {
       const coords = {
         x: index % columns,
         y: Math.floor(index / columns),
@@ -165,18 +164,40 @@ export default class BattleCardDeck {
       this.deckCards.push(card);
     });
 
-    BattleCardDeck.deckData[this.props.target] = deckData;
-    console.log('>>> deckCards', deckData, this.deckCards);
+    BattleCardDeck.cards[this.props.target] = cards;
+    console.log('>>> deckCards', cards, this.deckCards);
   }
 
-  getRandomCardsOfType(type: CardType, max: number): CardID[] {
+  private getRandomCardsOfType(type: CardType, max: number): CardID[] {
     return getRandomItemsFromArr(this.getAllCardsOfType(type), max);
   }
 
-  getAllCardsOfType(type: CardType): CardID[] {
+  private getAllCardsOfType(type: CardType): CardID[] {
     return ruleset.cardIds.filter((id) => {
       const card = ruleset.cards[id];
       return card.type === type;
     });
+  }
+
+  public static reshuffle(target: Target) {
+    shuffleArray(BattleCardDeck.cards[target]);
+  }
+
+  // public static extractCards(target: Target, max: number) {
+  //   return BattleCardDeck.cards[target].splice(0, max);
+  // }
+
+  // public static insertCards(target: Target, arr: CardID[]) {
+  //   arr.forEach((id) => {
+  //     BattleCardDeck.cards[target].push(id);
+  //   })
+  // }
+
+  public static extract(target: Target) {
+    return BattleCardDeck.cards[target].splice(0, 1);
+  }
+
+  public static insert(target: Target, id: CardID) {
+    BattleCardDeck.cards[target].push(id);
   }
 }

@@ -11,75 +11,75 @@ const cards = {
   // ============================================
   // modifier
 
-  one: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 1, max: 1 } as CardStat,
-    image: null,
-    name: '+1',
-    desc: 'Adds +1 to your combat meter',
-    ep: 5,
-  },
+  // one: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 1, max: 1 } as CardStat,
+  //   image: null,
+  //   name: '+1',
+  //   desc: 'Adds +1 to your combat meter',
+  //   ep: 5,
+  // },
 
-  two: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 2, max: 2 } as CardStat,
-    image: null,
-    name: '+2',
-    desc: 'Adds +2 to your combat meter',
-    ep: 5,
-  },
+  // two: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 2, max: 2 } as CardStat,
+  //   image: null,
+  //   name: '+2',
+  //   desc: 'Adds +2 to your combat meter',
+  //   ep: 5,
+  // },
 
-  three: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 3, max: 3 } as CardStat,
-    image: null,
-    name: '+3',
-    desc: 'Adds +3 to your combat meter',
-    ep: 5,
-  },
+  // three: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 3, max: 3 } as CardStat,
+  //   image: null,
+  //   name: '+3',
+  //   desc: 'Adds +3 to your combat meter',
+  //   ep: 5,
+  // },
 
-  six: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 3, max: 3 } as CardStat,
-    image: null,
-    name: '+6',
-    desc: 'Adds +6 to your combat meter',
-    ep: 5,
-  },
+  // six: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 3, max: 3 } as CardStat,
+  //   image: null,
+  //   name: '+6',
+  //   desc: 'Adds +6 to your combat meter',
+  //   ep: 5,
+  // },
 
-  oneToThree: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 1, max: 3, randomMode: 'BETWEEN' } as CardStat,
-    image: null,
-    name: '1-3',
-    desc: 'Adds a random value between 1 and 3 to your combat meter',
-    ep: 5,
-  },
+  // oneToThree: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 1, max: 3, randomMode: 'BETWEEN' } as CardStat,
+  //   image: null,
+  //   name: '1-3',
+  //   desc: 'Adds a random value between 1 and 3 to your combat meter',
+  //   ep: 5,
+  // },
 
-  oneToFive: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 1, max: 5, randomMode: 'BETWEEN' } as CardStat,
-    image: null,
-    name: '1-5',
-    desc: 'Adds a random value between 1 and 5 to your combat meter',
-    ep: 5,
-  },
+  // oneToFive: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 1, max: 5, randomMode: 'BETWEEN' } as CardStat,
+  //   image: null,
+  //   name: '1-5',
+  //   desc: 'Adds a random value between 1 and 5 to your combat meter',
+  //   ep: 5,
+  // },
 
-  oneOrTen: {
-    playType: 'modifier' as CardPlayType,
-    type: 'modifier' as CardType,
-    value: { min: 1, max: 10, randomMode: 'OR' } as CardStat,
-    image: null,
-    name: '1/10',
-    desc: 'Adds either +1 or +10 to your combat meter',
-    ep: 5,
-  },
+  // oneOrTen: {
+  //   playType: 'modifier' as CardPlayType,
+  //   type: 'modifier' as CardType,
+  //   value: { min: 1, max: 10, randomMode: 'OR' } as CardStat,
+  //   image: null,
+  //   name: '1/10',
+  //   desc: 'Adds either +1 or +10 to your combat meter',
+  //   ep: 5,
+  // },
 
   // ============================================
   // shield

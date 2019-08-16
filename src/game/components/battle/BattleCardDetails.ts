@@ -22,6 +22,7 @@ import { Target } from 'src/types/custom';
 
 type Props = {
   superview: View;
+  target: Target;
   zIndex: number;
   cardHasBeenPlayedHandler?: (card: Card, remainActive: boolean) => void;
 };
@@ -215,7 +216,7 @@ export default class BattleCardDetails {
   playCard(card: Card) {
     // check if the card can be played
     const { combat } = StateObserver.getState();
-    const target = getTarget(StateObserver.getState());
+    const target = this.props.target; // getTarget(StateObserver.getState());
     const cost = card.getData().ep;
     if (cost > combat[target].stats.ep.current) {
       console.warn('Not enough EP to play this card!');
@@ -277,7 +278,7 @@ export default class BattleCardDetails {
       card.displayAsConsumed();
 
       // throw the redux dice
-      const { target } = StateObserver.getState().combat;
+      const { target } = this.props; // StateObserver.getState().combat;
       throwDice(target, diceModifier);
     });
   }
@@ -291,7 +292,7 @@ export default class BattleCardDetails {
     this.props.cardHasBeenPlayedHandler(card, true);
 
     // transform card into status card icon
-    card.displayAsStatus(() => {});
+    card.displayAsActiveCard(this.props.target, () => {});
   }
 
   playPotion(card: Card) {
@@ -303,9 +304,23 @@ export default class BattleCardDetails {
     const x = screen.width * 0.26;
     const y = screen.height - (data.value.type === 'hp' ? 55 : 25);
 
+    // const type = data.value.type;
+    // let offset = { x: 0, y: 0 };
+    // if (this.props.target === 'hero') {
+    //   offset = { x: -100, y: type === 'hp' ? 55 : 25 };
+    // } else {
+    //   offset = { x: type === 'hp' ? -55 : 55, y: -50 };
+    // }
+
+    // const type = data.value.type;
+    // const offset =
+    //   this.props.target === 'hero'
+    //     ? { x: -100, y: type === 'hp' ? 55 : 25 }
+    //     : { x: type === 'hp' ? -55 : 55, y: -50 };
+
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();
-      const target = getTarget(StateObserver.getState());
+      const { target } = this.props; // getTarget(StateObserver.getState());
       addStat(target, data.value.type, { current: data.value.min });
       sounds.playSound('break2', 0.2);
     });
@@ -323,9 +338,14 @@ export default class BattleCardDetails {
     const x = screen.width * 0.5;
     const y = screen.height * ruleset.baselineY - 100;
 
+    // const offset = {
+    //   x: -100,
+    //   y: this.props.target === 'hero' ? -100 : 100
+    // }
+
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();
-      const target = getTarget(StateObserver.getState());
+      const { target } = this.props; // getTarget(StateObserver.getState());
       const enemy = getTargetEnemy(target);
 
       addStat(enemy, 'hp', { current: -data.value.min });
@@ -351,8 +371,8 @@ export default class BattleCardDetails {
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;
     const y = screen.height * ruleset.baselineY - 100;
-    // displayAsInstant displayAsActiveWeapon
-    card.displayAsActiveWeapon(x, y, () => {
+    // displayAsInstant displayAsAlteringAttacks
+    card.displayAsAlteringAttacks(x, y, () => {
       card.displayAsConsumed();
     });
 

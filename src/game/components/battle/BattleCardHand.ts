@@ -16,6 +16,7 @@ import { CardData, CardID } from 'src/redux/ruleset/cards';
 import ButtonScaleViewWithText from 'src/lib/views/ButtonScaleViewWithText';
 import bitmapFonts from 'src/lib/bitmapFonts';
 import LangBitmapFontTextView from 'src/lib/views/LangBitmapFontTextView';
+import BattleCardDeck from './BattleCardDeck';
 
 type Props = { superview: View; zIndex: number; target: Target };
 
@@ -33,6 +34,7 @@ export default class BattleCardHand {
 
   constructor(props: Props) {
     this.props = props;
+
     this.createViews(props);
   }
 
@@ -57,6 +59,7 @@ export default class BattleCardHand {
 
     this.cardDetails = new BattleCardDetails({
       superview: this.container,
+      target: props.target,
       zIndex: 2,
       cardHasBeenPlayedHandler: this.cardHasBeenPlayed.bind(this),
     });
@@ -69,8 +72,19 @@ export default class BattleCardHand {
     this.activeCards = [];
     this.usedCards = [];
 
+    // on start, we want to shuffle the deck, then put the first 5 cards in to the hand
+    // each time we need to pick a new card, we'll get it from the first position of the deck
+    // each time we use or discard a card, we'll add it to the last position of the deck
+    // when the deck is empty, or we use the last original card, it will be reshuffled
+
+    const { target } = props;
+
+    console.log('>>>>>>>>>>>>>>', target);
+
+    // BattleCardDeck.reshuffle(target);
+
     for (let i = 0; i < maxCards; i++) {
-      const card = this.createRandomCard(i);
+      const card = this.createRandomCard(i); // BattleCardDeck.extract(target) //
       this.handCards.push(card);
     }
 
@@ -88,7 +102,7 @@ export default class BattleCardHand {
       x: 40 + i * 60,
       y: this.getBasePosY(),
       r: 0,
-      scale: 0.225,
+      scale: this.getBaseScale(), // 0.225,
       onClick: () => this.cardDetails.showCardDetails(card),
     });
 
@@ -114,30 +128,29 @@ export default class BattleCardHand {
     const screen = getScreenDimensions();
     const center = screen.width / 2;
     const max = this.handCards.length - 1;
-    const dx = 60;
+    const dx = this.props.target === 'hero' ? 60 : 60 * 0.45;
 
-    const t = animDuration; //this.active ? animDuration : 0;
+    const t = animDuration;
 
     this.handCards.forEach((card, index) => {
       const x = center - (max * dx) / 2 + index * dx;
       const y = this.getBasePosY();
 
-      animate(card.getView())
-        // .clear()
-        .then({ x, y }, t, animate.easeInOut);
+      animate(card.getView()).then({ x, y }, t, animate.easeInOut);
     });
   }
 
-  private updateCardStatusPositions() {
+  private updateCardActivePositions() {
     const screen = getScreenDimensions();
-    const center = screen.height * ruleset.baselineY + 35;
+    const dTarget = this.props.target === 'hero' ? 35 : -35 * 3;
+    const center = screen.height * ruleset.baselineY + dTarget;
     const max = this.activeCards.length - 1;
-    const dy = 50;
+    const dy = 50; // this.props.target === 'hero' ? 50 : 200;
 
-    const t = animDuration; //this.active ? animDuration : 0;
+    const t = animDuration;
 
     this.activeCards.forEach((card, index) => {
-      const x = screen.width - 32;
+      const x = this.props.target === 'hero' ? screen.width - 32 : 32;
       const y = center - max * dy + index * dy;
 
       animate(card.getView())
@@ -148,8 +161,15 @@ export default class BattleCardHand {
 
   private getBasePosY() {
     const screen = getScreenDimensions();
-    const baseY = screen.height - 130;
-    return baseY + (this.active ? 0 : 30);
+    // const baseY = screen.height - 130;
+    const baseY = this.props.target === 'hero' ? screen.height - 130 : 95;
+    const dy = this.props.target === 'hero' ? 30 : -30;
+    return baseY + (this.active ? 0 : dy);
+  }
+
+  private getBaseScale() {
+    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.45;
+    return scale;
   }
 
   // ===================================================
@@ -168,7 +188,7 @@ export default class BattleCardHand {
     sounds.playSound('swoosh1', 0.1);
     this.active = true;
 
-    this.handCards.forEach((card, index) => {
+    this.handCards.forEach((card) => {
       card.getView().show();
       animate(card.getView()).then(
         { y: this.getBasePosY(), opacity: 1 },
@@ -184,7 +204,7 @@ export default class BattleCardHand {
     sounds.playSound('swoosh1', 0.1);
     this.active = false;
 
-    this.handCards.forEach((card, index) => {
+    this.handCards.forEach((card) => {
       animate(card.getView())
         .then(
           { y: this.getBasePosY(), opacity: 0 },
@@ -221,7 +241,7 @@ export default class BattleCardHand {
 
     // reposition remaining cards
     this.updateCardHandPositions();
-    this.updateCardStatusPositions();
+    this.updateCardActivePositions();
   }
 
   activeCardHasBeenPlayed(card: Card) {
@@ -235,7 +255,14 @@ export default class BattleCardHand {
     this.usedCards.push(removedCard);
 
     // reposition remaining cards
-    this.updateCardStatusPositions();
+    this.updateCardActivePositions();
+
+    console.log(
+      '>>> active',
+      card.getID(),
+      'has been played by',
+      this.props.target,
+    );
   }
 
   returnCardToHand(card: Card) {
@@ -250,7 +277,8 @@ export default class BattleCardHand {
 
     // reposition remaining cards
     this.updateCardHandPositions();
-    // this.updateCardStatusPositions();
+    // this.updateCardActivePositions();
+    console.log('>>>', card.getID(), 'has been returned to', this.props.target);
   }
 
   returnActiveCardsToHand(winner: Target) {
@@ -261,6 +289,15 @@ export default class BattleCardHand {
       cardsToDiscard = this.getActiveCardsOfPlayType(
         isWin ? 'defensive' : 'offensive',
       );
+      console.log(
+        '=========== winner:',
+        winner,
+        'target:',
+        this.props.target,
+        'isWin:',
+        isWin,
+        cardsToDiscard,
+      );
     } else {
       cardsToDiscard = this.activeCards;
     }
@@ -268,7 +305,10 @@ export default class BattleCardHand {
     // return discarded cards to hand
     cardsToDiscard.forEach((card, index) => {
       const delay = index * animDuration * 0.5;
-      card.displayAsHand(delay, () => this.returnCardToHand(card));
+      console.log('>>> returning', card.getID(), 'to hand...');
+      card.displayAsReturningToHand(this.props.target, delay, () =>
+        this.returnCardToHand(card),
+      );
     });
   }
 
