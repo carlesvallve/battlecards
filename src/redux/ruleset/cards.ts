@@ -109,7 +109,7 @@ const cards = {
   // shield
 
   buckler: {
-    playType: 'equipment' as CardPlayType,
+    playType: 'defensive' as CardPlayType,
     type: 'shield' as CardType,
     value: { min: 1 } as CardStat,
     image: 'resources/images/cards/shields/round-shield.png',
@@ -119,7 +119,7 @@ const cards = {
   },
 
   shield: {
-    playType: 'equipment' as CardPlayType,
+    playType: 'defensive' as CardPlayType,
     type: 'shield' as CardType,
     value: { min: 2 } as CardStat,
     image: 'resources/images/cards/shields/griffin-shield.png',
@@ -129,7 +129,7 @@ const cards = {
   },
 
   superiorShield: {
-    playType: 'equipment' as CardPlayType,
+    playType: 'defensive' as CardPlayType,
     type: 'shield' as CardType,
     value: { min: 3 } as CardStat,
     image: 'resources/images/cards/shields/winged-shield.png',
@@ -142,7 +142,7 @@ const cards = {
   // weapon
 
   dagger: {
-    playType: 'equipment' as CardPlayType,
+    playType: 'offensive' as CardPlayType,
     type: 'weapon' as CardType,
     value: { min: 1, max: 1 } as CardStat,
     image: 'resources/images/cards/weapons/machete.png',
@@ -153,7 +153,7 @@ const cards = {
   },
 
   // sword: {
-  //   playType: 'equipment' as CardPlayType,
+  //   playType: 'offensive' as CardPlayType,
   //   type: 'weapon' as CardType,
   //   value: { min: 2, max: 2 } as CardStat,
   //   image: 'resources/images/cards/weapons/sword-brandish.png',
@@ -164,7 +164,7 @@ const cards = {
   // },
 
   // superiorSword: {
-  //   playType: 'equipment' as CardPlayType,
+  //   playType: 'offensive' as CardPlayType,
   //   type: 'weapon' as CardType,
   //   value: { min: 3, max: 3 } as CardStat,
   //   image: 'resources/images/cards/weapons/pointy-sword.png',
@@ -175,7 +175,7 @@ const cards = {
   // },
 
   // axe: {
-  //   playType: 'equipment' as CardPlayType,
+  //   playType: 'offensive' as CardPlayType,
   //   type: 'weapon' as CardType,
   //   value: { min: 2, max: 2 } as CardStat,
   //   image: 'resources/images/cards/weapons/battered-axe.png',
@@ -186,7 +186,7 @@ const cards = {
   // },
 
   greatAxe: {
-    playType: 'equipment' as CardPlayType,
+    playType: 'offensive' as CardPlayType,
     type: 'weapon' as CardType,
     value: { min: 3, max: 3 } as CardStat,
     image: 'resources/images/cards/weapons/sharp-axe.png',
@@ -197,7 +197,7 @@ const cards = {
   },
 
   // club: {
-  //   playType: 'equipment' as CardPlayType,
+  //   playType: 'offensive' as CardPlayType,
   //   type: 'weapon' as CardType,
   //   value: { min: 1, max: 1 } as CardStat,
   //   image: 'resources/images/cards/weapons/wood-club.png',
@@ -208,7 +208,7 @@ const cards = {
   // },
 
   flail: {
-    playType: 'equipment' as CardPlayType,
+    playType: 'offensive' as CardPlayType,
     type: 'weapon' as CardType,
     value: { min: 3, max: 3 } as CardStat,
     image: 'resources/images/cards/weapons/flail.png',

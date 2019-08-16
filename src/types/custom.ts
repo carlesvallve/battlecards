@@ -25,7 +25,12 @@ export type PopupOpts = {
 
 // cards
 
-export type CardPlayType = 'modifier' | 'equipment' | 'playable' | 'instant';
+export type CardPlayType =
+  | 'modifier'
+  | 'offensive'
+  | 'defensive'
+  | 'playable'
+  | 'instant';
 
 export type CardType = 'modifier' | 'shield' | 'weapon' | 'potion' | 'spell';
 

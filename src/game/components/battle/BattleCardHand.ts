@@ -7,9 +7,9 @@ import { getScreenDimensions } from 'src/lib/utils';
 import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
-import { CardType } from 'src/types/custom';
+import { CardType, CombatResult, Target, CardPlayType } from 'src/types/custom';
 
-type Props = { superview: View; zIndex: number };
+type Props = { superview: View; zIndex: number; target: Target };
 
 const maxCards = 5;
 
@@ -240,8 +240,20 @@ export default class BattleCardHand {
     // this.updateCardStatusPositions();
   }
 
-  returnActiveCardsToHand() {
-    this.activeCards.forEach((card, index) => {
+  returnActiveCardsToHand(winner: Target) {
+    // get active cards that cannot be played
+    let cardsToDiscard = [];
+    if (winner) {
+      const isWin = winner === this.props.target;
+      cardsToDiscard = this.getActiveCardsOfPlayType(
+        isWin ? 'defensive' : 'offensive',
+      );
+    } else {
+      cardsToDiscard = this.activeCards;
+    }
+
+    // return discarded cards to hand
+    cardsToDiscard.forEach((card, index) => {
       const delay = index * animDuration * 0.5;
       card.displayAsHand(delay, () => this.returnCardToHand(card));
     });
@@ -257,6 +269,12 @@ export default class BattleCardHand {
   getActiveCardsOfType(type: CardType): Card[] {
     return this.activeCards.filter((card, index) => {
       return ruleset.cards[card.getID()].type === type;
+    });
+  }
+
+  getActiveCardsOfPlayType(type: CardPlayType): Card[] {
+    return this.activeCards.filter((card, index) => {
+      return ruleset.cards[card.getID()].playType === type;
     });
   }
 }

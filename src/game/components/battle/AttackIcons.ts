@@ -95,7 +95,7 @@ export default class AttackIcons {
     return icon;
   }
 
-  removeIcon() {
+  public removeIcon(cb?: () => void) {
     const icon = this.icons.shift();
     if (!icon) return;
 
@@ -104,7 +104,10 @@ export default class AttackIcons {
     const x = icon.style.x + d / 2;
     const x2 = this.container.style.x - d / 2;
 
-    this.animateIconOut(icon, { t, x, x2 }, () => icon.removeFromSuperview());
+    this.animateIconOut(icon, { t, x, x2 }, () => {
+      icon.removeFromSuperview();
+      cb && cb();
+    });
   }
 
   // animations

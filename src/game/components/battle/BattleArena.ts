@@ -20,6 +20,7 @@ import {
   addStat,
   getRandomMonsterID,
   setMeter,
+  getTarget,
 } from 'src/redux/shortcuts/combat';
 
 import ProgressMeter from './ProgressMeter';
@@ -154,6 +155,9 @@ export default class BattleArena {
     this.monsterImage.playDeathAnimation();
     this.displayMeters(false);
 
+    // all active cards that cannot be played are returned to the user hand
+    this.cardHand.returnActiveCardsToHand(null);
+
     // generate a new combat
     waitForIt(() => {
       newCombat(getRandomMonsterID());
@@ -217,29 +221,76 @@ export default class BattleArena {
     this.cardHand.hideHand();
 
     // all active cards that cannot be played are returned to the user hand
-    // const weaponCards = this.cardHand.getActiveCardsOfType('weapon');
-    this.cardHand.hideHand();
-
-    // if (winner === StateObserver.getState().combat.target) {
-    this.cardHand.returnActiveCardsToHand();
-    // }
+    this.cardHand.returnActiveCardsToHand(winner);
 
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons({ winner, loser, attacks }, () => {
-        // apply additional attacks if wevhave any active cards on the right
+        // apply additional attacks if we have any active cards on the right
         this.applyAdditionalAttacks(result, (newAttacks: number) => {
-          // start attacking sequence
           result.attacks += newAttacks;
 
-          this.startAttackingSequence(result, () => {
-            waitForIt(() => {
-              resetCombatTurn();
-            }, 150);
+          // apply additional blocks
+          this.applyAdditionalBlocks(result, (newBlocks: number) => {
+            result.attacks -= newBlocks;
+
+            // decide final attack outcome
+            this.finalAttackOutcome(result);
           });
         });
       });
     }, animDuration * 2);
+  }
+
+  finalAttackOutcome(result: CombatResult) {
+    // skip attacking sequence
+    if (result.attacks <= 0) {
+      resetCombatTurn();
+      return;
+    }
+
+    // start attacking sequence
+    this.startAttackingSequence(result, () => {
+      waitForIt(() => {
+        resetCombatTurn();
+      }, 150);
+    });
+  }
+
+  applyAdditionalBlocks(
+    result: CombatResult,
+    cb: (newAttacks: number) => void,
+  ) {
+    const { winner, loser, attacks } = result;
+    let newBlocks = 0;
+
+    // todo: enemies will be able to block too in the future
+    if (loser === 'monster') {
+      waitForIt(() => cb && cb(newBlocks), 0);
+      return;
+    }
+
+    const shieldCards = this.cardHand.getActiveCardsOfType('shield');
+
+    // for each shield card
+    shieldCards.forEach((card, index) => {
+      waitForIt(() => {
+        // todo: change the name os this function to displayAsActiveCardEffect (?)
+        card.displayAsActiveWeapon(
+          screen.width * 0.5 + (attacks * 40) / 2,
+          115,
+          () => {
+            const index = newBlocks;
+            this.components.monster.attackIcons.removeIcon(() => {});
+            newBlocks++;
+          },
+        );
+        this.cardHand.activeCardHasBeenPlayed(card);
+      }, index * 1000);
+    });
+
+    // return callback once all blocks have been added
+    waitForIt(() => cb && cb(newBlocks), 1100 * shieldCards.length);
   }
 
   applyAdditionalAttacks(
@@ -247,12 +298,11 @@ export default class BattleArena {
     cb: (newAttacks: number) => void,
   ) {
     // currentAttacks: number) {
-    const { winner, loser, attacks, isOverhead } = result;
+    const { winner, loser, attacks } = result;
     let newAttacks = 0;
 
     // todo: enemies will be able to add attacks too in the future
     if (winner === 'monster') {
-      // if (winner !== StateObserver.getState().combat.target) {
       waitForIt(() => cb && cb(newAttacks), 0);
       return;
     }
@@ -297,7 +347,6 @@ export default class BattleArena {
     this.displayMeters(false);
 
     const t = 350;
-    console.log('========== ATTACKS', result.attacks);
 
     waitForIt(() => {
       for (let i = 0; i < result.attacks; i++) {
@@ -385,7 +434,7 @@ export default class BattleArena {
     const currentMeter = combat[target].meter;
     const left = combat[target].maxSteps - currentMeter;
 
-    const precaucious = 0.5; // 0: agressive 1: normal 2: coward
+    const precaucious = 1.0; // 0: agressive 1: normal 2: coward
     const r = getRandomInt(1, 6) * precaucious;
 
     if (r <= left) {
@@ -523,6 +572,7 @@ export default class BattleArena {
     this.cardHand = new BattleCardHand({
       superview: this.container,
       zIndex: 1,
+      target: 'hero',
     });
 
     const header = new BattleHeader({
