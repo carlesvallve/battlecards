@@ -220,7 +220,7 @@ export default class BattleArena {
   checkCombatResult(combat: Combat) {
     const { target, enemy } = combat;
 
-    // if someone overheaded, resolve the combat
+    // if someone overheaded, resolve the combat as an overhead
     if (combat[target].overhead > 0 || combat[enemy].overhead > 0) {
       const overhead = combat[target].overhead;
       console.log('combat-flow:', 'OVERHEAD!', overhead);
@@ -240,12 +240,9 @@ export default class BattleArena {
 
     console.log('>>> COMBAT IS RESOLVED!');
 
-    // if it's a draw, reset both meters to 0 and call it  day
+    // if it's a draw, resolve the combat as a draw
     if (combat[target].meter === combat[enemy].meter) {
-      waitForIt(() => {
-        sounds.playSound('item2', 1);
-        resetCombatTurn();
-      }, 350);
+      this.resolveCombatDraw();
       return true;
     }
 
@@ -261,6 +258,19 @@ export default class BattleArena {
     });
 
     return true;
+  }
+
+  resolveCombatDraw() {
+    sounds.playSound('item2', 1);
+    this.components.hero.cardHand.hideHand();
+    this.components.monster.cardHand.hideHand();
+    this.components.hero.cardHand.returnActiveCardsToHand(null);
+    this.components.monster.cardHand.returnActiveCardsToHand(null);
+
+    waitForIt(() => {
+      sounds.playSound('item3', 1);
+      resetCombatTurn();
+    }, 350);
   }
 
   resolveCombat(result: CombatResult) {

@@ -455,7 +455,7 @@ export default class Card {
   displayAsReturningToHand(target: Target, delay: number, cb: () => void) {
     this.props.mode = 'mini';
 
-    const x = this.container.style.x + (target === 'hero' ? 20 : -20);
+    const x = target === 'hero' ? screen.width + 30 : -30;
     const t = animDuration * 1;
 
     waitForIt(() => {

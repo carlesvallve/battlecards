@@ -275,7 +275,7 @@ export default class BattleCardHand {
 
     // return discarded cards to hand
     cardsToDiscard.forEach((card, index) => {
-      const delay = index * animDuration * 0.5;
+      const delay = index * animDuration * 0.2;
       console.log('>>> returning', card.getID(), 'to hand...');
       card.displayAsReturningToHand(this.props.target, delay, () =>
         this.returnCardToHand(card),
