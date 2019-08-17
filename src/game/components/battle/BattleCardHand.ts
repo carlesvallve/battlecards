@@ -46,8 +46,8 @@ export default class BattleCardHand {
   // ========================================================
 
   private createDeck(): CardID[] {
-    const modifiers = this.getRandomCardsOfType('modifier', 4);
-    const weapons = this.getRandomCardsOfType('weapon', 2);
+    const modifiers = []; // this.getRandomCardsOfType('modifier', 4);
+    const weapons = this.getRandomCardsOfType('weapon', 4);
     const shields = this.getRandomCardsOfType('shield', 2);
     const spells = this.getRandomCardsOfType('spell', 2);
     const potions = this.getRandomCardsOfType('potion', 2);
@@ -220,18 +220,16 @@ export default class BattleCardHand {
 
   // ===================================================
 
-  refillHand() {
+  private refillHand() {
     const cardsToAdd = this.getMaxCards() - this.handCards.length;
     if (cardsToAdd <= 0) return;
 
     for (let i = 0; i < cardsToAdd; i++) {
       // extract first card from deck
-      const id = this.extractCardFromDeck(); // getRandomCardID();
-      const newCard = this.createCard(id, i); //this.createRandomCard(i);
+      const id = this.extractCardFromDeck();
+      const newCard = this.createCard(id, i);
       // add new card to hand
       this.handCards.splice(i, 0, newCard);
-
-      // this.addRandomCardToDeck(0);
     }
     // rearrange hand cards
     this.updateCardHandPositions();
@@ -244,7 +242,6 @@ export default class BattleCardHand {
     // if we have less than maxCards, refill hand with cards from deck
     this.refillHand();
 
-    // if (this.props.target === 'hero')
     sounds.playSound('swoosh4', 0.025);
     this.active = true;
 
@@ -262,7 +259,6 @@ export default class BattleCardHand {
     // console.log('############## cardHand hideHand', this.active);
     if (!this.active) return;
 
-    // if (this.props.target === 'hero')
     sounds.playSound('swoosh4', 0.025);
     this.active = false;
 

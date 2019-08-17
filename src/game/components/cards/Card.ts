@@ -12,7 +12,7 @@ import { animDuration } from 'src/lib/uiConfig';
 import { CardType, CardPlayType, CardStat, Target } from 'src/types/custom';
 import { getScreenDimensions, waitForIt } from 'src/lib/utils';
 
-export type CardMode = 'mini' | 'full';
+export type CardMode = 'mini' | 'full' | 'active';
 export type CardSide = 'front' | 'back';
 
 export type Props = {
@@ -40,6 +40,7 @@ export default class Card {
   private backImage: View;
   private imageMask: View;
   private image: ImageView;
+  private button: ButtonView;
   private infoHand: View;
   private infoDetails: View;
   private infoModifier: View;
@@ -214,11 +215,12 @@ export default class Card {
     this.createInfoDetails();
     this.createInfoModifier();
 
-    const button = new ButtonView({
+    this.button = new ButtonView({
       superview: this.container,
-      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: 120 * 2,
       height: 170 * 2,
+      zIndex: 3,
       onClick: () => props.onClick && props.onClick(this.props.id),
     });
   }
@@ -385,7 +387,9 @@ export default class Card {
       .then(() => this.infoModifier.hide());
   }
 
-  displayAsActiveCard(target: Target, cb: () => void) {
+  displayAsActiveCard(target: Target, cb: () => void, yFromDetails?: number) {
+    this.setProps({ mode: 'active', side: 'front' });
+
     const screen = getScreenDimensions();
 
     this.infoModifier.hide();
@@ -393,8 +397,11 @@ export default class Card {
 
     const x = target === 'hero' ? screen.width - 32 : 32;
     const dTarget = target === 'hero' ? 35 : -35 * 3;
-    const y = screen.height * ruleset.baselineY + dTarget; // target === 'hero' ? 35 : -100;
+    let y = screen.height * ruleset.baselineY + dTarget; // target === 'hero' ? 35 : -100;
     const h = this.container.style.width + 5;
+
+    // in case we are returning from details
+    if (yFromDetails) y = yFromDetails;
 
     //container
     animate(this.container)
@@ -408,6 +415,13 @@ export default class Card {
 
     // frame
     animate(this.frame).then(
+      { height: h },
+      animDuration * 0.5,
+      animate.easeInOut,
+    );
+
+    // button
+    animate(this.button).then(
       { height: h },
       animDuration * 0.5,
       animate.easeInOut,
@@ -482,6 +496,13 @@ export default class Card {
         animate.easeInOut,
       );
 
+      // button
+      animate(this.button).then(
+        { height: this.container.style.height },
+        animDuration * 0.5,
+        animate.easeInOut,
+      );
+
       // imageMask
       animate(this.imageMask).then(
         { scale: 1, zIndex: 0 },
@@ -489,6 +510,36 @@ export default class Card {
         animate.easeInOut,
       );
     }, delay);
+  }
+
+  displayAsFullDetails() {
+    const screen = getScreenDimensions();
+    const t = animDuration;
+
+    animate(this.container)
+      .clear()
+      .wait(0)
+      .then(
+        { x: screen.width / 2, y: screen.height * 0.45, scale: 0.5 },
+        t * 0.5,
+        animate.easeOut,
+      )
+      .then({ scale: 1.05, r: 0 }, t * 0.5, animate.easeInOut)
+      .then({ scale: 0.95 }, t * 0.5, animate.easeInOut);
+
+    // frame
+    animate(this.frame).then(
+      { scale: 1, height: this.container.style.height },
+      t,
+      animate.easeInOut,
+    );
+
+    // button
+    animate(this.button).then(
+      { height: this.container.style.height },
+      animDuration * 0.5,
+      animate.easeInOut,
+    );
   }
 
   // ===============================================================

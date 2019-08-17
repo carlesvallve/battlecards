@@ -7,7 +7,7 @@ import bitmapFonts from 'src/lib/bitmapFonts';
 import { getScreenDimensions, getRandomInt } from 'src/lib/utils';
 
 import uiConfig, { animDuration } from 'src/lib/uiConfig';
-import Card from '../cards/Card';
+import Card, { CardMode } from '../cards/Card';
 
 import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
@@ -28,6 +28,7 @@ export default class BattleCardDetails {
   private bg: View;
   private buttonUse: View;
   private buttonCancel: View;
+  private selectedCardMode: CardMode;
 
   private selectedCardData: {
     card: Card;
@@ -100,6 +101,9 @@ export default class BattleCardDetails {
   // show / hide card details
 
   showCardDetails(card: Card) {
+    console.log('>>> showCardDetails', card.getMode());
+    this.selectedCardMode = card.getMode();
+
     if (card.getMode() === 'full') return;
 
     console.log('SHOWCARDDETAILS', card.getID());
@@ -117,25 +121,29 @@ export default class BattleCardDetails {
       .wait(0)
       .then({ opacity: 1 }, t, animate.easeOut);
 
-    animate(this.buttonUse)
-      .clear()
-      .wait(t * 0.5)
-      .then({ y: screen.height - 105 }, t, animate.easeInOut);
+    if (this.selectedCardMode === 'mini') {
+      animate(this.buttonUse)
+        .clear()
+        .wait(t * 0.5)
+        .then({ y: screen.height - 105 }, t, animate.easeInOut);
+    }
 
     const { x, y, scale, r } = card.getView().style;
     this.selectedCardData = { card, x, y, scale, r };
     card.setProps({ mode: 'full', side: 'front' });
 
-    animate(card.getView())
-      .clear()
-      .wait(0)
-      .then(
-        { x: screen.width / 2, y: screen.height * 0.45, scale: 0.5, r: r / 2 },
-        t * 0.5,
-        animate.easeOut,
-      )
-      .then({ scale: 1.05, r: 0 }, t * 0.5, animate.easeInOut)
-      .then({ scale: 0.95 }, t * 0.5, animate.easeInOut);
+    card.displayAsFullDetails();
+
+    // animate(card.getView())
+    //   .clear()
+    //   .wait(0)
+    //   .then(
+    //     { x: screen.width / 2, y: screen.height * 0.45, scale: 0.5, r: r / 2 },
+    //     t * 0.5,
+    //     animate.easeOut,
+    //   )
+    //   .then({ scale: 1.05, r: 0 }, t * 0.5, animate.easeInOut)
+    //   .then({ scale: 0.95 }, t * 0.5, animate.easeInOut);
   }
 
   hideCardDetails(usingCard: boolean) {
@@ -160,6 +168,12 @@ export default class BattleCardDetails {
           this.playCardByType(card); // play card depending on type
         } else {
           this.placeCardBackToHand(); // or return card to the user hand
+          // if (this.selectedCardMode === 'mini') {
+          //   this.placeCardBackToHand(); // or return card to the user hand
+          // } else if (this.selectedCardMode === 'active') {
+          //   this.placeCardBackToActive();
+          //   // this.placeCardBackToHand(); // or return card to the user hand
+          // }
         }
       });
 
@@ -185,10 +199,13 @@ export default class BattleCardDetails {
   placeCardBackToHand() {
     const { card, x, y, scale, r } = this.selectedCardData;
 
-    card.setProps({ mode: 'mini', side: 'front' });
+    card.setProps({ mode: this.selectedCardMode, side: 'front' });
     animate(card.getView())
       .clear()
       .then({ x, y, scale, r }, animDuration * 0.75, animate.easeInOut);
+
+    if (this.selectedCardMode === 'active')
+      card.displayAsActiveCard(this.props.target, null, y);
   }
 
   playCard(card: Card) {
