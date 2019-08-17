@@ -3,25 +3,23 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import Card from '../cards/Card';
 import BattleCardDetails from './BattleCardDetails';
-import { getScreenDimensions } from 'src/lib/utils';
+import { getScreenDimensions, getRandomItemsFromArr } from 'src/lib/utils';
 import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
 import { CardType, Target, CardPlayType } from 'src/types/custom';
 import StateObserver from 'src/redux/StateObserver';
+import { CardID } from 'src/redux/ruleset/cards';
 
 type Props = { superview: View; zIndex: number; target: Target };
-
-// const maxCards = 5;
 
 export default class BattleCardHand {
   private props: Props;
   private container: View;
   private active: boolean = false;
-  private deckCards: Card[];
+  private deck: CardID[];
   private handCards: Card[];
   private activeCards: Card[];
-  private usedCards: Card[];
   private cardDetails: BattleCardDetails;
 
   constructor(props: Props) {
@@ -30,20 +28,62 @@ export default class BattleCardHand {
   }
 
   init() {
-    this.createHandCards(this.props);
+    this.deck = this.createDeck();
+    this.createHandCards();
   }
 
   reset() {
     // destroy all cards
-    this.handCards = this.destroyDeck(this.handCards);
-    this.usedCards = this.destroyDeck(this.usedCards);
-    this.activeCards = this.destroyDeck(this.activeCards);
+    this.deck = [];
+    this.handCards = this.destroyCards(this.handCards);
+    this.activeCards = this.destroyCards(this.activeCards);
   }
 
-  private destroyDeck(cards: Card[]) {
-    cards.forEach((card) => {
-      card.getView().removeFromSuperview();
+  // ========================================================
+
+  private createDeck(): CardID[] {
+    const modifiers = this.getRandomCardsOfType('modifier', 4);
+    const weapons = this.getRandomCardsOfType('weapon', 2);
+    const shields = this.getRandomCardsOfType('shield', 2);
+    const spells = this.getRandomCardsOfType('spell', 2);
+    const potions = this.getRandomCardsOfType('potion', 2);
+
+    return [...modifiers, ...weapons, ...shields, ...spells, ...potions];
+  }
+
+  private extractCardFromDeck(): CardID {
+    // console.log('#################', this.props.target, this.cards);
+    return this.deck.splice(0, 1)[0] as CardID;
+  }
+
+  private insertCardInDeck(card: Card) {
+    this.deck.push(card.getID());
+    // this.destroyCard(card);
+  }
+
+  private getRandomCardsOfType(type: CardType, max: number): CardID[] {
+    return getRandomItemsFromArr(this.getAllCardsOfType(type), max);
+  }
+
+  private getAllCardsOfType(type: CardType): CardID[] {
+    return ruleset.cardIds.filter((id) => {
+      const card = ruleset.cards[id];
+      return card.type === type;
     });
+  }
+
+  // public static reshuffle(target: Target) {
+  //   shuffleArray(BattleCardDeck.cards[target]);
+  // }
+
+  // ========================================================
+
+  private destroyCard(card: Card) {
+    card.getView().removeFromSuperview();
+  }
+
+  private destroyCards(cards: Card[]) {
+    cards.forEach((card) => this.destroyCard(card));
     return [];
   }
 
@@ -77,10 +117,10 @@ export default class BattleCardHand {
     return StateObserver.getState().combat[target].stats.maxCards;
   }
 
-  private createHandCards(props: Props) {
+  private createHandCards() {
     this.handCards = [];
     this.activeCards = [];
-    this.usedCards = [];
+    // this.usedCards = [];
 
     // on start, we want to shuffle the deck, then put the first 5 cards in to the hand
     // each time we need to pick a new card, we'll get it from the first position of the deck
@@ -91,7 +131,8 @@ export default class BattleCardHand {
     // const maxCards = StateObserver.getState().combat[target].stats.maxCards;
 
     for (let i = 0; i < this.getMaxCards(); i++) {
-      const card = this.createRandomCard(i);
+      const id = this.extractCardFromDeck();
+      const card = this.createCard(id, i);
       this.handCards.push(card);
     }
 
@@ -105,35 +146,26 @@ export default class BattleCardHand {
     );
   }
 
-  private createRandomCard(i: number) {
-    const id = getRandomCardID();
-
+  private createCard(id: CardID, index: number) {
     const card = new Card({
       superview: this.container,
       id,
       side: 'front',
       mode: 'mini',
-      x: 40 + i * 60,
+      x: 40 + index * 60,
       y: this.getBasePosY(),
       r: 0,
-      scale: this.getBaseScale(), // 0.225,
+      scale: this.getBaseScale(),
       onClick: () => this.cardDetails.showCardDetails(card),
     });
 
     return card;
   }
 
-  private addRandomCardToDeck(index: number = 0) {
-    // add a new random card to cards array
-    const newCard = this.createRandomCard(index);
-    this.handCards.splice(index, 0, newCard);
-    this.updateCardHandPositions();
-  }
-
   // ===================================================
 
   private updateCardHandPositions() {
-    // if (this.active) sounds.playSound('swoosh4', 0.1);
+    if (this.active) sounds.playSound('swoosh4', 0.1);
 
     const screen = getScreenDimensions();
     const center = screen.width / 2;
@@ -183,17 +215,29 @@ export default class BattleCardHand {
 
   // ===================================================
 
+  refillHand() {
+    const cardsToAdd = this.getMaxCards() - this.handCards.length;
+    if (cardsToAdd <= 0) return;
+
+    for (let i = 0; i < cardsToAdd; i++) {
+      // extract first card from deck
+      const id = this.extractCardFromDeck(); // getRandomCardID();
+      const newCard = this.createCard(id, i); //this.createRandomCard(i);
+      // add new card to hand
+      this.handCards.splice(i, 0, newCard);
+
+      // this.addRandomCardToDeck(0);
+    }
+    // rearrange hand cards
+    this.updateCardHandPositions();
+  }
+
   showHand() {
     // console.log('############## cardHand showHand', this.active);
     if (this.active) return;
 
-    // if we have less than maxCards, add random cards to deck
-    const cardsToAdd = this.getMaxCards() - this.handCards.length;
-    if (cardsToAdd > 0) {
-      for (let i = 0; i < cardsToAdd; i++) {
-        this.addRandomCardToDeck(0);
-      }
-    }
+    // if we have less than maxCards, refill hand with cards from deck
+    this.refillHand();
 
     // if (this.props.target === 'hero')
     sounds.playSound('swoosh4', 0.025);
@@ -241,14 +285,16 @@ export default class BattleCardHand {
     if (remainActive) {
       this.activeCards.push(removedCard); // equipment, status cards
     } else {
-      this.usedCards.push(removedCard); // modifiers, instant cards
+      this.insertCardInDeck(removedCard);
+      // this.usedCards.push(removedCard); // modifiers, instant cards
     }
 
     console.log(
       '>>> Card has been played',
       card.getID(),
-      `cards: ${this.handCards}`,
-      `usedCards: ${this.usedCards}`,
+      `deck: ${this.deck}`,
+      `hand: ${this.handCards}`,
+      // `usedCards: ${this.usedCards}`,
       `activeCards: ${this.activeCards}`,
     );
 
@@ -265,7 +311,8 @@ export default class BattleCardHand {
     const removedCard = this.activeCards.splice(index, 1)[0];
 
     // put card in used deck
-    this.usedCards.push(removedCard);
+    this.insertCardInDeck(removedCard);
+    // this.usedCards.push(removedCard);
 
     // reposition remaining cards
     this.updateCardActivePositions();

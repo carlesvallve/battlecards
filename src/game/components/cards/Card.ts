@@ -359,7 +359,11 @@ export default class Card {
     animate(this.container)
       .clear()
       .then(() => sounds.playSound('swoosh3', 0.1))
-      .then({ scale: 0, scaleY: 0.75 }, t, animate.easeInOut);
+      .then({ scale: 0, scaleY: 0.75 }, t, animate.easeInOut)
+      .then(() => {
+        // todo: make sure that removing physical card works in all cases
+        this.container.removeFromSuperview();
+      });
   }
 
   displayModifierResult(result: number, cb: () => void) {

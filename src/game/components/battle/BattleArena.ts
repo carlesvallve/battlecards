@@ -46,7 +46,7 @@ export default class BattleArena {
   private footer: BattleFooter;
   private battleGround: View;
   private monsterImage: MonsterImage;
-  // private cardDeck: BattleCardDeck;
+  private cardDeck: BattleCardDeck;
   private overlay: BattleOverlay;
 
   private components: {
@@ -232,6 +232,128 @@ export default class BattleArena {
 
     // ==========================================
   }
+
+  // ============================================================
+
+  protected createViews(props: Props) {
+    const screen = getScreenDimensions();
+
+    this.container = new View({
+      superview: props.superview,
+      // backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      width: screen.width,
+      height: screen.height,
+      x: screen.width * 0.5,
+      y: screen.height * 0.5,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      infinite: true,
+      canHandleEvents: false,
+    });
+
+    this.battleGround = new View({
+      superview: this.container,
+      // backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      width: screen.width,
+      height: screen.height,
+      x: screen.width * 0.5,
+      y: screen.height * 0.5,
+      centerOnOrigin: true,
+      centerAnchor: true,
+      infinite: true,
+      canHandleEvents: false,
+    });
+
+    this.monsterImage = new MonsterImage({
+      superview: this.battleGround,
+    });
+
+    this.overlay = new BattleOverlay({
+      superview: this.container,
+      zIndex: 10,
+    });
+
+    const y = this.container.style.height * ruleset.baselineY;
+
+    this.components = {
+      hero: {
+        meter: new ProgressMeter({
+          superview: this.battleGround,
+          x: this.container.style.width * 0.5,
+          y: y + 25,
+          width: 220,
+          height: 40,
+          target: 'hero',
+        }) as ProgressMeter,
+
+        attackIcons: new AttackIcons({
+          superview: this.overlay.getView(),
+          x: this.container.style.width * 0.5,
+          y: screen.height - 130, // y + 110,
+          target: 'hero',
+        }) as AttackIcons,
+
+        cardNumbers: new BattleCardNumbers({
+          superview: this.container,
+          target: 'hero',
+          zIndex: 2,
+        }),
+
+        cardHand: new BattleCardHand({
+          superview: this.container,
+          target: 'hero',
+          zIndex: 1,
+        }),
+      },
+
+      monster: {
+        meter: new ProgressMeter({
+          superview: this.battleGround,
+          x: this.container.style.width * 0.5,
+          y: y - 25,
+          width: 220,
+          height: 40,
+          target: 'monster',
+        }) as ProgressMeter,
+
+        attackIcons: new AttackIcons({
+          superview: this.overlay.getView(),
+          x: this.container.style.width * 0.5,
+          y: 115, // y - 220,
+          target: 'monster',
+        }) as AttackIcons,
+
+        cardNumbers: new BattleCardNumbers({
+          superview: this.container,
+          target: 'monster',
+          zIndex: 2,
+        }),
+
+        cardHand: new BattleCardHand({
+          superview: this.container,
+          target: 'monster',
+          zIndex: 1,
+        }),
+      },
+    };
+
+    // this.cardDeck = new BattleCardDeck({
+    //   superview: this.container,
+    //   zIndex: 1,
+    //   target: 'hero',
+    //   startGame: this.startGame.bind(this),
+    // });
+
+    this.header = new BattleHeader({
+      superview: this.container,
+    });
+
+    this.footer = new BattleFooter({
+      superview: this.container,
+    });
+  }
+
+  // ============================================================
 
   displayMeters(value: boolean) {
     if (value) {
@@ -573,125 +695,5 @@ export default class BattleArena {
     // update +5 EP points to both contenders
     addStat('hero', 'ep', { current: 5 });
     addStat('monster', 'ep', { current: 5 });
-  }
-
-  // ============================================================
-
-  protected createViews(props: Props) {
-    const screen = getScreenDimensions();
-
-    this.container = new View({
-      superview: props.superview,
-      // backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      width: screen.width,
-      height: screen.height,
-      x: screen.width * 0.5,
-      y: screen.height * 0.5,
-      centerOnOrigin: true,
-      centerAnchor: true,
-      infinite: true,
-      canHandleEvents: false,
-    });
-
-    this.battleGround = new View({
-      superview: this.container,
-      // backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      width: screen.width,
-      height: screen.height,
-      x: screen.width * 0.5,
-      y: screen.height * 0.5,
-      centerOnOrigin: true,
-      centerAnchor: true,
-      infinite: true,
-      canHandleEvents: false,
-    });
-
-    this.monsterImage = new MonsterImage({
-      superview: this.battleGround,
-    });
-
-    this.overlay = new BattleOverlay({
-      superview: this.container,
-      zIndex: 10,
-    });
-
-    const y = this.container.style.height * ruleset.baselineY;
-
-    this.components = {
-      hero: {
-        meter: new ProgressMeter({
-          superview: this.battleGround,
-          x: this.container.style.width * 0.5,
-          y: y + 25,
-          width: 220,
-          height: 40,
-          target: 'hero',
-        }) as ProgressMeter,
-
-        attackIcons: new AttackIcons({
-          superview: this.overlay.getView(),
-          x: this.container.style.width * 0.5,
-          y: screen.height - 130, // y + 110,
-          target: 'hero',
-        }) as AttackIcons,
-
-        cardNumbers: new BattleCardNumbers({
-          superview: this.container,
-          target: 'hero',
-          zIndex: 2,
-        }),
-
-        cardHand: new BattleCardHand({
-          superview: this.container,
-          target: 'hero',
-          zIndex: 1,
-        }),
-      },
-
-      monster: {
-        meter: new ProgressMeter({
-          superview: this.battleGround,
-          x: this.container.style.width * 0.5,
-          y: y - 25,
-          width: 220,
-          height: 40,
-          target: 'monster',
-        }) as ProgressMeter,
-
-        attackIcons: new AttackIcons({
-          superview: this.overlay.getView(),
-          x: this.container.style.width * 0.5,
-          y: 115, // y - 220,
-          target: 'monster',
-        }) as AttackIcons,
-
-        cardNumbers: new BattleCardNumbers({
-          superview: this.container,
-          target: 'monster',
-          zIndex: 2,
-        }),
-
-        cardHand: new BattleCardHand({
-          superview: this.container,
-          target: 'monster',
-          zIndex: 1,
-        }),
-      },
-    };
-
-    // this.cardDeck = new BattleCardDeck({
-    //   superview: this.container,
-    //   zIndex: 1,
-    //   target: 'hero',
-    //   startGame: this.startGame.bind(this),
-    // });
-
-    this.header = new BattleHeader({
-      superview: this.container,
-    });
-
-    this.footer = new BattleFooter({
-      superview: this.container,
-    });
   }
 }

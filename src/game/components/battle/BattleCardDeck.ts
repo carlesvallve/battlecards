@@ -26,6 +26,7 @@ type Props = {
 export default class BattleCardDeck {
   private props: Props;
   private container: View;
+  private cards: CardID[];
   private deckCards: Card[];
   private cardDetails: BattleCardDetails;
 
@@ -42,7 +43,8 @@ export default class BattleCardDeck {
   }
 
   init() {
-    this.createDeckCards(this.props);
+    this.cards = this.createDeckData();
+    this.createDeckCards(this.cards);
   }
 
   private createViews(props: Props) {
@@ -110,14 +112,24 @@ export default class BattleCardDeck {
 
   // ===================================================
 
-  createDeckCards(props: Props) {
+  createDeckData(): CardID[] {
     const modifiers = this.getRandomCardsOfType('modifier', 4);
     const weapons = this.getRandomCardsOfType('weapon', 2);
     const shields = this.getRandomCardsOfType('shield', 2);
     const spells = this.getRandomCardsOfType('spell', 2);
     const potions = this.getRandomCardsOfType('potion', 2);
 
-    const cards = [...modifiers, ...weapons, ...shields, ...spells, ...potions];
+    return [...modifiers, ...weapons, ...shields, ...spells, ...potions];
+  }
+
+  createDeckCards(cards: CardID[]) {
+    // const modifiers = this.getRandomCardsOfType('modifier', 4);
+    // const weapons = this.getRandomCardsOfType('weapon', 2);
+    // const shields = this.getRandomCardsOfType('shield', 2);
+    // const spells = this.getRandomCardsOfType('spell', 2);
+    // const potions = this.getRandomCardsOfType('potion', 2);
+
+    // const cards = [...modifiers, ...weapons, ...shields, ...spells, ...potions];
 
     this.deckCards = [];
 
