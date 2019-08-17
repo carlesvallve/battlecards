@@ -286,15 +286,18 @@ export default class BattleArena {
   }
 
   resolveCombatDraw() {
-    sounds.playSound('item2', 1);
+    sounds.playSound('item2', 0.7);
+    sounds.playSound('error1', 0.5);
     this.components.hero.cardHand.hideHand();
     this.components.monster.cardHand.hideHand();
     this.components.hero.cardHand.returnActiveCardsToHand(null);
     this.components.monster.cardHand.returnActiveCardsToHand(null);
 
     waitForIt(() => {
-      sounds.playSound('item3', 1);
-      resetCombatTurn();
+      sounds.playSound('item3', 0.7);
+      waitForIt(() => {
+        resetCombatTurn();
+      }, 150);
     }, 350);
   }
 
