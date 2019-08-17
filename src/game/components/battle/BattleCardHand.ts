@@ -125,12 +125,12 @@ export default class BattleCardHand {
   private createHandCards() {
     this.handCards = [];
     this.activeCards = [];
-    // this.usedCards = [];
 
     // on start, we want to shuffle the deck, then put the first 5 cards in to the hand
     // each time we need to pick a new card, we'll get it from the first position of the deck
     // each time we use or discard a card, we'll add it to the last position of the deck
-    // when the deck is empty, or we use the last original card, it will be reshuffled
+
+    // todo: when the deck is empty, or we use the last original card, it will be reshuffled
 
     // const { target } = props;
     // const maxCards = StateObserver.getState().combat[target].stats.maxCards;
@@ -282,12 +282,11 @@ export default class BattleCardHand {
     // remove card from cards array
     const removedCard = this.handCards.splice(index, 1)[0];
 
-    // put card in used or active deck
+    // put card in active cards, or return it to normal deck
     if (remainActive) {
       this.activeCards.push(removedCard); // equipment, status cards
     } else {
-      this.insertCardInDeck(removedCard);
-      // this.usedCards.push(removedCard); // modifiers, instant cards
+      this.insertCardInDeck(removedCard); // modifiers, instant cards
     }
 
     console.log(
@@ -295,7 +294,6 @@ export default class BattleCardHand {
       card.getID(),
       `deck: ${this.deck}`,
       `hand: ${this.handCards}`,
-      // `usedCards: ${this.usedCards}`,
       `activeCards: ${this.activeCards}`,
     );
 
@@ -313,7 +311,6 @@ export default class BattleCardHand {
 
     // put card in used deck
     this.insertCardInDeck(removedCard);
-    // this.usedCards.push(removedCard);
 
     // reposition remaining cards
     this.updateCardActivePositions();
@@ -338,8 +335,14 @@ export default class BattleCardHand {
 
     // reposition remaining cards
     this.updateCardHandPositions();
-    // this.updateCardActivePositions();
-    console.log('>>>', card.getID(), 'has been returned to', this.props.target);
+
+    console.log(
+      '>>>',
+      card.getID(),
+      'has been returned to',
+      this.props.target,
+      'hand',
+    );
   }
 
   returnActiveCardsToHand(winner: Target) {

@@ -217,7 +217,7 @@ export default class Card {
 
     this.button = new ButtonView({
       superview: this.container,
-      backgroundColor: 'rgba(255, 0, 0, 0.5)',
+      // backgroundColor: 'rgba(255, 0, 0, 0.5)',
       width: 120 * 2,
       height: 170 * 2,
       zIndex: 3,

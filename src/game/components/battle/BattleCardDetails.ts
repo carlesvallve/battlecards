@@ -101,10 +101,9 @@ export default class BattleCardDetails {
   // show / hide card details
 
   showCardDetails(card: Card) {
-    console.log('>>> showCardDetails', card.getMode());
-    this.selectedCardMode = card.getMode();
-
     if (card.getMode() === 'full') return;
+
+    this.selectedCardMode = card.getMode();
 
     console.log('SHOWCARDDETAILS', card.getID());
     sounds.playSound('swoosh4', 0.1);
