@@ -203,8 +203,8 @@ export default class BattleCardHand {
       card.getView().show();
       animate(card.getView()).then(
         { y: this.getBasePosY(), opacity: 1 },
-        animDuration,
-        animate.easeInOut,
+        animDuration * 1,
+        animate.easeOut,
       );
     });
   }
@@ -220,9 +220,9 @@ export default class BattleCardHand {
     this.handCards.forEach((card) => {
       animate(card.getView())
         .then(
-          { y: this.getBasePosY(), opacity: 0.5 },
-          animDuration,
-          animate.easeInOut,
+          { y: this.getBasePosY(), opacity: 0 },
+          animDuration * 1,
+          animate.easeOut,
         )
         .then(() => card.getView().hide());
     });

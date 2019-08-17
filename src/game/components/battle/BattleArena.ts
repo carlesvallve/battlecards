@@ -192,7 +192,7 @@ export default class BattleArena {
     });
 
     // ==========================================
-    // monster death
+    // deaths
 
     (['hero', 'monster'] as Target[]).forEach((target) => {
       StateObserver.createSelector(({ ui, combat }) => {
@@ -226,62 +226,12 @@ export default class BattleArena {
     });
 
     // ==========================================
-    // monster death
-
-    // (['hero', 'monster'] as Target[]).forEach((target) => {
-
-    //   StateObserver.createSelector(
-    //     ({ combat }) => combat.monster.isDead,
-    //   ).addListener((monsterIsDead) => {
-    //     if (!monsterIsDead) return;
-
-    //     // hide meters
-    //     this.displayMeters(false);
-
-    //     // render monster death
-    //     this.monsterImage.playDeathAnimation();
-
-    //     // all hero's active cards that cannot be played are returned to the user hand
-    //     this.components.hero.cardHand.returnActiveCardsToHand(null);
-
-    //     // generate a new combat
-    //     waitForIt(() => {
-    //       newCombat(getRandomMonsterID());
-    //     }, animDuration * 5);
-    //   });
-
-    // ==========================================
-    // hero's death
-
-    // StateObserver.createSelector(
-    //   ({ combat }) => combat.hero.isDead,
-    // ).addListener((heroIsDead) => {
-    //   if (!heroIsDead) return;
-
-    //   // hide meters
-    //   this.displayMeters(false);
-
-    //   // render monster death
-    //   this.monsterImage.playDeathAnimation();
-
-    //   // all hero's active cards that cannot be played are returned to the user hand
-    //   this.components.hero.cardHand.returnActiveCardsToHand(null);
-
-    //   // generate a new combat
-    //   waitForIt(() => {
-    //     newCombat(getRandomMonsterID());
-    //   }, animDuration * 5);
-    // });
-
-    // ==========================================
   }
 
   displayMeters(value: boolean) {
     if (value) {
       this.components.hero.meter.showMeter();
       this.components.monster.meter.showMeter();
-      // this.components.hero.cardHand.showHand();
-      // this.components.monster.cardHand.showHand();
       this.monsterImage.playAttackAnimationEnd();
     } else {
       this.components.hero.meter.hideMeter();
@@ -289,7 +239,6 @@ export default class BattleArena {
       this.components.hero.cardHand.hideHand();
       this.components.monster.cardHand.hideHand();
       this.monsterImage.playAttackAnimationStart();
-      // this.cardHand.hideHand();
     }
   }
 
