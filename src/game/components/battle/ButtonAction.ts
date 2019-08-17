@@ -98,8 +98,4 @@ export default class ButtonAction {
       },
     });
   }
-
-  // playActionsound() {
-  //   // sounds.playSound('click2', 1);
-  // }
 }

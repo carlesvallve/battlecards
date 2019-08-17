@@ -25,6 +25,10 @@ export default class GameOver {
     this.createSelectors();
   }
 
+  init() {
+    this.container.updateOpts({ opacity: 0, visible: false });
+  }
+
   private createSelectors() {
     StateObserver.createSelector(({ combat }) => combat).addListener(
       (combat) => {},
@@ -55,7 +59,8 @@ export default class GameOver {
       visible: false,
       onClick: () => {
         if (this.container.style.opacity < 1) return;
-        this.fadeOut();
+        // this.fadeOut();
+
         navigateToScene('title');
       },
     });
@@ -73,34 +78,31 @@ export default class GameOver {
     });
   }
 
-  fadeIn() {
+  private fadeIn() {
     const screen = getScreenDimensions();
-    const t = animDuration;
+    const t = animDuration * 2;
     const y = screen.height * 0.5;
 
-    this.container.show();
+    this.container.updateOpts({ opacity: 0, visible: true });
 
     waitForIt(() => {
       animate(this.container).then({ opacity: 1 }, t, animate.easeInOut);
 
       this.label.updateOpts({ y: y + 40 });
-      animate(this.label).then({ opacity: 1, y }, t, animate.easeInOut);
+      animate(this.label).then({ opacity: 1, y }, t * 2, animate.easeInOut);
     }, 300);
   }
 
-  fadeOut() {
+  private fadeOut() {
     const screen = getScreenDimensions();
-    const t = animDuration;
-    const y = screen.height * 0.5 - 40;
+    const t = animDuration * 1;
+    const y = screen.height * 0.5;
+    +140;
 
     animate(this.container)
       .then({ opacity: 0 }, t, animate.easeInOut)
       .then(() => this.container.hide());
 
-    animate(this.label).then({ opacity: 0, y }, t, animate.easeInOut);
+    animate(this.label).then({ opacity: 0, y }, t * 2, animate.easeInOut);
   }
-
-  // playActionsound() {
-  //   // sounds.playSound('click2', 1);
-  // }
 }

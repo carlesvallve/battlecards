@@ -48,7 +48,7 @@ export default class ProgressBar {
     });
   }
 
-  protected createViews(props: Props) {
+  private createViews(props: Props) {
     this.container = new View({ ...props, centerOnOrigin: true });
 
     const box = new ImageScaleView({
@@ -132,7 +132,7 @@ export default class ProgressBar {
     });
   }
 
-  setProgress(value: TargetStat) {
+  private setProgress(value: TargetStat) {
     this.labelStat.localeText = () => `${Math.max(value.current, 0)}`;
     this.labelStatMax.localeText = () => `/${Math.max(value.max, 0)}`;
 

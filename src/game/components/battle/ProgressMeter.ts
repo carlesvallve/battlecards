@@ -127,7 +127,7 @@ export default class ProgressMeter {
 
   showMeter() {
     if (this.active) return;
-    // this.reset({ isOverhead: false });
+
     setMeter(this.props.target, 0);
 
     // update bg

@@ -1,7 +1,6 @@
 import SceneBasic from './SceneBasic';
 import ButtonView from 'ui/widget/ButtonView';
 import { getScreenDimensions } from 'src/lib/utils';
-import { getRandomMonster } from 'src/redux/shortcuts/combat';
 import BattleArena from '../components/battle/BattleArena';
 import GameOver from '../components/battle/GameOver';
 
@@ -17,6 +16,7 @@ export default class SceneGame extends SceneBasic {
 
   protected init() {
     console.log('Init game');
+    this.gameOver.init();
     this.battleArena.init();
   }
 

@@ -47,8 +47,8 @@ export default class BattleArena {
   private battleGround: View;
   private monsterImage: MonsterImage;
   // private cardDeck: BattleCardDeck;
-  // private cardHand: BattleCardHand;
   private overlay: BattleOverlay;
+
   private components: {
     hero: {
       meter: ProgressMeter;
@@ -63,6 +63,11 @@ export default class BattleArena {
       cardHand: BattleCardHand;
     };
   };
+
+  /*
+  - on entering game, hero deck is generated, and first cards assigned to hero hand
+  - on entering new combat, monster is generated, monster deck is generated and first crds assigned to monster hand
+  */
 
   constructor(props: Props) {
     this.props = props;
@@ -418,9 +423,7 @@ export default class BattleArena {
     const { winner, loser, attacks } = result;
     if (!winner) return;
 
-    const meter = this.components[winner].meter;
-
-    this.components[winner].attackIcons.addIcons(meter, attacks, () => {
+    this.components[winner].attackIcons.addIcons(attacks, () => {
       cb && cb();
     });
   }

@@ -77,7 +77,7 @@ export default class BattleCardHand {
     return StateObserver.getState().combat[target].stats.maxCards;
   }
 
-  createHandCards(props: Props) {
+  private createHandCards(props: Props) {
     this.handCards = [];
     this.activeCards = [];
     this.usedCards = [];
@@ -123,7 +123,7 @@ export default class BattleCardHand {
     return card;
   }
 
-  addRandomCardToDeck(index: number = 0) {
+  private addRandomCardToDeck(index: number = 0) {
     // add a new random card to cards array
     const newCard = this.createRandomCard(index);
     this.handCards.splice(index, 0, newCard);

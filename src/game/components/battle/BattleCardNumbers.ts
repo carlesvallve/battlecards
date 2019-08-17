@@ -74,14 +74,7 @@ export default class BattleCardNumbers {
     });
   }
 
-  // generateNumbers() {
-  //   // add numbers
-  //   for (let i = 1; i <= 6; i++) {
-  //     for (let j = 1; j <= 4; j++) {}
-  //   }
-  // }
-
-  createCards(props: Props) {
+  private createCards(props: Props) {
     this.usedCards = [];
     this.cards = [];
 
@@ -103,7 +96,7 @@ export default class BattleCardNumbers {
     this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 
-  shuffleCards() {
+  private shuffleCards() {
     const screen = getScreenDimensions();
 
     const shuffled = this.cards.sort(() => 0.5 - Math.random());
@@ -135,7 +128,7 @@ export default class BattleCardNumbers {
     this.cards[this.cards.length - 1].updateLabel(this.cards.length.toString());
   }
 
-  spawnCard() {
+  public spawnCard() {
     // get the card on top of the deck
     const card: CardNumber = this.cards[this.cards.length - 1];
 
@@ -203,7 +196,7 @@ export default class BattleCardNumbers {
       });
   }
 
-  updateCardLabels(card?: CardNumber) {
+  private updateCardLabels(card?: CardNumber) {
     if (this.cards.length > 1) {
       this.cards[this.cards.length - 2].updateLabel(
         (this.cards.length - 1).toString(),

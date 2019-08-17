@@ -1,11 +1,9 @@
 import animate from 'animate';
+import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import ImageScaleView from 'ui/ImageScaleView';
 import { waitForIt } from 'src/lib/utils';
 import { Target } from 'src/types/custom';
-import sounds from 'src/lib/sounds';
-import { getCurrentMeter, setMeter } from 'src/redux/shortcuts/combat';
-import ProgressMeter from './ProgressMeter';
 
 type Props = {
   superview: View;
@@ -46,7 +44,7 @@ export default class AttackIcons {
     this.center = this.container.style.x;
   }
 
-  public addIcons(meter: ProgressMeter, maxAttacks: number, cb: () => void) {
+  public addIcons(maxAttacks: number, cb: () => void) {
     this.container.updateOpts({ x: this.center });
 
     // create icon sequence
@@ -63,13 +61,13 @@ export default class AttackIcons {
     waitForIt(() => cb && cb(), callbackDelay);
   }
 
-  public removeAllIcons() {
-    this.icons.forEach((icon) => {
-      animate(icon)
-        .then({ scale: 0 }, animDuration / 2, animate.easeInOut)
-        .then(() => icon.removeFromSuperview());
-    });
-  }
+  // public removeAllIcons() {
+  //   this.icons.forEach((icon) => {
+  //     animate(icon)
+  //       .then({ scale: 0 }, animDuration / 2, animate.easeInOut)
+  //       .then(() => icon.removeFromSuperview());
+  //   });
+  // }
 
   public addIcon(i: number, cb?: () => void) {
     // refresh meter ?
@@ -117,7 +115,7 @@ export default class AttackIcons {
 
   // animations
 
-  animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
+  private animateIconIn(icon: View, { t, x, x2 }, cb?: () => void) {
     sounds.playSound('swoosh3', 0.2);
 
     animate(icon)
@@ -130,8 +128,8 @@ export default class AttackIcons {
     waitForIt(() => cb && cb(), t * 4);
   }
 
-  animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
-    sounds.playRandomSound(['swoosh1', 'swoosh3', ], 0.15); // 'swoosh2', 'swoosh5'
+  private animateIconOut(icon: View, { t, x, x2 }, cb?: () => void) {
+    sounds.playRandomSound(['swoosh1', 'swoosh3'], 0.15); // 'swoosh2', 'swoosh5'
 
     animate(icon).then({ x, scale: 0 }, t * 1, animate.easeInOut);
 
