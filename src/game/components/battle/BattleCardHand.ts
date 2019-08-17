@@ -3,7 +3,11 @@ import sounds from 'src/lib/sounds';
 import View from 'ui/View';
 import Card from '../cards/Card';
 import BattleCardDetails from './BattleCardDetails';
-import { getScreenDimensions, getRandomItemsFromArr } from 'src/lib/utils';
+import {
+  getScreenDimensions,
+  getRandomItemsFromArr,
+  shuffleArray,
+} from 'src/lib/utils';
 import { animDuration } from 'src/lib/uiConfig';
 import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
@@ -48,7 +52,8 @@ export default class BattleCardHand {
     const spells = this.getRandomCardsOfType('spell', 2);
     const potions = this.getRandomCardsOfType('potion', 2);
 
-    return [...modifiers, ...weapons, ...shields, ...spells, ...potions];
+    const deck = [...modifiers, ...weapons, ...shields, ...spells, ...potions];
+    return shuffleArray(deck);
   }
 
   private extractCardFromDeck(): CardID {
