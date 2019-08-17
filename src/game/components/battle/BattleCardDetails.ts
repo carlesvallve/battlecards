@@ -11,11 +11,7 @@ import Card from '../cards/Card';
 
 import StateObserver from 'src/redux/StateObserver';
 import ruleset from 'src/redux/ruleset';
-import {
-  throwDice,
-  addStat,
-  getTargetEnemy,
-} from 'src/redux/shortcuts/combat';
+import { throwDice, addStat, getTargetEnemy } from 'src/redux/shortcuts/combat';
 import playExplosion from './Explosion';
 import { Target } from 'src/types/custom';
 

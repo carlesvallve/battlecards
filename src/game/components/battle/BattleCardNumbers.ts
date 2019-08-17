@@ -38,6 +38,25 @@ export default class BattleCardNumbers {
     );
   }
 
+  reset() {
+    animate(this.container).then(
+      { opacity: 0, y: 100 },
+      animDuration,
+      animate.easeInOut,
+    );
+
+    // destroy all cards
+    this.cards = this.destroyDeck(this.cards);
+    this.usedCards = this.destroyDeck(this.usedCards);
+  }
+
+  private destroyDeck(cards: CardNumber[]) {
+    cards.forEach((card) => {
+      card.getView().removeFromSuperview();
+    });
+    return [];
+  }
+
   private createViews(props: Props) {
     const screen = getScreenDimensions();
 
@@ -55,12 +74,12 @@ export default class BattleCardNumbers {
     });
   }
 
-  generateNumbers() {
-    // add numbers
-    for (let i = 1; i <= 6; i++) {
-      for (let j = 1; j <= 4; j++) {}
-    }
-  }
+  // generateNumbers() {
+  //   // add numbers
+  //   for (let i = 1; i <= 6; i++) {
+  //     for (let j = 1; j <= 4; j++) {}
+  //   }
+  // }
 
   createCards(props: Props) {
     this.usedCards = [];
@@ -123,7 +142,7 @@ export default class BattleCardNumbers {
     // block the combat ui
     blockUi(true);
 
-    sounds.playSound('swoosh1', 0.2);
+    sounds.playSound('swoosh1', 0.1);
 
     this.updateCardLabels(card);
 
@@ -157,7 +176,7 @@ export default class BattleCardNumbers {
           throwDice(this.props.target, card.getNum()); // use the card with redux
         }, t * 0.5);
       })
-      .then(() => sounds.playSound('swoosh3', 0.3))
+      .then(() => sounds.playSound('swoosh3', 0.1))
       .then(
         {
           scale: 0,

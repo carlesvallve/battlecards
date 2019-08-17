@@ -17,7 +17,7 @@ type Props = { superview: View; zIndex: number; target: Target };
 export default class BattleCardHand {
   private props: Props;
   private container: View;
-  private active: boolean;
+  private active: boolean = false;
   private deckCards: Card[];
   private handCards: Card[];
   private activeCards: Card[];
@@ -33,11 +33,26 @@ export default class BattleCardHand {
     this.createHandCards(this.props);
   }
 
+  reset() {
+    // destroy all cards
+    this.handCards = this.destroyDeck(this.handCards);
+    this.usedCards = this.destroyDeck(this.usedCards);
+    this.activeCards = this.destroyDeck(this.activeCards);
+  }
+
+  private destroyDeck(cards: Card[]) {
+    cards.forEach((card) => {
+      card.getView().removeFromSuperview();
+    });
+    return [];
+  }
+
   private createViews(props: Props) {
     const screen = getScreenDimensions();
 
     this.container = new View({
       superview: props.superview,
+      // backgroundColor: 'rgba(255, 255, 0, 0.1)',
       width: screen.width,
       height: screen.height,
       x: 0,
@@ -81,6 +96,13 @@ export default class BattleCardHand {
     }
 
     this.updateCardHandPositions();
+
+    console.log(
+      '### createHandCards',
+      this.props.target,
+      this.getMaxCards(),
+      this.handCards,
+    );
   }
 
   private createRandomCard(i: number) {
@@ -162,6 +184,7 @@ export default class BattleCardHand {
   // ===================================================
 
   showHand() {
+    // console.log('############## cardHand showHand', this.active);
     if (this.active) return;
 
     // if we have less than maxCards, add random cards to deck
@@ -172,7 +195,8 @@ export default class BattleCardHand {
       }
     }
 
-    sounds.playSound('swoosh1', 0.1);
+    // if (this.props.target === 'hero')
+    sounds.playSound('swoosh4', 0.025);
     this.active = true;
 
     this.handCards.forEach((card) => {
@@ -186,15 +210,17 @@ export default class BattleCardHand {
   }
 
   hideHand() {
+    // console.log('############## cardHand hideHand', this.active);
     if (!this.active) return;
 
-    sounds.playSound('swoosh1', 0.1);
+    // if (this.props.target === 'hero')
+    sounds.playSound('swoosh4', 0.025);
     this.active = false;
 
     this.handCards.forEach((card) => {
       animate(card.getView())
         .then(
-          { y: this.getBasePosY(), opacity: 0 },
+          { y: this.getBasePosY(), opacity: 0.5 },
           animDuration,
           animate.easeInOut,
         )

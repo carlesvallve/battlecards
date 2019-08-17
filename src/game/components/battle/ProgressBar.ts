@@ -42,8 +42,8 @@ export default class ProgressBar {
     StateObserver.createSelector(
       ({ combat }) => combat[target].stats[type],
     ).addListener((value: TargetStat) => {
-      if (!value) return;
-      // console.log('### value:', value);
+      // if (!value) return;
+      // console.log('###### updating', target, type, 'value:', value);
       this.setProgress(value);
     });
   }

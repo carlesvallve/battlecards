@@ -20,7 +20,7 @@ const initialState = {
 
   hero: {
     id: 'hero',
-    meter: -100,
+    meter: 0,
 
     overhead: 0,
     attacks: 0,
@@ -39,7 +39,7 @@ const initialState = {
 
   monster: {
     id: null,
-    meter: -100,
+    meter: 0,
 
     attacks: 0,
     overhead: 0,
@@ -50,7 +50,7 @@ const initialState = {
       maxCards: 4,
       hp: { current: 20, max: 20 },
       ep: { current: 20, max: 20 },
-      attack: { current: 3, max: 5 },
+      attack: { current: 5, max: 5 },
       defense: { current: 1, max: 5 },
       status: [],
     },
@@ -88,35 +88,47 @@ const slice = createSlice({
       state.target = 'hero';
       state.enemy = 'monster';
 
-      state.hero.meter = -100;
+      //  ========= hero =========
+
+      state.hero.meter = 0;
       state.hero.overhead = 0;
       state.hero.resolved = false;
-      (state.hero.isDead = false), (state.monster.id = monsterID);
-      state.monster.meter = -100;
+      state.hero.isDead = false;
 
+      // reset hero stats if it's the first combat
+      if (state.index.combat === 1) {
+        state.hero.stats = {
+          maxSteps: 12, // ruleset.monsters[monsterID].maxSteps;
+          maxCards: 4,
+          hp: { current: 20, max: 20 },
+          ep: { current: 20, max: 20 },
+          attack: { current: 5, max: 5 },
+          defense: { current: 1, max: 5 },
+          status: state.monster.stats.status,
+        };
+      }
+
+      //  ========= monster =========
+
+      state.monster.id = monsterID;
+
+      state.monster.meter = 0;
       state.monster.overhead = 0;
       state.monster.resolved = false;
       state.monster.isDead = false;
-      // state.hero.stats = {
-      //   hp: { current: 20, max: 20 },
-      //   ep: { current: 20, max: 20 },
-      //   attack: { current: 3, max: 5 },
-      //   defense: { current: 1, max: 5 },
-      // };
 
-      // todo: generate a monster and fill this from monster ruleset, slightly randomized
       state.monster.stats = {
-        maxSteps: 5 + getRandomInt(0, 3), // ruleset.monsters[monsterID].maxSteps;
+        maxSteps: 5 + getRandomInt(0, 6), // ruleset.monsters[monsterID].maxSteps;
         maxCards: 4,
         hp: { current: 12, max: 20 },
         ep: { current: 20, max: 20 },
-        attack: { current: 3, max: 5 },
+        attack: { current: 5, max: 5 },
         defense: { current: 1, max: 5 },
         status: state.monster.stats.status,
       };
 
       console.log('================================');
-      console.log('action > newCombat', { ...state });
+      console.log('action > newCombat', state.index.combat, { ...state });
       console.log('================================');
     },
 
@@ -196,6 +208,7 @@ const slice = createSlice({
     action_kill: (state, { payload }: PayloadAction<{ target: Target }>) => {
       const { target } = payload;
       state[target].isDead = true;
+      if (target === 'hero') state.index.combat = 0;
     },
 
     // =====================================================================

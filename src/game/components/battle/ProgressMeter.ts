@@ -43,10 +43,25 @@ export default class ProgressMeter {
   }
 
   private createSelectors() {
-    StateObserver.createSelector(
-      ({ combat }) => combat[this.props.target].meter,
-    ).addListener((meter) => {
-      this.updateMeter(meter);
+    // meter value changed
+    StateObserver.createSelector(({ ui, combat }) => {
+      if (ui.scene !== 'game') return null;
+      return combat[this.props.target].meter;
+    }).addListener((meter) => {
+      if (meter === null) return;
+
+      const playSound = StateObserver.getState().combat.index.turn > 1;
+      this.updateMeter(meter, playSound);
+    });
+
+    // new combat
+    StateObserver.createSelector(({ ui, combat }) => {
+      if (ui.scene !== 'game') return null;
+      return combat[this.props.target].stats.maxSteps;
+    }).addListener((maxSteps) => {
+      if (maxSteps === null) return;
+
+      this.updateMeter(0, false);
     });
   }
 
@@ -146,7 +161,7 @@ export default class ProgressMeter {
     }
   }
 
-  updateMeter(meter: number) {
+  updateMeter(meter: number, playSound: boolean = false) {
     const target = this.props.target;
     const { combat } = StateObserver.getState();
     const maxSteps = combat[target].stats.maxSteps;
@@ -158,7 +173,8 @@ export default class ProgressMeter {
     this.label.setProps({ localeText: () => meter.toString() });
 
     // update sound
-    sounds.playSound('tick2', 0.2);
+    // console.log('==============================', target, meter, playSound);
+    if (playSound) sounds.playSound('tick2', 0.1);
 
     // update steps
     for (let i = 0; i < totalSteps; i++) {

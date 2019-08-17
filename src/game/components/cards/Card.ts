@@ -358,7 +358,6 @@ export default class Card {
     // transition the card to final goal position
     animate(this.container)
       .clear()
-      // .then({ scaleY: 1 }, t, animate.easeInOut)
       .then(() => sounds.playSound('swoosh3', 0.1))
       .then({ scale: 0, scaleY: 0.75 }, t, animate.easeInOut);
   }

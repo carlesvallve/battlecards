@@ -87,26 +87,40 @@ export default class BattleArena {
     // generate card decks
     this.components.hero.cardHand.init();
     this.components.monster.cardHand.init();
-    // this.cardHand.init();
 
     // generate a new combat
     newCombat(getRandomMonsterID());
+  }
+
+  endGame() {
+    // display footer and header
+    this.header.reset();
+    this.footer.reset();
+
+    // reset card-number decks
+    this.components.hero.cardNumbers.reset();
+    this.components.monster.cardNumbers.reset();
+
+    // reset card decks
+    this.components.hero.cardHand.reset();
+    this.components.monster.cardHand.reset();
   }
 
   private createSelectors() {
     // ==========================================
     // combat flow
 
-    StateObserver.createSelector(({ combat }) => {
+    StateObserver.createSelector(({ ui, combat }) => {
+      if (ui.scene !== 'game') return;
+
       return combat.index;
     }).addListener((index) => {
       const { combat } = StateObserver.getState();
       // console.log('combat-flow: ---------', index);
+      if (combat.hero.isDead) return;
       if (combat.monster.isDead) return;
 
       if (combat.index.turn === 0) {
-        setMeter('hero', 0);
-        setMeter('monster', 0);
         return;
       }
 
@@ -136,7 +150,8 @@ export default class BattleArena {
 
     (['hero', 'monster'] as Target[]).forEach((target) => {
       const lastHP = { hero: 0, monster: 0 };
-      StateObserver.createSelector(({ combat }) => {
+      StateObserver.createSelector(({ ui, combat }) => {
+        if (ui.scene !== 'game') return;
         return combat[target].stats.hp;
       }).addListener((value: TargetStat) => {
         if (!value) return;
@@ -150,8 +165,9 @@ export default class BattleArena {
 
         // get damage
         const damage = lastHP[target] - value.current;
+
         console.log(
-          `### ${target} ${lastHP[target]} -> ${value.current} = ${damage}`,
+          `    - ${target} ${lastHP[target]} -> ${value.current} = ${damage}`,
         );
 
         // update local last hp
@@ -165,7 +181,8 @@ export default class BattleArena {
           // once enemy has ended all attacks
           const enemy = target === 'hero' ? 'monster' : 'hero';
           const icons = this.components[enemy].attackIcons.getIcons();
-          console.log('### icons:', icons.length, 'hp:', value.current);
+
+          // console.log('### icons:', icons.length, 'hp:', value.current);
           if (icons.length === 0 && value.current <= 0) {
             console.log('killing target...');
             kill(target);
@@ -177,25 +194,84 @@ export default class BattleArena {
     // ==========================================
     // monster death
 
-    StateObserver.createSelector(
-      ({ combat }) => combat.monster.isDead,
-    ).addListener((monsterIsDead) => {
-      if (!monsterIsDead) return;
+    (['hero', 'monster'] as Target[]).forEach((target) => {
+      StateObserver.createSelector(({ ui, combat }) => {
+        if (ui.scene !== 'game') return;
+        return combat[target].isDead;
+      }).addListener((targetIsDead) => {
+        if (!targetIsDead) return;
 
-      // hide meters
-      this.displayMeters(false);
+        // hide meters
+        this.displayMeters(false);
 
-      // render monster death
-      this.monsterImage.playDeathAnimation();
+        // all active cards are returned to both contender hands
+        this.components.hero.cardHand.returnActiveCardsToHand(null);
+        this.components.monster.cardHand.returnActiveCardsToHand(null);
 
-      // all hero's active cards that cannot be played are returned to the user hand
-      this.components.hero.cardHand.returnActiveCardsToHand(null);
+        // if hero died, reset all combat components.
+        // Gameover component will be displayed by itself
+        if (target === 'hero') {
+          this.endGame();
+          return;
+        }
 
-      // generate a new combat
-      waitForIt(() => {
-        newCombat(getRandomMonsterID());
-      }, animDuration * 5);
+        // if monster died, render death and genearte a new combat
+        if (target === 'monster') {
+          this.monsterImage.playDeathAnimation();
+          waitForIt(() => {
+            newCombat(getRandomMonsterID());
+          }, animDuration * 5);
+        }
+      });
     });
+
+    // ==========================================
+    // monster death
+
+    // (['hero', 'monster'] as Target[]).forEach((target) => {
+
+    //   StateObserver.createSelector(
+    //     ({ combat }) => combat.monster.isDead,
+    //   ).addListener((monsterIsDead) => {
+    //     if (!monsterIsDead) return;
+
+    //     // hide meters
+    //     this.displayMeters(false);
+
+    //     // render monster death
+    //     this.monsterImage.playDeathAnimation();
+
+    //     // all hero's active cards that cannot be played are returned to the user hand
+    //     this.components.hero.cardHand.returnActiveCardsToHand(null);
+
+    //     // generate a new combat
+    //     waitForIt(() => {
+    //       newCombat(getRandomMonsterID());
+    //     }, animDuration * 5);
+    //   });
+
+    // ==========================================
+    // hero's death
+
+    // StateObserver.createSelector(
+    //   ({ combat }) => combat.hero.isDead,
+    // ).addListener((heroIsDead) => {
+    //   if (!heroIsDead) return;
+
+    //   // hide meters
+    //   this.displayMeters(false);
+
+    //   // render monster death
+    //   this.monsterImage.playDeathAnimation();
+
+    //   // all hero's active cards that cannot be played are returned to the user hand
+    //   this.components.hero.cardHand.returnActiveCardsToHand(null);
+
+    //   // generate a new combat
+    //   waitForIt(() => {
+    //     newCombat(getRandomMonsterID());
+    //   }, animDuration * 5);
+    // });
 
     // ==========================================
   }
@@ -508,6 +584,8 @@ export default class BattleArena {
   }
 
   updateTurn(combat: Combat) {
+    if (combat.hero.isDead || combat.monster.isDead) return;
+
     console.log('combat-flow: UPDATE TURN', combat.index.turn, combat);
 
     let { target, enemy } = combat;

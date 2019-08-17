@@ -7,6 +7,7 @@ import {
   action_blockUi,
 } from '../state/reducers/ui';
 
+
 export const getScene = () => {
   return StateObserver.getState().ui.scene;
 };

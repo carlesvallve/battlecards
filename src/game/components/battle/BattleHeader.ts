@@ -25,6 +25,14 @@ export default class BattleHeader {
     );
   }
 
+  reset() {
+    animate(this.container).then(
+      { opacity: 0, y: 5 - 100 },
+      animDuration,
+      animate.easeInOut,
+    );
+  }
+
   private createViews(props: Props) {
     const screen = getScreenDimensions();
 

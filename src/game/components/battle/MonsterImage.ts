@@ -83,7 +83,7 @@ export default class MonsterImage {
   }
 
   playAttackAnimationEnd() {
-    sounds.playSound('swoosh4', 0.15);
+    // sounds.playSound('swoosh4', 0.15); // // this plays after laying down a card number
     animate(this.container)
       .clear()
       .then({ scale: 1, y: this.baseY }, animDuration, animate.easeInOut);

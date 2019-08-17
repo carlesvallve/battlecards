@@ -25,6 +25,15 @@ export default class BattleFooter {
     );
   }
 
+  reset() {
+    const screen = getScreenDimensions();
+    animate(this.container).then(
+      { opacity: 0, y: screen.height - 80 + 100 },
+      animDuration,
+      animate.easeInOut,
+    );
+  }
+
   private createViews(props: Props) {
     const screen = getScreenDimensions();
 
