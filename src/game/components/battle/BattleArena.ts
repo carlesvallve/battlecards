@@ -112,6 +112,19 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    StateObserver.createSelector(({ ui, combat }) => {
+      if (ui.scene !== 'game') return;
+
+      return combat.index.combat;
+    }).addListener((combatIndex) => {
+      if (!combatIndex) return;
+      console.log('############## New Combat Started ##############');
+      // make a new deck for new monster.
+      // Probably this should be moved on some kind of monster generation class
+      this.components.monster.cardHand.reset();
+      this.components.monster.cardHand.init();
+    });
+
     // ==========================================
     // combat flow
 
