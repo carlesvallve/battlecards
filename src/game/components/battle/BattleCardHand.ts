@@ -53,7 +53,10 @@ export default class BattleCardHand {
     const potions = this.getRandomCardsOfType('potion', 2);
 
     const deck = [...modifiers, ...weapons, ...shields, ...spells, ...potions];
-    return shuffleArray(deck);
+    const shuffled = shuffleArray(deck);
+
+    console.log('Creating a new', this.props.target, 'deck:', shuffled);
+    return shuffled;
   }
 
   private extractCardFromDeck(): CardID {
@@ -144,9 +147,11 @@ export default class BattleCardHand {
     this.updateCardHandPositions();
 
     console.log(
-      '### createHandCards',
+      'Drawing a new ',
       this.props.target,
-      this.getMaxCards(),
+      'card',
+      this.props.target,
+      'hand:',
       this.handCards,
     );
   }

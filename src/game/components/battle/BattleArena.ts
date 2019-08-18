@@ -112,6 +112,9 @@ export default class BattleArena {
   }
 
   private createSelectors() {
+    // ==========================================
+    // new combat
+
     StateObserver.createSelector(({ ui, combat }) => {
       if (ui.scene !== 'game') return;
 
