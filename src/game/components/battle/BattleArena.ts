@@ -34,6 +34,7 @@ import BattleOverlay from './BattleOverlay';
 
 import { CombatResult, Combat, Target, TargetStat } from 'src/types/custom';
 import BattleCardDeck from './BattleCardDeck';
+import Card from '../cards/Card';
 
 type Props = {
   superview: View;
@@ -502,7 +503,6 @@ export default class BattleArena {
     const { winner, loser, attacks } = result;
     let newAttacks = 0;
 
-    const screen = getScreenDimensions();
     const weaponCards = this.components[winner].cardHand.getActiveCardsOfType(
       'weapon',
     );
@@ -510,15 +510,12 @@ export default class BattleArena {
     // for each card
     weaponCards.forEach((card, index) => {
       waitForIt(() => {
-        card.displayAsAlteringAttacks(
-          screen.width * 0.5 + (attacks * 40) / 2,
-          screen.height - 120,
-          () => {
-            const index = attacks + newAttacks;
-            this.components[winner].attackIcons.addIcon(index, () => {});
-            newAttacks++;
-          },
-        );
+        this.playActiveCard(card, winner, 'attack', () => {
+          const index = attacks + newAttacks;
+          this.components[winner].attackIcons.addIcon(index, () => {});
+          newAttacks++;
+        });
+
         this.components[winner].cardHand.activeCardHasBeenPlayed(card);
       }, index * 1000);
     });
@@ -541,22 +538,41 @@ export default class BattleArena {
     // for each shield card
     shieldCards.forEach((card, index) => {
       waitForIt(() => {
-        // todo: change the name os this function to displayAsActiveCardEffect (?)
-        card.displayAsAlteringAttacks(
-          screen.width * 0.5 + (attacks * 40) / 2,
-          115,
-          () => {
-            const index = newBlocks;
-            this.components[winner].attackIcons.removeIcon(() => {});
-            newBlocks++;
-          },
-        );
+        this.playActiveCard(card, winner, 'defend', () => {
+          this.components[winner].attackIcons.removeIcon(() => {});
+          newBlocks++;
+        });
+
         this.components[loser].cardHand.activeCardHasBeenPlayed(card);
       }, index * 1000);
     });
 
     // return callback once all blocks have been added
     waitForIt(() => cb && cb(newBlocks), 1100 * shieldCards.length);
+  }
+
+  playActiveCard(
+    card: Card,
+    winner: Target,
+    mode: 'attack' | 'defend',
+    cb: () => void,
+  ) {
+    console.log('PLAYING ACTIVE CARD', card.getID());
+
+    const screen = getScreenDimensions();
+
+    const i = this.components[winner].attackIcons.getIcons().length;
+    const attackNum = mode === 'attack' ? i : -i;
+
+    let x = screen.width * 0.5 + (attackNum * 40) / 2;
+    let y = screen.height - 120;
+
+    if (winner === 'monster') {
+      x = screen.width * 0.5 + (attackNum * 40) / 2;
+      y = 120;
+    }
+
+    card.displayAsAlteringAttacks(x, y, () => cb && cb());
   }
 
   createAttackIcons(result: CombatResult, cb: () => void) {

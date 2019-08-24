@@ -268,7 +268,7 @@ export default class Card {
 
     this.createInfoParagraph(
       3,
-      () => ruleset.cards[this.getID()].name, 
+      () => ruleset.cards[this.getID()].name,
       () => ruleset.cards[this.getID()].desc,
     );
   }
@@ -436,12 +436,9 @@ export default class Card {
     // transition the card to final goal position
     animate(this.container)
       .clear()
-      .then({ scale: 0.15, scaleY: 0.8, x, y }, animDuration, animate.easeInOut)
-      .then({ scale: 0.2, scaleY: 1.1 }, animDuration, animate.easeInOut)
-      // .then({ scale: 0.175, scaleY: 1 }, animDuration, animate.easeInOut)
-      .then(() => {
-        cb && cb(); // set the card as an active status
-      });
+      .then({ scale: 0.15, scaleY: 0.8, x, y }, t, animate.easeInOut)
+      .then({ scale: 0.2, scaleY: 1.1 }, t, animate.easeInOut)
+      .then(() => cb && cb());
   }
 
   displayAsAlteringAttacks(x: number, y: number, cb: () => void) {
@@ -460,7 +457,7 @@ export default class Card {
       .then({ x: x + 10, y, scale: 0, scaleY: 1 }, t * 1, animate.easeInOut)
       .then(() => {
         this.displayAsConsumed();
-        cb && cb(); // set the card as an active status
+        cb && cb();
       });
   }
 

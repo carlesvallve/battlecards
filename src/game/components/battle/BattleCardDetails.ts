@@ -353,22 +353,32 @@ export default class BattleCardDetails {
     this.props.cardHasBeenPlayedHandler(card, false);
   }
 
-  playActiveWeapon(card: Card) {
-    // get card data
-    const data = ruleset.cards[card.getID()];
-    console.log('PLAYING ACTIVE WEAPON', card.getID(), data);
+  // playActiveEquipment(card: Card, winner: Target, attackNum: number, cb: () => void) {
+  //   // get card data
+  //   // const data = ruleset.cards[card.getID()];
+  //   console.log('PLAYING ACTIVE EQUIPMENT', card.getID());
 
-    const screen = getScreenDimensions();
-    const x = screen.width * 0.5;
-    const y = screen.height * ruleset.baselineY - 100;
+  //       let x = screen.width * 0.5 + (attackNum * 40) / 2;
+  //       let y = screen.height - 120;
 
-    card.displayAsAlteringAttacks(x, y, () => {
-      card.displayAsConsumed();
-    });
+  //       if (winner === 'monster') {
+  //         x = screen.width * 0.5 + (attackNum * 40) / 2;
+  //         y = 120;
+  //       }
 
-    // put card in usedCards array
-    this.props.cardHasBeenPlayedHandler(card, false);
-  }
+  //       card.displayAsAlteringAttacks(x, y, () => {cb && cb())
+
+  //   // const screen = getScreenDimensions();
+  //   // const x = screen.width * 0.5;
+  //   // const y = screen.height * ruleset.baselineY - 100;
+
+  //   // card.displayAsAlteringAttacks(x, y, () => {
+  //   //   card.displayAsConsumed();
+  //   // });
+
+  //   // // put card in usedCards array
+  //   // this.props.cardHasBeenPlayedHandler(card, false);
+  // }
 
   // ===============================================================
 }
