@@ -6,14 +6,12 @@ import {
   action_setResolved,
   action_resetCombatTurn,
   action_addStat,
-  action_setStat,
   action_setMonsterID,
   action_newCombat,
   action_setMeter,
   action_kill,
 } from 'src/redux/state/reducers/combat';
 import uiConfig from 'src/lib/uiConfig';
-import { CardNum } from 'src/game/components/cards/CardNumber';
 import { State } from '../state';
 import ruleset from '../ruleset';
 import { getRandomItemFromArray } from 'src/lib/utils';
@@ -104,10 +102,6 @@ export const kill = (target: Target) => {
 export const addStat = (target: Target, type: string, value: TargetStat) => {
   StateObserver.dispatch(action_addStat({ target, type, value }));
   return StateObserver.getState().combat[target].stats.hp.current;
-};
-
-export const setStat = (target: Target, type: string, value: TargetStat) => {
-  StateObserver.dispatch(action_setStat({ target, type, value }));
 };
 
 // ======================================================

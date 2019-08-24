@@ -1,6 +1,4 @@
 import SceneBasic from './SceneBasic';
-import ButtonView from 'ui/widget/ButtonView';
-import { getScreenDimensions } from 'src/lib/utils';
 import BattleArena from '../components/battle/BattleArena';
 import GameOver from '../components/battle/GameOver';
 
@@ -21,21 +19,12 @@ export default class SceneGame extends SceneBasic {
   }
 
   private createViews() {
-    const screen = getScreenDimensions();
-
-    const bg = new ButtonView({
-      superview: this.container,
-      width: screen.width,
-      height: screen.height,
-      // backgroundColor: '#222',
-    });
-
     this.battleArena = new BattleArena({
       superview: this.container,
     });
 
     this.gameOver = new GameOver({
       superview: this.container,
-    })
+    });
   }
 }

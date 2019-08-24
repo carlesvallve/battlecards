@@ -94,11 +94,11 @@ export default class BattleArena {
 
     // generate card-number decks
     this.components.hero.cardNumbers.init();
-    this.components.monster.cardNumbers.init();
+    // this.components.monster.cardNumbers.init();
 
     // generate card decks
     this.components.hero.cardHand.init();
-    this.components.monster.cardHand.init();
+    // this.components.monster.cardHand.init();
 
     // generate a new combat
     newCombat(getRandomMonsterID());
@@ -128,9 +128,14 @@ export default class BattleArena {
       return combat.index.combat;
     }).addListener((combatIndex) => {
       if (!combatIndex) return;
-      console.log('############## New Combat Started ##############');
-      // make a new deck for new monster.
-      // Probably this should be moved on some kind of monster generation class
+
+      console.log('================================');
+      console.log('New Combat Started', combatIndex);
+      console.log('================================');
+
+      // make new decks for new monster.
+      this.components.monster.cardNumbers.reset();
+      this.components.monster.cardNumbers.init();
       this.components.monster.cardHand.reset();
       this.components.monster.cardHand.init();
     });
@@ -194,14 +199,13 @@ export default class BattleArena {
         // get damage
         const damage = lastHP[target] - value.current;
 
-        console.log(
-          `  - ${target} ${lastHP[target]} -> ${value.current} = ${damage}`,
-        );
-
-        // update local last hp
-        lastHP[target] = value.current;
-
         if (damage > 0) {
+          console.log(
+            `>>> damaging ${target} ${lastHP[target]} -> ${
+              value.current
+            } = ${damage}`,
+          );
+
           // render damage on target
           this.playDamageAnimation(target, damage);
 
@@ -210,10 +214,13 @@ export default class BattleArena {
           const enemy = target === 'hero' ? 'monster' : 'hero';
           const attacks = this.getAttacksTotal(enemy);
           if (attacks === 0 && value.current <= 0) {
-            console.log('killing target...');
+            console.log(`>>> killing ${target}`);
             kill(target);
           }
         }
+
+        // update local last hp
+        lastHP[target] = value.current;
       });
     });
 
@@ -237,12 +244,14 @@ export default class BattleArena {
         // if hero died, reset all combat components.
         // Gameover component will be displayed by itself
         if (target === 'hero') {
+          console.log('>>> Hero died. Ending game...');
           this.endGame();
           return;
         }
 
         // if monster died, render death and genearte a new combat
         if (target === 'monster') {
+          console.log('>>> Monster died. Starting new combat...');
           this.monsterImage.playDeathAnimation();
           waitForIt(() => {
             newCombat(getRandomMonsterID());
@@ -396,7 +405,7 @@ export default class BattleArena {
     // if someone overheaded, resolve the combat as an overhead
     if (combat[target].overhead > 0 || combat[enemy].overhead > 0) {
       const overhead = combat[target].overhead;
-      console.log('combat-flow:', 'OVERHEAD!', overhead);
+      console.log('>>>', target, 'Overheaded!', overhead);
       this.resolveCombat({
         winner: combat[target].overhead > 0 ? enemy : target,
         loser: combat[target].overhead > 0 ? target : enemy,
@@ -411,13 +420,13 @@ export default class BattleArena {
       return false;
     }
 
-    console.log('>>> COMBAT IS RESOLVED!');
-
     // if it's a draw, resolve the combat as a draw
     if (combat[target].meter === combat[enemy].meter) {
       this.resolveCombatDraw();
       return true;
     }
+
+    console.log('>>> Both combatants resolved the combat');
 
     // if someone won, resolve the combat
     const winner = combat[target].meter > combat[enemy].meter ? target : enemy;
@@ -434,6 +443,8 @@ export default class BattleArena {
   }
 
   private resolveCombatDraw() {
+    console.log('>>> Combat is resolved: was a draw');
+
     sounds.playSound('item2', 0.7);
     sounds.playSound('error1', 0.5);
     this.components.hero.cardHand.hideHand();
@@ -455,7 +466,8 @@ export default class BattleArena {
   // Attack building phase
 
   private resolveCombat(result: CombatResult) {
-    const { winner, loser, attacks, isOverhead } = result;
+    const { winner, loser, attacks } = result;
+    console.log('>>> Combat is resolved:', winner, 'won by', attacks);
 
     // update meters to combat result
     setMeter(winner, attacks);
@@ -579,7 +591,7 @@ export default class BattleArena {
     }
 
     card.displayAsAlteringAttacks(x, y, () => {
-      const t = animDuration * 2;
+      const t = animDuration;
 
       for (let i = 0; i < value.min; i++) {
         const delay = i * t; // playType === 'offensive' ? i * t : 0;
@@ -721,7 +733,7 @@ export default class BattleArena {
   private updateTurn(combat: Combat) {
     if (combat.hero.isDead || combat.monster.isDead) return;
 
-    console.log('combat-flow: UPDATE TURN', combat.index.turn, combat);
+    console.log('combat-flow: Update turn', combat.index.turn);
 
     let { target, enemy } = combat;
 
@@ -738,9 +750,11 @@ export default class BattleArena {
         waitForIt(() => this.executeAi(combat), 500);
       }
     } else {
-      // turn is done
+      // turn is done, wait for user input
       waitForIt(() => {
-        console.log('*************************************************');
+        console.log('================================');
+        console.log('>>> Waiting for hero to play');
+
         this.components.hero.cardHand.showHand();
         this.components.monster.cardHand.showHand();
         if (!combat[enemy].resolved) target = changeTarget();

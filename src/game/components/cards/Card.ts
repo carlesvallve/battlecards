@@ -516,8 +516,8 @@ export default class Card {
         t * 0.5,
         animate.easeOut,
       )
-      .then({ scale: 1.05, r: 0 }, t * 0.5, animate.easeInOut)
-      .then({ scale: 0.95 }, t * 0.5, animate.easeInOut);
+      .then({ scale: 1.0, r: 0 }, t * 1, animate.easeInOut)
+      .then({ scale: 0.95 }, t * 1, animate.easeInOut);
 
     // frame
     animate(this.frame).then(

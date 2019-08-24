@@ -105,7 +105,7 @@ export default class BattleCardDetails {
 
     this.selectedCardMode = card.getMode();
 
-    console.log('SHOWCARDDETAILS', card.getID());
+    console.log('>>> showing card details', card.getID());
     sounds.playSound('swoosh4', 0.1);
 
     this.props.superview.updateOpts({ zIndex: 3 });
@@ -236,7 +236,7 @@ export default class BattleCardDetails {
   playModifier(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING MODIFIER', card.getID(), data);
+    console.log('>>> Playing modifier', card.getID());
 
     // get modifier dice
     let diceModifier = data.value.min;
@@ -265,7 +265,7 @@ export default class BattleCardDetails {
   playEquipment(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING EQUIPMENT', card.getID(), data);
+    console.log('>>> Playing equipment', card.getID());
 
     // put card in activeCards array
     this.props.cardHasBeenPlayedHandler(card, true);
@@ -277,7 +277,7 @@ export default class BattleCardDetails {
   playPotion(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING POTION', card.getID(), data);
+    console.log('>>> Playing potion', card.getID());
 
     const screen = getScreenDimensions();
     let x = screen.width * 0.26;
@@ -302,7 +302,7 @@ export default class BattleCardDetails {
   playSpell(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING SPELL', this.props.target, card.getID(), data);
+    console.log('>>> Playing spell', this.props.target, card.getID());
 
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;

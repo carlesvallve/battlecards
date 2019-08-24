@@ -1,9 +1,8 @@
 import {
   createSlice,
   PayloadAction,
-  createSerializableStateInvariantMiddleware,
 } from 'redux-starter-kit';
-import { Target, TargetData, TargetStat, Combat } from 'src/types/custom';
+import { Target, TargetStat, Combat } from 'src/types/custom';
 import { MonsterID } from 'src/redux/ruleset/monsters';
 import ruleset from 'src/redux/ruleset';
 import { getRandomInt } from 'src/lib/utils';
@@ -98,7 +97,7 @@ const slice = createSlice({
       // reset hero stats if it's the first combat
       if (state.index.combat === 1) {
         state.hero.stats = {
-          maxSteps: 12, // ruleset.monsters[monsterID].maxSteps;
+          maxSteps: 12,
           maxCards: 4,
           hp: { current: 20, max: 20 },
           ep: { current: 20, max: 20 },
@@ -126,15 +125,9 @@ const slice = createSlice({
         defense: { current: 1, max: 5 },
         status: state.monster.stats.status,
       };
-
-      console.log('================================');
-      console.log('action > newCombat', state.index.combat, { ...state });
-      console.log('================================');
     },
 
     action_resetCombatTurn: (state) => {
-      // console.log('action > resetCombatTurn');
-
       state.index.turn += 1; // updating turn index
 
       state.hero.meter = 0;
@@ -156,8 +149,6 @@ const slice = createSlice({
         state.target = state.target === 'hero' ? 'monster' : 'hero';
       }
       state.enemy = state.target === 'hero' ? 'monster' : 'hero';
-
-      // console.log('action > changeTarget:', state.target);
     },
 
     action_throwDice: (
@@ -181,8 +172,6 @@ const slice = createSlice({
       }
 
       state.index.turn += 1; // updating turn index
-
-      // console.log('action > throwDice:', target, { ...state[target] });
     },
 
     action_setResolved: (
@@ -193,8 +182,6 @@ const slice = createSlice({
       state[target].resolved = true;
 
       state.index.turn += 1; // updating turn index
-
-      // console.log('action > setResolved:', target, { ...state[target] });
     },
 
     action_setMeter: (
@@ -228,17 +215,6 @@ const slice = createSlice({
 
       if (value.max) stat.max += value.max;
     },
-
-    action_setStat: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{ target: Target; type: string; value: TargetStat }>,
-    ) => {
-      const { target, type, value } = payload;
-      if (value.current) state[target].stats[type].current = value.current;
-      if (value.max) state[target].stats[type].max = value.max;
-    },
   },
 
   // =====================================================================
@@ -253,8 +229,6 @@ export const {
   action_setResolved,
   action_setMeter,
   action_kill,
-
   action_addStat,
-  action_setStat,
 } = slice.actions;
 export default slice.reducer;

@@ -20,8 +20,8 @@ type Props = { superview: View; zIndex: number; target: Target };
 export default class BattleCardNumbers {
   private props: Props;
   private container: View;
-  private cards: CardNumber[];
-  private usedCards: CardNumber[];
+  private cards: CardNumber[] = [];
+  private usedCards: CardNumber[] = [];
 
   constructor(props: Props) {
     this.props = props;

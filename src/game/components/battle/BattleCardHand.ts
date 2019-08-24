@@ -21,8 +21,8 @@ export default class BattleCardHand {
   private container: View;
   private active: boolean = false;
   private deck: CardID[];
-  private handCards: Card[];
-  private activeCards: Card[];
+  private handCards: Card[] = [];
+  private activeCards: Card[] = [];
   private cardDetails: BattleCardDetails;
 
   constructor(props: Props) {
@@ -137,11 +137,9 @@ export default class BattleCardHand {
     this.updateCardHandPositions();
 
     console.log(
-      'Drawing a new ',
+      'Creating a new',
       this.props.target,
-      'card',
-      this.props.target,
-      'hand:',
+      'card hand:',
       this.handCards,
     );
   }
@@ -177,8 +175,8 @@ export default class BattleCardHand {
     this.handCards.forEach((card, index) => {
       const x = center - (max * dx) / 2 + index * dx;
       const y = this.getBasePosY();
-      
-      if(card) {
+
+      if (card) {
         animate(card.getView()).then({ x, y }, t, animate.easeInOut);
       }
     });

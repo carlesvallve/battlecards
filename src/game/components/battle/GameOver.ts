@@ -41,6 +41,7 @@ export default class GameOver {
     ).addListener((heroIsDead) => {
       if (!heroIsDead) return;
 
+      console.log('>>> Game Over');
       this.fadeIn();
     });
   }
