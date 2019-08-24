@@ -46,6 +46,18 @@ type Props = {
   superview: View;
 };
 
+/*
+
+- Distinguish between normal and critical attacks
+- 12 meter special case -> Attacks are critical
+- Damage types (bleeding, freezing, burning, poison, etc)
+- Monster attitude /personality (coward, agressive...)
+- better Monster AI:
+
+- fix cards ruleset
+- add hardcoded basic set for each monster
+*/
+
 export default class BattleArena {
   private props: Props;
   private container: View;
