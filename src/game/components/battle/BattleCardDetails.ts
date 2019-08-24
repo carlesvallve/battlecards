@@ -211,20 +211,24 @@ export default class BattleCardDetails {
     // check if the card can be played
     const { combat } = StateObserver.getState();
     const target = this.props.target; // getTarget(StateObserver.getState());
+
     const cost = card.getData().ep;
     if (cost > combat[target].stats.ep.current) {
-      console.warn('Not enough EP to play this card!');
-      // comment this is we want to be able to play cards
-      // unlimited for testing purposes
-      return;
+      if (!ruleset.cheats[target].skipCostEP) {
+        console.warn('Not enough EP to play this card!');
+        // comment this is we want to be able to play cards
+        // unlimited for testing purposes
+        return;
+      }
     }
 
     // remove EP cost
-    addStat(target, 'ep', { current: -cost });
+    if (!ruleset.cheats[target].skipCostEP) {
+      addStat(target, 'ep', { current: -cost });
+    }
 
     // start card using animation
     this.hideCardDetails(true);
-    // this.playCardByType(card);
   }
 
   playCardByType(card: Card) {
@@ -295,12 +299,17 @@ export default class BattleCardDetails {
     console.log('PLAYING POTION', card.getID(), data);
 
     const screen = getScreenDimensions();
-    const x = screen.width * 0.26;
-    const y = screen.height - (data.value.type === 'hp' ? 55 : 25);
+    let x = screen.width * 0.26;
+    let y = screen.height - (data.value.type === 'hp' ? 55 : 25);
+
+    if (this.props.target === 'monster') {
+      x = screen.width * (data.value.type === 'hp' ? 0.19 : 0.52);
+      y = 25;
+    }
 
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();
-      const { target } = this.props; // getTarget(StateObserver.getState());
+      const { target } = this.props;
       addStat(target, data.value.type, { current: data.value.min });
       sounds.playSound('break2', 0.2);
     });
@@ -312,15 +321,19 @@ export default class BattleCardDetails {
   playSpell(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('PLAYING SPELL', card.getID(), data);
+    console.log('PLAYING SPELL', this.props.target, card.getID(), data);
 
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;
-    const y = screen.height * ruleset.baselineY - 100;
+    let y = screen.height * ruleset.baselineY - 100;
+
+    if (this.props.target === 'monster') {
+      y = screen.height - 60;
+    }
 
     card.displayAsInstant(x, y, () => {
       card.displayAsConsumed();
-      const { target } = this.props; // getTarget(StateObserver.getState());
+      const { target } = this.props;
       const enemy = getTargetEnemy(target);
 
       addStat(enemy, 'hp', { current: -data.value.min });
@@ -346,7 +359,7 @@ export default class BattleCardDetails {
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;
     const y = screen.height * ruleset.baselineY - 100;
-    // displayAsInstant displayAsAlteringAttacks
+
     card.displayAsAlteringAttacks(x, y, () => {
       card.displayAsConsumed();
     });

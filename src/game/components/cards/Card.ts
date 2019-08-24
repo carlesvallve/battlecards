@@ -268,14 +268,9 @@ export default class Card {
 
     this.createInfoParagraph(
       3,
-      () => ruleset.cards[this.getID()].name, // 'PROS',
-      () => ruleset.cards[this.getID()].desc, // 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
+      () => ruleset.cards[this.getID()].name, 
+      () => ruleset.cards[this.getID()].desc,
     );
-    // this.createInfoParagraph(
-    //   53,
-    //   () => 'CONS',
-    //   () => 'Lorem ipsum dolor estavitas dolor versus ipsum dolor est.',
-    // );
   }
 
   private createInfoParagraph(
