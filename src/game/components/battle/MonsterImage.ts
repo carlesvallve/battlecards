@@ -57,6 +57,7 @@ export default class MonsterImage {
   }
 
   setImage(imageName: string) {
+    console.log('>>> SET MONSTER IMAGE', imageName);
     this.alive = true;
     if (imageName) {
       this.image.updateOpts({

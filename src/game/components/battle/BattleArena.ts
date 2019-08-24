@@ -133,6 +133,11 @@ export default class BattleArena {
       console.log('New Combat Started', combatIndex);
       console.log('================================');
 
+      // set monster image
+      const { combat } = StateObserver.getState();
+      const id = combat.monster.id;
+      if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
+
       // make new decks for new monster.
       this.components.monster.cardNumbers.reset();
       this.components.monster.cardNumbers.init();
@@ -150,21 +155,15 @@ export default class BattleArena {
     }).addListener((index) => {
       const { combat } = StateObserver.getState();
       // console.log('combat-flow: ---------', index);
+
       if (combat.hero.isDead) return;
       if (combat.monster.isDead) return;
-
-      if (combat.index.turn === 0) {
-        return;
-      }
+      if (combat.index.turn === 0) return;
 
       // unblock ui in case monster resolved and hero can keep playing
       if (combat.target === 'hero' && combat.monster.resolved) {
         blockUi(false);
       }
-
-      // update monster image
-      const id = combat.monster.id;
-      if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
 
       // check for combat resolve
       if (this.checkCombatResult(combat)) return;
@@ -185,6 +184,7 @@ export default class BattleArena {
       const lastHP = { hero: 0, monster: 0 };
       StateObserver.createSelector(({ ui, combat }) => {
         if (ui.scene !== 'game') return;
+
         return combat[target].stats.hp;
       }).addListener((value: TargetStat) => {
         if (!value) return;
@@ -479,6 +479,7 @@ export default class BattleArena {
 
     // create attack icons
     waitForIt(() => {
+      console.log('>>> Creating Attack icons...');
       this.createAttackIcons(result, () => {
         this.applyAdditionalAttacks(result, () => {
           this.applyAdditionalBlocks(result, () => {
@@ -561,9 +562,8 @@ export default class BattleArena {
 
     // get next card to be played and play it
     const card = cards[0];
-    this.playActiveCard(card, winner, () => {
+    this.playActiveCard(card, target, winner, () => {
       this.components[target].cardHand.activeCardHasBeenPlayed(card);
-      console.log(`>>>> played ${cardType} card`, cards.length);
 
       // iterate recursively
       waitForIt(() => {
@@ -572,8 +572,13 @@ export default class BattleArena {
     });
   }
 
-  private playActiveCard(card: Card, winner: Target, cb: () => void) {
-    console.log('PLAYING ACTIVE CARD', card.getID());
+  private playActiveCard(
+    card: Card,
+    target: Target,
+    winner: Target,
+    cb: () => void,
+  ) {
+    console.log('>>>', target, 'plays', card.getID(), 'active card');
 
     // decide how many attacks will be added or removed
     const { playType, value } = ruleset.cards[card.getID()];

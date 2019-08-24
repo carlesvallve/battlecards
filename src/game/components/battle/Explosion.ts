@@ -67,7 +67,7 @@ class Explosion extends View {
     // update timestep view props
     sprite.updateOpts({
       backgroundColor: this.imageUrl ? null : 'white',
-      image: new Image({ url: this.imageUrl }),
+      image: this.imageUrl,
       scale: this.sc,
       x: startX,
       y: startY,

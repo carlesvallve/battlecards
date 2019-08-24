@@ -236,7 +236,7 @@ export default class BattleCardDetails {
   playModifier(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('>>> Playing modifier', card.getID());
+    console.log('>>>', this.props.target, 'Plays modifier', card.getID());
 
     // get modifier dice
     let diceModifier = data.value.min;
@@ -263,9 +263,7 @@ export default class BattleCardDetails {
   }
 
   playEquipment(card: Card) {
-    // get card data
-    const data = ruleset.cards[card.getID()];
-    console.log('>>> Playing equipment', card.getID());
+    console.log('>>>', this.props.target, 'Plays equipment', card.getID());
 
     // put card in activeCards array
     this.props.cardHasBeenPlayedHandler(card, true);
@@ -277,7 +275,7 @@ export default class BattleCardDetails {
   playPotion(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('>>> Playing potion', card.getID());
+    console.log('>>>', this.props.target, 'Plays potion', card.getID());
 
     const screen = getScreenDimensions();
     let x = screen.width * 0.26;
@@ -302,7 +300,7 @@ export default class BattleCardDetails {
   playSpell(card: Card) {
     // get card data
     const data = ruleset.cards[card.getID()];
-    console.log('>>> Playing spell', this.props.target, card.getID());
+    console.log('>>>', this.props.target, 'Plays spell', card.getID());
 
     const screen = getScreenDimensions();
     const x = screen.width * 0.5;
