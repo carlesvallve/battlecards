@@ -64,9 +64,13 @@
   "author": "Carles Vallve",
   "license": "MIT",
   "devDependencies": {
+    "@blackstormlabs/gcn-client": "2.5.2",
+    "@blackstormlabs/replicant": "0.0.71",
     "@blackstormlabs/timestep-build": "9.5.1",
     "@blackstormlabs/timestep-core": "7.1.0",
+    "@blackstormlabs/timestep-devtools": "4.0.0",
     "@blackstormlabs/timestep-instant": "8.2.0",
+    "@blackstormlabs/timestep-workspace": "4.1.3",
     "@types/node": "11.13.2",
     "@typescript-eslint/eslint-plugin": "1.9.0",
     "@typescript-eslint/parser": "1.9.0",
