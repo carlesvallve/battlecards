@@ -223,8 +223,6 @@ const slice = createSlice({
       const { target, type, value } = payload;
       const stat = state[target].stats[type];
 
-      if (type === 'ep') return;
-
       if (value.current) stat.current += value.current;
       if (stat.current > stat.max) stat.current = stat.max;
 

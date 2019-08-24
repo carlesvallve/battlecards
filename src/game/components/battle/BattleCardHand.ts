@@ -14,6 +14,7 @@ import ruleset from 'src/redux/ruleset';
 import { CardType, Target, CardPlayType } from 'src/types/custom';
 import StateObserver from 'src/redux/StateObserver';
 import { CardID } from 'src/redux/ruleset/cards';
+import { isTargetDead } from 'src/redux/shortcuts/combat';
 
 type Props = { superview: View; zIndex: number; target: Target };
 
@@ -87,7 +88,7 @@ export default class BattleCardHand {
   // ========================================================
 
   private destroyCard(card: Card) {
-    card.getView().removeFromSuperview();
+    if (card) card.getView().removeFromSuperview();
   }
 
   private destroyCards(cards: Card[]) {
@@ -187,8 +188,10 @@ export default class BattleCardHand {
     this.handCards.forEach((card, index) => {
       const x = center - (max * dx) / 2 + index * dx;
       const y = this.getBasePosY();
-
-      animate(card.getView()).then({ x, y }, t, animate.easeInOut);
+      
+      if(card) {
+        animate(card.getView()).then({ x, y }, t, animate.easeInOut);
+      }
     });
   }
 
@@ -297,9 +300,9 @@ export default class BattleCardHand {
     console.log(
       '>>> Card has been played',
       card.getID(),
-      `deck: ${this.deck}`,
-      `hand: ${this.handCards}`,
-      `activeCards: ${this.activeCards}`,
+      // `deck: ${this.deck}`,
+      // `hand: ${this.handCards}`,
+      // `activeCards: ${this.activeCards}`,
     );
 
     // reposition remaining cards

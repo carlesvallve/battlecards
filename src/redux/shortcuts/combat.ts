@@ -58,6 +58,10 @@ export const getColorByDiff = (target: Target, currentMeter: number) => {
     : uiConfig.frameOrange;
 };
 
+export const isTargetDead = (target: Target) => {
+  return StateObserver.getState().combat[target].isDead;
+};
+
 // ======================================================
 
 // setters

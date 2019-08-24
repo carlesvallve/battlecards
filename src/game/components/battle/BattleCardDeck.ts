@@ -95,7 +95,6 @@ export default class BattleCardDeck {
       size: 16,
       font: bitmapFonts('TitleStroke'),
       onClick: () => {
-        console.log('>>> click!', props.startGame);
         animate(this.container)
           .then(
             { opacity: 0, y: screen.height * 1 },

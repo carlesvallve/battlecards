@@ -210,7 +210,9 @@ export default class BattleCardDetails {
   playCard(card: Card) {
     // check if the card can be played
     const { combat } = StateObserver.getState();
-    const target = this.props.target; // getTarget(StateObserver.getState());
+    const target = this.props.target;
+
+    console.log('>>> cheats', ruleset.cheats);
 
     const cost = card.getData().ep;
     if (cost > combat[target].stats.ep.current) {
@@ -328,7 +330,7 @@ export default class BattleCardDetails {
     let y = screen.height * ruleset.baselineY - 100;
 
     if (this.props.target === 'monster') {
-      y = screen.height - 60;
+      y = screen.height - 45;
     }
 
     card.displayAsInstant(x, y, () => {
