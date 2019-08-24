@@ -52,7 +52,7 @@ export default class AttackIcons {
     for (let i = 0; i < maxAttacks; i++) {
       waitForIt(() => {
         const current = maxAttacks - this.icons.length - 1;
-        this.addIcon(i);
+        this.addIcon();
       }, i * animDuration * 2);
     }
 
@@ -61,17 +61,8 @@ export default class AttackIcons {
     waitForIt(() => cb && cb(), callbackDelay);
   }
 
-  // public removeAllIcons() {
-  //   this.icons.forEach((icon) => {
-  //     animate(icon)
-  //       .then({ scale: 0 }, animDuration / 2, animate.easeInOut)
-  //       .then(() => icon.removeFromSuperview());
-  //   });
-  // }
-
-  public addIcon(i: number, cb?: () => void) {
-    // refresh meter ?
-    // waitForIt(() => setMeter(this.props.target, current), animDuration / 2);
+  public addIcon(cb?: () => void) {
+    const i = this.getIcons().length;
 
     const d = iconSeparation;
     const x = this.container.style.width / 2 + i * d;

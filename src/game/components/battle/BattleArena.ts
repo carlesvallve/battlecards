@@ -32,7 +32,13 @@ import BattleHeader from './BattleHeader';
 import BattleFooter from './BattleFooter';
 import BattleOverlay from './BattleOverlay';
 
-import { CombatResult, Combat, Target, TargetStat } from 'src/types/custom';
+import {
+  CombatResult,
+  Combat,
+  Target,
+  TargetStat,
+  CardType,
+} from 'src/types/custom';
 import BattleCardDeck from './BattleCardDeck';
 import Card from '../cards/Card';
 
@@ -189,7 +195,7 @@ export default class BattleArena {
         const damage = lastHP[target] - value.current;
 
         console.log(
-          `    - ${target} ${lastHP[target]} -> ${value.current} = ${damage}`,
+          `  - ${target} ${lastHP[target]} -> ${value.current} = ${damage}`,
         );
 
         // update local last hp
@@ -200,12 +206,10 @@ export default class BattleArena {
           this.playDamageAnimation(target, damage);
 
           // check if we have to kill the target,
-          // once enemy has ended all attacks
+          // once the enemy has ended all attacks
           const enemy = target === 'hero' ? 'monster' : 'hero';
-          const icons = this.components[enemy].attackIcons.getIcons();
-
-          // console.log('### icons:', icons.length, 'hp:', value.current);
-          if (icons.length === 0 && value.current <= 0) {
+          const attacks = this.getAttacksTotal(enemy);
+          if (attacks === 0 && value.current <= 0) {
             console.log('killing target...');
             kill(target);
           }
@@ -252,7 +256,7 @@ export default class BattleArena {
 
   // ============================================================
 
-  protected createViews(props: Props) {
+  private createViews(props: Props) {
     const screen = getScreenDimensions();
 
     this.container = new View({
@@ -372,7 +376,7 @@ export default class BattleArena {
 
   // ============================================================
 
-  displayMeters(value: boolean) {
+  private displayMeters(value: boolean) {
     if (value) {
       this.components.hero.meter.showMeter();
       this.components.monster.meter.showMeter();
@@ -386,7 +390,7 @@ export default class BattleArena {
     }
   }
 
-  checkCombatResult(combat: Combat) {
+  private checkCombatResult(combat: Combat) {
     const { target, enemy } = combat;
 
     // if someone overheaded, resolve the combat as an overhead
@@ -429,7 +433,7 @@ export default class BattleArena {
     return true;
   }
 
-  resolveCombatDraw() {
+  private resolveCombatDraw() {
     sounds.playSound('item2', 0.7);
     sounds.playSound('error1', 0.5);
     this.components.hero.cardHand.hideHand();
@@ -447,7 +451,10 @@ export default class BattleArena {
     }, 350);
   }
 
-  resolveCombat(result: CombatResult) {
+  // =====================================================
+  // Attack building phase
+
+  private resolveCombat(result: CombatResult) {
     const { winner, loser, attacks, isOverhead } = result;
 
     // update meters to combat result
@@ -461,109 +468,108 @@ export default class BattleArena {
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons(result, () => {
-        // apply additional attacks if we have any in active cards
-        this.applyAdditionalAttacks(result, (newAttacks: number) => {
-          result.attacks += newAttacks;
-
-          // apply additional blocks if we have any in active cards
-          this.applyAdditionalBlocks(result, (newBlocks: number) => {
-            result.attacks -= newBlocks;
-
-            // decide final attack outcome
-            this.finalAttackOutcome(result);
-
+        this.applyAdditionalAttacks(result, () => {
+          this.applyAdditionalBlocks(result, () => {
             // all active cards that cannot be played are returned to the user hand
             this.components[winner].cardHand.returnActiveCardsToHand(winner);
             this.components[loser].cardHand.returnActiveCardsToHand(winner);
+
+            // set final number of attacks
+            result.attacks = this.getAttacksTotal(winner);
+
+            // escape if all attacks were blocked
+            if (result.attacks <= 0) {
+              resetCombatTurn();
+              return;
+            }
+
+            // start attacking sequence
+            this.startAttackingSequence(result, () => {
+              waitForIt(() => resetCombatTurn(), 150);
+            });
           });
         });
       });
     }, animDuration * 2);
   }
 
-  finalAttackOutcome(result: CombatResult) {
-    // skip attacking sequence
-    if (result.attacks <= 0) {
-      resetCombatTurn();
+  private createAttackIcons(result: CombatResult, cb: () => void) {
+    const { winner, loser, attacks } = result;
+    if (!winner) return;
+
+    this.components[winner].attackIcons.addIcons(attacks, () => {
+      cb && cb();
+    });
+  }
+
+  private getAttacksTotal(target: Target) {
+    return this.components[target].attackIcons.getIcons().length;
+  }
+
+  private applyAdditionalAttacks(result: CombatResult, cb: () => void) {
+    const { winner } = result;
+    this.addEffectFromActiveCard(winner, winner, 'weapon', () => {
+      cb && cb();
+    });
+  }
+
+  private applyAdditionalBlocks(result: CombatResult, cb: () => void) {
+    const { winner, loser } = result;
+    this.addEffectFromActiveCard(loser, winner, 'shield', () => {
+      cb && cb();
+    });
+  }
+
+  private addEffectFromActiveCard(
+    target: Target,
+    winner: Target,
+    cardType: CardType,
+    cb: () => void,
+  ) {
+    // get remaining cards of given type to be played
+    const cards = this.components[target].cardHand.getActiveCardsOfType(
+      cardType,
+    );
+
+    // return if no there are no active cards left to play
+    if (cards.length === 0) {
+      console.log(`>>> no additional ${cardType}s. returning callback...`);
+      cb && cb();
       return;
     }
 
-    // start attacking sequence
-    this.startAttackingSequence(result, () => {
+    // return if next card to be played is a shield, and winner has no attacks left
+    if (cardType === 'shield' && this.getAttacksTotal(winner) === 0) {
+      console.log(
+        `>>> no additional attacks to be blocked by a ${cardType}. returning callback...`,
+      );
+      cb && cb();
+      return;
+    }
+
+    // get next card to be played and play it
+    const card = cards[0];
+    this.playActiveCard(card, winner, () => {
+      this.components[target].cardHand.activeCardHasBeenPlayed(card);
+      console.log(`>>>> played ${cardType} card`, cards.length);
+
+      // iterate recursively
       waitForIt(() => {
-        resetCombatTurn();
-      }, 150);
+        this.addEffectFromActiveCard(target, winner, cardType, cb);
+      }, animDuration);
     });
   }
 
-  applyAdditionalAttacks(
-    result: CombatResult,
-    cb: (newAttacks: number) => void,
-  ) {
-    const { winner, loser, attacks } = result;
-    let newAttacks = 0;
-
-    const weaponCards = this.components[winner].cardHand.getActiveCardsOfType(
-      'weapon',
-    );
-
-    // for each card
-    weaponCards.forEach((card, index) => {
-      waitForIt(() => {
-        this.playActiveCard(card, winner, 'attack', () => {
-          const index = attacks + newAttacks;
-          this.components[winner].attackIcons.addIcon(index, () => {});
-          newAttacks++;
-        });
-
-        this.components[winner].cardHand.activeCardHasBeenPlayed(card);
-      }, index * 1000);
-    });
-
-    // return callback once all attacks have been added
-    waitForIt(() => cb && cb(newAttacks), 1100 * weaponCards.length);
-  }
-
-  applyAdditionalBlocks(
-    result: CombatResult,
-    cb: (newAttacks: number) => void,
-  ) {
-    const { winner, loser, attacks } = result;
-    let newBlocks = 0;
-
-    const shieldCards = this.components[loser].cardHand.getActiveCardsOfType(
-      'shield',
-    );
-
-    // for each shield card
-    shieldCards.forEach((card, index) => {
-      waitForIt(() => {
-        this.playActiveCard(card, winner, 'defend', () => {
-          this.components[winner].attackIcons.removeIcon(() => {});
-          newBlocks++;
-        });
-
-        this.components[loser].cardHand.activeCardHasBeenPlayed(card);
-      }, index * 1000);
-    });
-
-    // return callback once all blocks have been added
-    waitForIt(() => cb && cb(newBlocks), 1100 * shieldCards.length);
-  }
-
-  playActiveCard(
-    card: Card,
-    winner: Target,
-    mode: 'attack' | 'defend',
-    cb: () => void,
-  ) {
+  private playActiveCard(card: Card, winner: Target, cb: () => void) {
     console.log('PLAYING ACTIVE CARD', card.getID());
 
+    // decide how many attacks will be added or removed
+    const { playType, value } = ruleset.cards[card.getID()];
+
+    const attacks = this.getAttacksTotal(winner);
+    const attackNum = playType === 'offensive' ? attacks : -attacks;
+
     const screen = getScreenDimensions();
-
-    const i = this.components[winner].attackIcons.getIcons().length;
-    const attackNum = mode === 'attack' ? i : -i;
-
     let x = screen.width * 0.5 + (attackNum * 40) / 2;
     let y = screen.height - 120;
 
@@ -572,17 +578,31 @@ export default class BattleArena {
       y = 120;
     }
 
-    card.displayAsAlteringAttacks(x, y, () => cb && cb());
-  }
+    card.displayAsAlteringAttacks(x, y, () => {
+      const t = animDuration * 2;
 
-  createAttackIcons(result: CombatResult, cb: () => void) {
-    const { winner, loser, attacks } = result;
-    if (!winner) return;
+      for (let i = 0; i < value.min; i++) {
+        const delay = i * t; // playType === 'offensive' ? i * t : 0;
 
-    this.components[winner].attackIcons.addIcons(attacks, () => {
-      cb && cb();
+        waitForIt(() => {
+          if (playType === 'offensive') {
+            this.components[winner].attackIcons.addIcon();
+          } else {
+            this.components[winner].attackIcons.removeIcon();
+          }
+
+          console.log('>>> adding attack', i, '/', value.min - 1);
+          if (i === value.min - 1) {
+            console.log('>>> all attacks added. returning callback');
+            cb && cb();
+          }
+        }, delay);
+      }
     });
   }
+
+  // =====================================================
+  // Attack execution phase
 
   private startAttackingSequence(result: CombatResult, cb: () => void) {
     // hide meters
@@ -673,7 +693,9 @@ export default class BattleArena {
     );
   }
 
-  executeAi(combat: Combat) {
+  // =====================================================
+
+  private executeAi(combat: Combat) {
     const target = changeTarget('monster');
     console.log('combat-flow: executing monster AI');
 
@@ -694,7 +716,9 @@ export default class BattleArena {
     }
   }
 
-  updateTurn(combat: Combat) {
+  // =====================================================
+
+  private updateTurn(combat: Combat) {
     if (combat.hero.isDead || combat.monster.isDead) return;
 
     console.log('combat-flow: UPDATE TURN', combat.index.turn, combat);
@@ -725,7 +749,7 @@ export default class BattleArena {
     }
   }
 
-  initializeNewCombatTurn(combat: Combat) {
+  private initializeNewCombatTurn(combat: Combat) {
     // update +5 EP points to both contenders
     addStat('hero', 'ep', { current: 5 });
     addStat('monster', 'ep', { current: 5 });

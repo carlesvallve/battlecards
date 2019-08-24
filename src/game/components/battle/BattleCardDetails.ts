@@ -195,8 +195,6 @@ export default class BattleCardDetails {
     const { combat } = StateObserver.getState();
     const target = this.props.target;
 
-    console.log('>>> cheats', ruleset.cheats);
-
     const cost = card.getData().ep;
     if (cost > combat[target].stats.ep.current) {
       if (!ruleset.cheats[target].skipCostEP) {
