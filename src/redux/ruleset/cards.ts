@@ -5,6 +5,16 @@ import {
   CardStat,
 } from 'src/types/custom';
 
+/*
+- stun punch
+- pass meter and give attack bonus next round
+- +1 attack for rest of combat
+- kick to double next dice
+- play next card 2 times
+- get hp for each successfull attack
+- 
+*/
+
 // ================ cards =================
 
 const cards = {

@@ -154,7 +154,7 @@ export default class BattleArena {
       const id = combat.monster.id;
       if (id) this.monsterImage.setImage(ruleset.monsters[id].image);
 
-      // if (this.checkCombatReset(combat)) return;
+      // check for combat resolve
       if (this.checkCombatResult(combat)) return;
 
       // both meters need to refresh their colors
@@ -162,12 +162,12 @@ export default class BattleArena {
       this.components.hero.meter.updateMeterColors();
       this.components.monster.meter.updateMeterColors();
 
-      // this.refreshMeters(combat);
+      // update the turn index so the selector triggers again
       this.updateTurn(combat);
     });
 
     // ==========================================
-    // target damage and death
+    // target damage and kills
 
     (['hero', 'monster'] as Target[]).forEach((target) => {
       const lastHP = { hero: 0, monster: 0 };
@@ -433,13 +433,15 @@ export default class BattleArena {
     sounds.playSound('error1', 0.5);
     this.components.hero.cardHand.hideHand();
     this.components.monster.cardHand.hideHand();
-    this.components.hero.cardHand.returnActiveCardsToHand(null);
-    this.components.monster.cardHand.returnActiveCardsToHand(null);
 
     waitForIt(() => {
       sounds.playSound('item3', 0.7);
       waitForIt(() => {
         resetCombatTurn();
+
+        // return unused active cards to hand
+        this.components.hero.cardHand.returnActiveCardsToHand(null);
+        this.components.monster.cardHand.returnActiveCardsToHand(null);
       }, 150);
     }, 350);
   }
@@ -455,10 +457,6 @@ export default class BattleArena {
     this.components.hero.cardHand.hideHand();
     this.components.monster.cardHand.hideHand();
 
-    // all active cards that cannot be played are returned to the user hand
-    this.components[winner].cardHand.returnActiveCardsToHand(winner);
-    this.components[loser].cardHand.returnActiveCardsToHand(winner);
-
     // create attack icons
     waitForIt(() => {
       this.createAttackIcons(result, () => {
@@ -472,6 +470,10 @@ export default class BattleArena {
 
             // decide final attack outcome
             this.finalAttackOutcome(result);
+
+            // all active cards that cannot be played are returned to the user hand
+            this.components[winner].cardHand.returnActiveCardsToHand(winner);
+            this.components[loser].cardHand.returnActiveCardsToHand(winner);
           });
         });
       });
@@ -703,7 +705,7 @@ export default class BattleArena {
         this.components.monster.cardHand.showHand();
         if (!combat[enemy].resolved) target = changeTarget();
         blockUi(target !== 'hero');
-      }, 350);
+      }, animDuration * 2);
     }
   }
 
