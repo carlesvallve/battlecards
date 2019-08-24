@@ -392,7 +392,7 @@ export default class Card {
 
     const x = target === 'hero' ? screen.width - 32 : 32;
     const dTarget = target === 'hero' ? 35 : -35 * 3;
-    let y = screen.height * ruleset.baselineY + dTarget; // target === 'hero' ? 35 : -100;
+    let y = screen.height * ruleset.baselineY + dTarget;
     const h = this.container.style.width + 5;
 
     // in case we are returning from details

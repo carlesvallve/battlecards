@@ -132,17 +132,6 @@ export default class BattleCardDetails {
     card.setProps({ mode: 'full', side: 'front' });
 
     card.displayAsFullDetails();
-
-    // animate(card.getView())
-    //   .clear()
-    //   .wait(0)
-    //   .then(
-    //     { x: screen.width / 2, y: screen.height * 0.45, scale: 0.5, r: r / 2 },
-    //     t * 0.5,
-    //     animate.easeOut,
-    //   )
-    //   .then({ scale: 1.05, r: 0 }, t * 0.5, animate.easeInOut)
-    //   .then({ scale: 0.95 }, t * 0.5, animate.easeInOut);
   }
 
   hideCardDetails(usingCard: boolean) {
@@ -167,12 +156,6 @@ export default class BattleCardDetails {
           this.playCardByType(card); // play card depending on type
         } else {
           this.placeCardBackToHand(); // or return card to the user hand
-          // if (this.selectedCardMode === 'mini') {
-          //   this.placeCardBackToHand(); // or return card to the user hand
-          // } else if (this.selectedCardMode === 'active') {
-          //   this.placeCardBackToActive();
-          //   // this.placeCardBackToHand(); // or return card to the user hand
-          // }
         }
       });
 
@@ -218,8 +201,6 @@ export default class BattleCardDetails {
     if (cost > combat[target].stats.ep.current) {
       if (!ruleset.cheats[target].skipCostEP) {
         console.warn('Not enough EP to play this card!');
-        // comment this is we want to be able to play cards
-        // unlimited for testing purposes
         return;
       }
     }

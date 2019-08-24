@@ -73,6 +73,7 @@ export default class GameOver {
       color: 'red',
       x: this.container.style.width * 0.5,
       y: this.container.style.height * 0.5,
+      height: 50,
       opacity: 0,
       localeText: () => 'GAME OVER',
     });

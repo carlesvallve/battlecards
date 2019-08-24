@@ -9,12 +9,10 @@ import {
   shuffleArray,
 } from 'src/lib/utils';
 import { animDuration } from 'src/lib/uiConfig';
-import { getRandomCardID } from 'src/redux/shortcuts/cards';
 import ruleset from 'src/redux/ruleset';
 import { CardType, Target, CardPlayType } from 'src/types/custom';
 import StateObserver from 'src/redux/StateObserver';
 import { CardID } from 'src/redux/ruleset/cards';
-import { isTargetDead } from 'src/redux/shortcuts/combat';
 
 type Props = { superview: View; zIndex: number; target: Target };
 
@@ -130,15 +128,6 @@ export default class BattleCardHand {
     this.handCards = [];
     this.activeCards = [];
 
-    // on start, we want to shuffle the deck, then put the first 5 cards in to the hand
-    // each time we need to pick a new card, we'll get it from the first position of the deck
-    // each time we use or discard a card, we'll add it to the last position of the deck
-
-    // todo: when the deck is empty, or we use the last original card, it will be reshuffled
-
-    // const { target } = props;
-    // const maxCards = StateObserver.getState().combat[target].stats.maxCards;
-
     for (let i = 0; i < this.getMaxCards(); i++) {
       const id = this.extractCardFromDeck();
       const card = this.createCard(id, i);
@@ -222,7 +211,7 @@ export default class BattleCardHand {
   }
 
   private getBaseScale() {
-    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.58; //0.465;
+    const scale = this.props.target === 'hero' ? 0.225 : 0.225 * 0.58;
     return scale;
   }
 
@@ -244,7 +233,6 @@ export default class BattleCardHand {
   }
 
   showHand() {
-    // console.log('############## cardHand showHand', this.active);
     if (this.active) return;
 
     // if we have less than maxCards, refill hand with cards from deck
@@ -264,7 +252,6 @@ export default class BattleCardHand {
   }
 
   hideHand() {
-    // console.log('############## cardHand hideHand', this.active);
     if (!this.active) return;
 
     sounds.playSound('swoosh4', 0.025);
