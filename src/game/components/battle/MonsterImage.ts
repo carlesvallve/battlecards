@@ -1,9 +1,10 @@
+import sounds from 'src/lib/sounds';
 import animate from 'animate';
 import View from 'ui/View';
 import ImageView from 'ui/ImageView';
 import { animDuration } from 'src/lib/uiConfig';
 import playExplosion from './Explosion';
-import sounds from 'src/lib/sounds';
+
 import { waitForIt, getScreenDimensions } from 'src/lib/utils';
 import ruleset from 'src/redux/ruleset';
 
@@ -15,8 +16,6 @@ export default class MonsterImage {
   private image: ImageView;
   private baseY: number;
 
-  private alive: boolean = true;
-
   constructor(props: Props) {
     this.props = props;
     this.createViews(props);
@@ -24,10 +23,6 @@ export default class MonsterImage {
 
   getView() {
     return this.container;
-  }
-
-  isAlive() {
-    return this.alive;
   }
 
   private createViews(props: Props) {
@@ -57,8 +52,8 @@ export default class MonsterImage {
   }
 
   setImage(imageName: string) {
-    console.log('>>> SET MONSTER IMAGE', imageName);
-    this.alive = true;
+    console.log('>>> Setting monster image', imageName);
+
     if (imageName) {
       this.image.updateOpts({
         image: `resources/images/monsters/${imageName}.png`,
@@ -73,6 +68,8 @@ export default class MonsterImage {
   }
 
   playAttackAnimationStart() {
+    console.log('>>> Starting monster attack animation');
+
     // sounds.playSound('swoosh1', 0.15); // this makes sounds so crowded
     animate(this.container)
       .clear()
@@ -84,14 +81,18 @@ export default class MonsterImage {
   }
 
   playAttackAnimationEnd() {
-    // sounds.playSound('swoosh4', 0.15); // // this plays after laying down a card number
+    console.log('>>> Ending monster attack animation');
+
+    // this seems to play after laying down a card number
+    // sounds.playSound('swoosh4', 0.15);
+
     animate(this.container)
       .clear()
       .then({ scale: 1, y: this.baseY }, animDuration, animate.easeInOut);
   }
 
   playDeathAnimation() {
-    this.alive = false;
+    console.log('>>> Playing monster death animation');
 
     waitForIt(() => {
       // play death sounds
